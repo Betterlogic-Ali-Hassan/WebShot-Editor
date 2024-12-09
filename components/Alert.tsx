@@ -1,0 +1,31 @@
+"use client";
+import { X } from "lucide-react";
+import React from "react";
+import { Alert as AlertBase, AlertDescription } from "@/components/ui/alert";
+import { BsInfo } from "react-icons/bs";
+interface Props {
+  handleClose: () => void;
+}
+const Alert = ({ handleClose }: Props) => {
+  return (
+    <div className='pt-6 '>
+      <AlertBase className='bg-[#FEF7EE] relative  dark:border-none '>
+        <AlertDescription className='flex gap-3 text-[13px]'>
+          <span className='h-6 w-6 flex items-center flex-shrink-0 justify-center bg-[#FFE7CB] dark:bg-[#A6754C] rounded-full'>
+            <BsInfo size={20} />
+          </span>
+          Some users are experiencing download <br />
+          issues, and we are actively working on a fix...
+        </AlertDescription>
+        <span className='absolute top-2 right-2' onClick={handleClose}>
+          <X
+            size={16}
+            className='text-[#999] hover:text-black dark:hover:text-[#f4f4f4] cursor-pointer'
+          />
+        </span>
+      </AlertBase>
+    </div>
+  );
+};
+
+export default Alert;
