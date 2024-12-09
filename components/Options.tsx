@@ -1,7 +1,6 @@
 import { options } from "@/constant/option";
 import React, { useState } from "react";
 import { BsThreeDots } from "react-icons/bs";
-import { IoVideocamOutline } from "react-icons/io5";
 import Tooltip from "./Tooltip";
 
 const Menu = () => {
@@ -18,9 +17,7 @@ const Menu = () => {
           key={i}
           className='flex items-center gap-2 py-[10px] px-3.5 hover:bg-light cursor-pointer text-sm'
         >
-          <span>
-            <IoVideocamOutline size={20} />
-          </span>
+          <span>{item.icon}</span>
           <h4>{item.name}</h4>
         </div>
       ))}
@@ -30,9 +27,7 @@ const Menu = () => {
             key={i}
             className='flex items-center gap-2 py-[10px] px-3.5 hover:bg-light cursor-pointer text-sm'
           >
-            <span>
-              <IoVideocamOutline size={20} />
-            </span>
+            <span>{item.icon}</span>
             <h4>{item.name}</h4>
           </div>
         ))}
