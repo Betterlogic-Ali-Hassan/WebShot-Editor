@@ -1,6 +1,11 @@
 import React from "react";
 
-const ToolCard = ({ icon, text }: { icon: React.ReactNode; text: string }) => {
+interface ToolCardProps {
+  icon: React.ReactNode;
+  text: string;
+}
+
+const ToolCard: React.FC<ToolCardProps> = ({ icon, text }) => {
   return (
     <div className='flex items-center justify-center flex-col border border-border hover:bg-secondary cursor-pointer transition duration-300 h-[68px] w-[68px] rounded-[16px]'>
       <span>{icon}</span>
