@@ -12,13 +12,6 @@ import { smallCard } from "@/constant/smallCardData";
 
 const MainCard = () => {
   const [alert, setAlert] = useState(true);
-  const [selectedCard, setSelectedCard] = useState<string | null>(
-    "Visible Part"
-  );
-
-  const handleCardClick = (cardName: string) => {
-    setSelectedCard(cardName);
-  };
   const handleClose = () => {
     setAlert(false);
   };
@@ -48,9 +41,7 @@ const MainCard = () => {
               key={i}
               icon={item.icon}
               text={item.name}
-              // content='Enable Light Mode'
-              isSelected={selectedCard === item.name}
-              onClick={() => handleCardClick(item.name)}
+              content={item.key}
             />
           ))}
         </div>

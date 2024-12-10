@@ -14,8 +14,8 @@ const Alert = ({ handleClose }: Props) => {
           <span className='h-6 w-6 flex items-center flex-shrink-0 justify-center bg-[#FFE7CB] dark:bg-[#A6754C] rounded-full'>
             <BsInfo size={20} />
           </span>
-          Some users are experiencing download <br />
-          issues, and we are actively working on a fix...
+          Screenshot upload server is temporarily <br /> down for maintenance.
+          We&apos;ll be back shortly!
         </AlertDescription>
         <span className='absolute top-2 right-2' onClick={handleClose}>
           <X
