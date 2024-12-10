@@ -28,3 +28,5 @@ export { default as Redo } from "./Redo.svg";
 export { default as UndoAll } from "./UndoAll.svg";
 export { default as Visible } from "./Visible.svg";
 export { default as EditPage } from "./EditPage.svg";
+export { default as Star } from "./Star.svg";
+export { default as RoundedStar } from "./RoundedStar.svg";
