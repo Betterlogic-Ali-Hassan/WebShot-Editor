@@ -1,3 +1,4 @@
+import Resizer from "@/components/editor/Resizer";
 import {
   Arrow,
   Crop,
@@ -15,98 +16,79 @@ import {
   ZoomIn,
   ZoomOut,
 } from "@/components/svgs";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-
 export const tools = [
   {
     id: 1,
     name: "Image",
     icon: <File />,
-    content: false,
+    hasDropdown: false,
   },
   {
     id: 2,
     name: "Zoom",
     icon: <ZoomIn />,
-    content: false,
+    hasDropdown: false,
   },
   {
     id: 3,
     name: "Zoom",
     icon: <ZoomOut />,
-    content: false,
+    hasDropdown: false,
   },
   {
     id: 4,
     name: "Resize",
     icon: <Resize />,
-    content: (
-      <div className='flex flex-col gap-2'>
-        <div>
-          <h4>Width</h4>
-          <Input /> px
-        </div>
-        <div>
-          <h4>Height</h4>
-          <Input /> px
-        </div>
-        <div>
-          <Checkbox />
-          <label>Proportional</label>
-        </div>
-        <Button>Change</Button>
-      </div>
-    ),
+    hasDropdown: true,
+    content: <Resizer />,
   },
   {
     id: 5,
     name: "Crop",
     icon: <Crop />,
-    content: false,
+    hasDropdown: false,
   },
   {
     id: 6,
     name: "Pen",
     icon: <Pen />,
-    content: true,
+    hasDropdown: true,
   },
   {
     id: 7,
     name: "Square",
     icon: <Screen height={24} width={24} />,
-    content: true,
+    hasDropdown: true,
   },
   {
     id: 8,
     name: "Arrows",
     icon: <Arrow />,
-    content: true,
+    hasDropdown: true,
   },
   {
     id: 9,
     name: "Text",
     icon: <Text />,
-    content: false,
+    hasDropdown: false,
   },
   {
     id: 10,
     name: "Font",
     icon: <Font />,
-    content: false,
+    hasDropdown: false,
   },
   {
     id: 11,
     name: "Numbers",
     icon: <Number />,
-    content: false,
+    hasDropdown: false,
   },
   {
     id: 12,
     name: "Blur",
     icon: <Drop />,
-    content: true,
+    hasDropdown: true,
   },
   {
     id: 13,
