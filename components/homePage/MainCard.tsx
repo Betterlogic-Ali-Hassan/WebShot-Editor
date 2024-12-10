@@ -3,15 +3,18 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import Image from "next/image";
 import Tooltip from "../Tooltip";
-import { About, Cinema, Picture, Rate, Setting, Sun } from "../svgs";
+import { About, Rate, Setting } from "../svgs";
 import Alert from "../Alert";
 import SmallCard from "../SmallCard";
 import Select from "../Select";
 import Menu from "./Options";
+import { smallCard } from "@/constant/smallCardData";
 
 const MainCard = () => {
   const [alert, setAlert] = useState(true);
-  const [selectedCard, setSelectedCard] = useState<string | null>("Light Mode");
+  const [selectedCard, setSelectedCard] = useState<string | null>(
+    "Visible Part"
+  );
 
   const handleCardClick = (cardName: string) => {
     setSelectedCard(cardName);
@@ -37,27 +40,16 @@ const MainCard = () => {
       <CardContent>
         {alert && <Alert handleClose={handleClose} />}
         <div className=' py-6 grid grid-cols-3 gap-3'>
-          <SmallCard
-            icon={<Sun />}
-            text='Light Mode'
-            content='Enable Light Mode'
-            isSelected={selectedCard === "Light Mode"}
-            onClick={() => handleCardClick("Light Mode")}
-          />
-          <SmallCard
-            icon={<Cinema />}
-            content='Disabled Cinema Mode'
-            text='Cinema Mode'
-            isSelected={selectedCard === "Cinema Mode"}
-            onClick={() => handleCardClick("Cinema Mode")}
-          />
-          <SmallCard
-            icon={<Picture />}
-            content='Disabled Picture-n-Picture Mode'
-            text='PiP'
-            isSelected={selectedCard === "PiP"}
-            onClick={() => handleCardClick("PiP")}
-          />
+          {smallCard.map((item, i) => (
+            <SmallCard
+              key={i}
+              icon={item.icon}
+              text={item.name}
+              // content='Enable Light Mode'
+              isSelected={selectedCard === item.name}
+              onClick={() => handleCardClick(item.name)}
+            />
+          ))}
         </div>
         <Menu />
         <div className='pt-6'>
