@@ -5,7 +5,7 @@ import ToolCard from "./ToolCard";
 const ToolCards = () => {
   return (
     <header className='flex items-center justify-center py-4 bg-white border-b border-border shadow-sm'>
-      <div className='flex items-center gap-6'>
+      <div className='flex items-center gap-4'>
         {tools.map((tool, i) => (
           <ToolCard key={i} text={tool.name} icon={tool.icon} />
         ))}

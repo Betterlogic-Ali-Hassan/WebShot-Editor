@@ -8,7 +8,6 @@ import {
   Select,
   Video,
 } from "@/components/svgs";
-import { IoVideocamOutline } from "react-icons/io5";
 
 export const options = [
   {
