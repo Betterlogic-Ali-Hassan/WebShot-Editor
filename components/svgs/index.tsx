@@ -27,3 +27,4 @@ export { default as Undo } from "./Undo.svg";
 export { default as Redo } from "./Redo.svg";
 export { default as UndoAll } from "./UndoAll.svg";
 export { default as Visible } from "./Visible.svg";
+export { default as EditPage } from "./EditPage.svg";

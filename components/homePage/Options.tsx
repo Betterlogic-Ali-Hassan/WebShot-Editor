@@ -15,20 +15,27 @@ const Menu = () => {
       {options.slice(0, 3).map((item, i) => (
         <div
           key={i}
-          className='flex items-center gap-2 py-[10px] px-3.5 hover:bg-light cursor-pointer text-sm'
+          className='flex items-center justify-between py-[10px] px-3.5 hover:bg-light cursor-pointer text-sm'
         >
-          <span>{item.icon}</span>
-          <h4>{item.name}</h4>
+          <div className='flex items-center gap-2'>
+            <span>{item.icon}</span>
+            <h4>{item.name}</h4>
+          </div>
+          <span className='text-[13px]'>{item.key}</span>
         </div>
       ))}
       {showAll &&
         options.slice(3).map((item, i) => (
           <div
             key={i}
-            className='flex items-center gap-2 py-[10px] px-3.5 hover:bg-light cursor-pointer text-sm'
+            className='flex items-center justify-between py-[10px] px-3.5 hover:bg-light cursor-pointer text-sm'
           >
-            <span>{item.icon}</span>
-            <h4>{item.name}</h4>
+            <div className='flex items-center gap-2'>
+              <span>{item.icon}</span>
+              <h4>{item.name}</h4>
+            </div>
+
+            <span className='text-[13px]'>{item.key}</span>
           </div>
         ))}
       <div

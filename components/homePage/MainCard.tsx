@@ -28,7 +28,10 @@ const MainCard = () => {
         <div>
           <CardTitle className='text-[15px] font-medium flex items-center gap-2'>
             <Image src='/logo.svg' alt='logo' height={24} width={24} />
-            Webshot (1.0)
+            Webshot{" "}
+            <span className='py-1 px-2 bg-secondary rounded-md text-xs font-medium'>
+              v1.0
+            </span>
           </CardTitle>
         </div>
         <div className='flex items-center gap-2'>
