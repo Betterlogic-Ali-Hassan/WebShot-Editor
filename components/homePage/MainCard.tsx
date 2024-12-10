@@ -1,12 +1,12 @@
 "use client";
 import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import Image from "next/image";
-import Tooltip from "./Tooltip";
-import { About, Cinema, Picture, Rate, Setting, Sun } from "./svgs";
-import Alert from "./Alert";
-import SmallCard from "./SmallCard";
-import Select from "./Select";
+import Tooltip from "../Tooltip";
+import { About, Cinema, Picture, Rate, Setting, Sun } from "../svgs";
+import Alert from "../Alert";
+import SmallCard from "../SmallCard";
+import Select from "../Select";
 import Menu from "./Options";
 
 const MainCard = () => {
@@ -23,9 +23,9 @@ const MainCard = () => {
     <Card className='overflow-hidden w-[388px] relative high-shadow border-none max-h-[600px] overflow-y-auto scrollbar '>
       <CardHeader className='border-b py-3 px-4 flex flex-row items-center justify-between'>
         <div>
-          <CardTitle className='text-[15px] font-medium flex items-center gap-3'>
-            <Image src='/logo.png' alt='logo' height={20} width={20} />
-            Download Video
+          <CardTitle className='text-base font-medium flex items-center gap-2'>
+            <Image src='/logo.svg' alt='logo' height={24} width={24} />
+            Webshot (version)
           </CardTitle>
         </div>
         <div className='flex items-center gap-2'>

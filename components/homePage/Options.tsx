@@ -1,7 +1,7 @@
 import { options } from "@/constant/option";
 import React, { useState } from "react";
 import { BsThreeDots } from "react-icons/bs";
-import Tooltip from "./Tooltip";
+import Tooltip from "../Tooltip";
 
 const Menu = () => {
   const [showAll, setShowAll] = useState(false); // State for showing all items

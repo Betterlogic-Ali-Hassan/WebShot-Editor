@@ -1,9 +1,9 @@
+import MainCard from "@/components/homePage/MainCard";
+import React from "react";
 export default function Home() {
   return (
-    <div className='flex items-center justify-center min-h-screen'>
+    <section className='flex items-center justify-center min-h-screen'>
       <MainCard />
-    </div>
+    </section>
   );
 }
-import MainCard from "@/components/MainCard";
-import React from "react";
