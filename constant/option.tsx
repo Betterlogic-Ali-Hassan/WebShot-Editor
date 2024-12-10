@@ -4,9 +4,9 @@ import {
   Clock,
   Computer,
   Desktop,
-  Screen,
   Select,
   Video,
+  Visible,
 } from "@/components/svgs";
 
 export const options = [
@@ -15,7 +15,7 @@ export const options = [
     name: "Record Step-by-Step Guide",
   },
   {
-    icon: <Screen />,
+    icon: <Visible />,
     name: "Visible part of page",
   },
   {
