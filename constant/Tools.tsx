@@ -1,10 +1,16 @@
+import Arrows from "@/components/editor/Arrows";
+import Blurs from "@/components/editor/Blurs";
+import Brush from "@/components/editor/Brush";
+import Fonts from "@/components/editor/Fonts";
 import Resizer from "@/components/editor/Resizer";
+import Shapes from "@/components/editor/Shapes";
+import Zoom from "@/components/editor/Zoom";
 import {
   Arrow,
   Crop,
   Drop,
   File,
-  Font,
+  // Horizontal,
   Number,
   Pen,
   Redo,
@@ -14,7 +20,6 @@ import {
   Undo,
   UndoAll,
   ZoomIn,
-  ZoomOut,
 } from "@/components/svgs";
 export const tools = [
   {
@@ -27,13 +32,8 @@ export const tools = [
     id: 2,
     name: "Zoom",
     icon: <ZoomIn />,
-    hasDropdown: false,
-  },
-  {
-    id: 3,
-    name: "Zoom",
-    icon: <ZoomOut />,
-    hasDropdown: false,
+    hasDropdown: true,
+    content: <Zoom />,
   },
   {
     id: 4,
@@ -53,30 +53,35 @@ export const tools = [
     name: "Pen",
     icon: <Pen />,
     hasDropdown: true,
+    content: <Brush />,
   },
   {
     id: 7,
     name: "Square",
     icon: <Screen height={24} width={24} />,
     hasDropdown: true,
+    content: <Shapes />,
   },
   {
     id: 8,
     name: "Arrows",
     icon: <Arrow />,
     hasDropdown: true,
+    content: <Arrows />,
   },
-  {
-    id: 9,
-    name: "Text",
-    icon: <Text />,
-    hasDropdown: false,
-  },
+  // {
+  //   id: 9,
+  //   name: "Line",
+  //   icon: <Horizontal />,
+  //   hasDropdown: true,
+  //   content: <Arrows />,
+  // },
   {
     id: 10,
-    name: "Font",
-    icon: <Font />,
-    hasDropdown: false,
+    name: "Text",
+    icon: <Text />,
+    hasDropdown: true,
+    content: <Fonts />,
   },
   {
     id: 11,
@@ -89,6 +94,7 @@ export const tools = [
     name: "Blur",
     icon: <Drop />,
     hasDropdown: true,
+    content: <Blurs />,
   },
   {
     id: 13,
