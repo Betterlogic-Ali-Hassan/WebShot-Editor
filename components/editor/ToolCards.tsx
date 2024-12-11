@@ -47,7 +47,7 @@ const ToolCards = () => {
         navigation={true}
         modules={[Navigation]}
         slidesPerView='auto'
-        spaceBetween={10}
+        spaceBetween={16}
         className='mySwiper'
       >
         <div className='flex items-center '>
