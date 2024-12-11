@@ -47,3 +47,16 @@ body {
 .swiper-button-prev {
   display: none !important;
 }
+body::-webkit-scrollbar {
+  width: 7px;
+}
+
+body::-webkit-scrollbar-track {
+  background-color: white;
+}
+
+body::-webkit-scrollbar-thumb {
+  background-color: #999;
+  height: 40px;
+  border-radius: 4px;
+}

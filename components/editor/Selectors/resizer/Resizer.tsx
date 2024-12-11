@@ -23,7 +23,9 @@ const Resizer = ({ onClick }: Props) => {
       </div>
       <div className='flex items-center gap-2 pt-2'>
         <Checkbox id='checkbox' />
-        <Label htmlFor='checkbox'>Proportional</Label>
+        <Label htmlFor='checkbox' className='cursor-pointer'>
+          Proportional
+        </Label>
       </div>
     </div>
   );

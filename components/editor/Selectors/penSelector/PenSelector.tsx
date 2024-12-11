@@ -17,7 +17,7 @@ const PenSelector = () => {
     <ToolDropdown
       open={open}
       setOpen={setOpen}
-      trigger={<ToolCard text='Pen' icon={selectedIcon} />}
+      trigger={<ToolCard text='Pen' icon={selectedIcon} id={7} />}
       content={<Brush onClick={handleSelection} />}
     />
   );

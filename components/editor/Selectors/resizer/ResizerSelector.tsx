@@ -15,7 +15,7 @@ const ResizerSelector = () => {
     <ToolDropdown
       open={open}
       setOpen={setOpen}
-      trigger={<ToolCard text='Resize' icon={<Resize />} />}
+      trigger={<ToolCard text='Resize' icon={<Resize />} id={9} />}
       content={<Resizer onClick={handleSelection} />}
     />
   );

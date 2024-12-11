@@ -1,7 +1,7 @@
-import { EditPage } from "@/components/svgs";
+import { Brush, Highlighter, Pen } from "@/components/svgs";
 
 export const brushData = [
-  { name: "Brush", icon: <EditPage /> },
-  { name: "Oil Brush", icon: <EditPage /> },
-  { name: "Natural Pencil", icon: <EditPage /> },
+  { name: "Pencil", icon: <Pen /> },
+  { name: "Brush", icon: <Brush /> },
+  { name: "Highlighter", icon: <Highlighter /> },
 ];

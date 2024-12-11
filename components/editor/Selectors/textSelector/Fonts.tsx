@@ -11,7 +11,7 @@ const Fonts = ({ onClick }: Props) => {
         Font Size:
         <FontCounter />
       </div>
-      <ul className='flex flex-col gap-2 border-t pt-2'>
+      <ul className='flex flex-col gap-1.5 border-t pt-2'>
         {fonts.map((font, i) => (
           <li
             key={i}

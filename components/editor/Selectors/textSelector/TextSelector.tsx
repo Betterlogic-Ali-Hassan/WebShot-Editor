@@ -15,7 +15,7 @@ const TextSelector = () => {
     <ToolDropdown
       open={open}
       setOpen={setOpen}
-      trigger={<ToolCard text='Text' icon={<Text />} />}
+      trigger={<ToolCard text='Text' icon={<Text />} id={12} />}
       content={<Fonts onClick={handleSelection} />}
     />
   );

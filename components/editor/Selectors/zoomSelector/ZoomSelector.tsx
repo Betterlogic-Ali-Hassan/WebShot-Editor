@@ -7,7 +7,7 @@ import Zoom from "./Zoom";
 const ZoomSelector = () => {
   return (
     <ToolDropdown
-      trigger={<ToolCard text='Zoom' icon={<ZoomIn />} />}
+      trigger={<ToolCard text='Zoom' icon={<ZoomIn />} id={16} />}
       content={<Zoom />}
     />
   );

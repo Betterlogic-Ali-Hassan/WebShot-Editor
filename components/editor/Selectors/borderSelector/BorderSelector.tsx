@@ -7,7 +7,7 @@ import BrowserContent from "./BorderContent";
 const BorderSelector = () => {
   return (
     <ToolDropdown
-      trigger={<ToolCard text='Border' icon={<Border />} />}
+      trigger={<ToolCard text='Border' icon={<Border />} id={3} />}
       content={<BrowserContent />}
     />
   );

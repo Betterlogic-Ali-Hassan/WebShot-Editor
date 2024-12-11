@@ -45,29 +45,37 @@ const Browser = () => {
 
       <div className='space-y-2'>
         <Button
-          className='text-sm text-white bg-black hover:bg-black/80 w-full'
+          className={cn(
+            "text-sm text-black bg-secondary border w-full border-border rounded ",
+            selected === "urlTop" && "border-black border-2"
+          )}
           size='sm'
+          onClick={() => handleSelectedItem("urlTop")}
         >
           URL on top
         </Button>
         <Button
-          className='text-sm text-white bg-black hover:bg-black/80 w-full'
+          className={cn(
+            "text-sm text-black bg-light border border-border w-full rounded",
+            selected === "urlBottom" && "border-black border-2"
+          )}
           size='sm'
+          onClick={() => handleSelectedItem("urlBottom")}
         >
           URL on bottom
         </Button>
       </div>
 
       <div className='space-y-2'>
-        <div className='flex items-center space-x-2'>
+        <div className='flex items-center space-x-2 '>
           <Checkbox id='include-url' defaultChecked />
-          <Label htmlFor='include-url' className='text-sm'>
+          <Label htmlFor='include-url' className='text-sm cursor-pointer'>
             Include URL
           </Label>
         </div>
-        <div className='flex items-center space-x-2'>
+        <div className='flex items-center space-x-2 '>
           <Checkbox id='include-date' defaultChecked />
-          <Label htmlFor='include-date' className='text-sm'>
+          <Label htmlFor='include-date' className='text-sm cursor-pointer'>
             Include Date
           </Label>
         </div>

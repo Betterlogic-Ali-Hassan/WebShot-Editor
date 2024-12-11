@@ -17,9 +17,9 @@ export default function Zoom() {
   };
 
   return (
-    <div className='space-y-1 min-w-[400px] py-4 px-3 flex items-center gap-6'>
+    <div className='space-y-1 min-w-[350px]  py-4 px-3 flex items-center gap-6'>
       <ZoomSelect zoomLevel={zoomLevel} setZoomLevel={setZoomLevel} />
-      <div className='flex items-center gap-4 min-w-[250px]'>
+      <div className='flex items-center gap-4 min-w-[200px]'>
         <div>
           <Button
             variant='outline'

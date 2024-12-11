@@ -12,9 +12,9 @@ export default function InputWithBtn({ text }: { text: string }) {
   return (
     <div className='space-y-2 flex flex-col'>
       <Label className='text-sm font-medium text-foreground'>{text}</Label>
-      <Group className='relative inline-flex h-[42px] items-center overflow-hidden whitespace-nowrap rounded-lg border border-input text-sm shadow-sm shadow-black/5 transition-shadow data-[focus-within]:border-ring data-[disabled]:opacity-50 data-[focus-within]:outline-none data-[focus-within]:ring-[3px] data-[focus-within]:ring-ring/20'>
+      <Group className='relative inline-flex h-[42px] items-center overflow-hidden whitespace-nowrap rounded-lg border border-input text-sm shadow-sm shadow-black/5 transition-shadow data-[focus-within]:border-ring data-[disabled]:opacity-50 data-[focus-within]:outline-none w-[110px] justify-between'>
         <Input
-          className='flex-1 bg-background px-3 py-2 tabular-nums text-foreground focus:outline-none'
+          className=' bg-background px-3 py-2 tabular-nums text-foreground focus:outline-none max-w-[70px]'
           value={`${value}px`}
           aria-label={`${text} value`}
           onChange={(e) => setValue(parseInt(e.target.value))}
@@ -22,7 +22,7 @@ export default function InputWithBtn({ text }: { text: string }) {
         <div className='flex h-[calc(100%+2px)] flex-col'>
           <Button
             onPress={handleIncrement}
-            className='-me-px flex h-1/2 w-6 flex-1 items-center justify-center border border-input bg-background text-sm text-muted-foreground/80 transition-shadow hover:bg-light hover:text-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50'
+            className='-me-px flex h-1/2 w-6  items-center justify-center border border-input bg-background text-sm text-muted-foreground/80 transition-shadow hover:bg-light hover:text-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50'
           >
             <ChevronUp size={12} strokeWidth={2} aria-hidden='true' />
           </Button>

@@ -7,7 +7,9 @@ import WatermarkContent from "./WaterMarkContent";
 const WaterMarkSelector = () => {
   return (
     <ToolDropdown
-      trigger={<ToolCard text='Watermark' icon={<LiaStampSolid size={24} />} />}
+      trigger={
+        <ToolCard text='Watermark' icon={<LiaStampSolid size={24} />} id={15} />
+      }
       content={<WatermarkContent />}
     />
   );

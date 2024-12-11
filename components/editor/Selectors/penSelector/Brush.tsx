@@ -6,11 +6,11 @@ interface Props {
 const Brush = ({ onClick }: Props) => {
   return (
     <>
-      <ul className='flex flex-col gap-3 w-full'>
+      <ul className='flex flex-col gap-0.5 w-full'>
         {brushData.map((item, index) => (
           <li
             key={index}
-            className='flex items-center justify-between p-2 px-3 hover:bg-light cursor-pointer text-sm'
+            className='flex items-center justify-between py-2 px-3 hover:bg-light cursor-pointer text-sm'
             onClick={() => onClick(item.icon)}
           >
             {item.name}

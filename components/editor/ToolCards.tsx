@@ -20,6 +20,8 @@ import UndoAllSelector from "./Selectors/undoAllSelector/UndoAllSelector";
 import WaterMarkSelector from "./Selectors/watermarkSelector/WaterMarkSelector";
 import BorderSelector from "./Selectors/borderSelector/BorderSelector";
 import StickersSelector from "./Selectors/stickersSelector/StickersSelector";
+import SliderBtn from "./SliderBtn";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const selectors = [
   ImgSelector,
@@ -38,18 +40,26 @@ const selectors = [
   UndoSelector,
   RedoSelector,
   UndoAllSelector,
+  UndoAllSelector,
+  UndoAllSelector,
+  UndoAllSelector,
 ];
 
 const ToolCards = () => {
   return (
     <header className='flex items-center justify-center py-4 bg-white border-b border-border shadow-sm px-4'>
       <Swiper
-        navigation={true}
         modules={[Navigation]}
         slidesPerView='auto'
         spaceBetween={16}
-        className='mySwiper'
+        navigation={{ nextEl: "#next", prevEl: "#prev" }}
+        className='mySwiper relative'
       >
+        <SliderBtn
+          icon={<ChevronRight size={20} />}
+          id='next'
+          className='right-2'
+        />
         <div className='flex items-center '>
           {selectors.map((SelectorComponent, index) => (
             <SwiperSlide key={index} className='max-w-max'>
@@ -57,6 +67,11 @@ const ToolCards = () => {
             </SwiperSlide>
           ))}
         </div>
+        <SliderBtn
+          icon={<ChevronLeft size={20} />}
+          id='prev'
+          className='left-2'
+        />
       </Swiper>
     </header>
   );

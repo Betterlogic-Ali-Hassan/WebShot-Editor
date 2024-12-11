@@ -20,7 +20,7 @@ const ShapeSelector = () => {
     <ToolDropdown
       open={open}
       setOpen={setOpen}
-      trigger={<ToolCard text='Square' icon={selectedIcon} />}
+      trigger={<ToolCard text='Square' icon={selectedIcon} id={10} />}
       content={<Shapes onClick={handleSelection} />}
     />
   );

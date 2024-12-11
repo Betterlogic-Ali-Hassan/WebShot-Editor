@@ -19,7 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body className={`${roboto.className} scrollbar`}>
+      <body className={`${roboto.className}`}>
         <main>{children}</main>
       </body>
     </html>
