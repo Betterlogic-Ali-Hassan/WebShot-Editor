@@ -3,7 +3,7 @@ import ToolCards from "./ToolCards";
 
 const Editor = () => {
   return (
-    <div>
+    <div className='sticky w-full top-0'>
       <ToolCards />
     </div>
   );
