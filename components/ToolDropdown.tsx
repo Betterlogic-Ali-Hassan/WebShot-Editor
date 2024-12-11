@@ -7,16 +7,14 @@ import {
 
 interface Props {
   trigger: React.ReactNode;
-  dropdownContent?: React.ReactNode[];
+  content: React.ReactNode;
 }
-const ToolDropdown = ({ trigger, dropdownContent }: Props) => {
+const ToolDropdown = ({ trigger, content }: Props) => {
   return (
     <Popover>
       <PopoverTrigger>{trigger}</PopoverTrigger>
       <PopoverContent className='bg-white max-h-[350px] overflow-y-auto scrollbar'>
-        {dropdownContent?.map((item, index) => (
-          <div key={index}>{item}</div>
-        ))}
+        {content}
       </PopoverContent>
     </Popover>
   );

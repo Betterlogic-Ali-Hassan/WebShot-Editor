@@ -1,5 +1,5 @@
+import { EditPage } from "@/components/svgs";
 import React from "react";
-import { EditPage } from "../svgs";
 
 const Brush = () => {
   return (

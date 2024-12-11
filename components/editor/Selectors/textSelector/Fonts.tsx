@@ -1,6 +1,6 @@
 import React from "react";
 import { fonts } from "@/constant/Fonts";
-import FontCounter from "./fontCounter";
+import FontCounter from "../../fontCounter";
 
 const Fonts = () => {
   return (

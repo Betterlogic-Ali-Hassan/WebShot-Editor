@@ -1,5 +1,5 @@
 import React from "react";
-import { Circle, RoundedSquare, RoundedStar, Square } from "../svgs";
+import { Circle, RoundedSquare, RoundedStar, Square } from "../../../svgs";
 
 const Shapes = () => {
   return (

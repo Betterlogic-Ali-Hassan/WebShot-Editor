@@ -2,8 +2,8 @@
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { useState } from "react";
-import { ZoomIn, ZoomOut } from "../svgs";
-import ZoomSelect from "./ZoomSelect";
+import { ZoomIn, ZoomOut } from "../../../svgs";
+import ZoomSelect from "../../ZoomSelect";
 
 export default function Zoom() {
   const [zoomLevel, setZoomLevel] = useState(100);

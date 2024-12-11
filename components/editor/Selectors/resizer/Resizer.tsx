@@ -1,10 +1,10 @@
 "use client";
 import React from "react";
-import { Button } from "../ui/button";
-import { Checkbox } from "../ui/checkbox";
+import { Button } from "../../../ui/button";
+import { Checkbox } from "../../../ui/checkbox";
 
-import InputWithBtn from "./InputWithBtn";
-import { Label } from "../ui/label";
+import InputWithBtn from "../../InputWithBtn";
+import { Label } from "../../../ui/label";
 
 const Resizer = () => {
   return (

@@ -1,5 +1,5 @@
 import React from "react";
-import { Drop } from "../svgs";
+import { Drop } from "../../../svgs";
 
 const Blurs = () => {
   return (
