@@ -15,7 +15,7 @@ const ToolDropdown = ({ trigger, content, open, setOpen }: Props) => {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger className='focus:outline-none'>{trigger}</PopoverTrigger>
-      <PopoverContent className='bg-white max-h-[350px] overflow-y-auto scrollbar  f'>
+      <PopoverContent className='bg-white max-h-[350px] overflow-y-auto scrollbar  focus:outline-none'>
         {content}
       </PopoverContent>
     </Popover>
