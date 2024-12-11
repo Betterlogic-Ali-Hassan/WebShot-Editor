@@ -5,8 +5,11 @@ import Fonts from "@/components/editor/Fonts";
 import Resizer from "@/components/editor/Resizer";
 import Shapes from "@/components/editor/Shapes";
 import Zoom from "@/components/editor/Zoom";
+import { LiaStampSolid } from "react-icons/lia";
+
 import {
   Arrow,
+  Border,
   Crop,
   Drop,
   File,
@@ -16,6 +19,7 @@ import {
   Redo,
   Resize,
   Screen,
+  Stickers,
   Text,
   Undo,
   UndoAll,
@@ -87,6 +91,24 @@ export const tools = [
     id: 11,
     name: "Numbers",
     icon: <Number />,
+    hasDropdown: false,
+  },
+  {
+    id: 12,
+    name: "Stickers",
+    icon: <Stickers />,
+    hasDropdown: false,
+  },
+  {
+    id: 13,
+    name: "Watermark",
+    icon: <LiaStampSolid size={24} />,
+    hasDropdown: false,
+  },
+  {
+    id: 14,
+    name: "Border",
+    icon: <Border />,
     hasDropdown: false,
   },
   {

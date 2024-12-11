@@ -40,3 +40,5 @@ export { default as Line } from "./Line.svg";
 export { default as LineCruve } from "./LineCruve.svg";
 export { default as LineDotted } from "./LineDotted.svg";
 export { default as Horizontal } from "./Horizontal.svg";
+export { default as Stickers } from "./Stickers.svg";
+export { default as Border } from "./Border.svg";

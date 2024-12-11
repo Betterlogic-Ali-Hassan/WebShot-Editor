@@ -1,55 +1,53 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-
 import { useState } from "react";
 import { ZoomIn, ZoomOut } from "../svgs";
+import ZoomSelect from "./ZoomSelect";
 
 export default function Zoom() {
-  const minValue = 0;
-  const maxValue = 200;
-  const steps = 5;
-  const [value, setValue] = useState([100]);
+  const [zoomLevel, setZoomLevel] = useState(100);
+  const handleZoomChange = (value: number[]) => {
+    setZoomLevel(value[0]);
+  };
 
-  const decreaseValue = () =>
-    setValue((prev) => [Math.max(minValue, prev[0] - steps)]);
-  const increaseValue = () =>
-    setValue((prev) => [Math.min(maxValue, prev[0] + steps)]);
+  const adjustZoom = (adjustment: number) => {
+    const newZoom = Math.max(10, Math.min(800, zoomLevel + adjustment));
+    setZoomLevel(newZoom);
+  };
 
   return (
-    <div className='space-y-3 min-w-[250px] max-w-[300px] '>
-      <Label className='tabular-nums'>{value[0]}%</Label>
-      <div className='flex items-center gap-4'>
+    <div className='space-y-1 min-w-[400px] py-4 px-3 flex items-center gap-6'>
+      <ZoomSelect zoomLevel={zoomLevel} setZoomLevel={setZoomLevel} />
+      <div className='flex items-center gap-4 min-w-[250px]'>
         <div>
           <Button
             variant='outline'
             size='icon'
-            className='size-8'
+            className='size-8 hover:bg-secondary'
             aria-label='Decrease value'
-            onClick={decreaseValue}
-            disabled={value[0] === 0}
+            onClick={() => adjustZoom(-1)}
+            disabled={zoomLevel === 10}
           >
             <ZoomOut />
           </Button>
         </div>
         <Slider
           className='flex-grow'
-          value={value}
-          onValueChange={setValue}
-          min={minValue}
-          max={maxValue}
-          step={steps}
-          aria-label='Dual range slider with buttons'
+          value={[zoomLevel]}
+          min={10}
+          max={800}
+          step={10}
+          onValueChange={handleZoomChange}
         />
         <div>
           <Button
             variant='outline'
             size='icon'
-            className='size-8'
+            className='size-8 hover:bg-secondary'
             aria-label='Increase value'
-            onClick={increaseValue}
-            disabled={value[0] === 200}
+            onClick={() => adjustZoom(1)}
+            disabled={zoomLevel === 800}
           >
             <ZoomIn />
           </Button>
