@@ -8,10 +8,12 @@ import {
 interface Props {
   trigger: React.ReactNode;
   content: React.ReactNode;
+  open?: boolean;
+  setOpen?: (open: boolean) => void;
 }
-const ToolDropdown = ({ trigger, content }: Props) => {
+const ToolDropdown = ({ trigger, content, open, setOpen }: Props) => {
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger>{trigger}</PopoverTrigger>
       <PopoverContent className='bg-white max-h-[350px] overflow-y-auto scrollbar'>
         {content}

@@ -1,14 +1,24 @@
+"use client";
 import React from "react";
 import ToolCard from "../../ToolCard";
 import { Pen } from "@/components/svgs";
 import ToolDropdown from "@/components/ToolDropdown";
 import Brush from "./Brush";
+import { useState } from "react";
 
 const PenSelector = () => {
+  const [selectedIcon, setSelectedIcon] = useState<React.ReactNode>(<Pen />);
+  const [open, setOpen] = useState(false);
+  const handleSelection = (icon: React.ReactNode) => {
+    setSelectedIcon(icon);
+    setOpen(false);
+  };
   return (
     <ToolDropdown
-      trigger={<ToolCard text='Pen' icon={<Pen />} />}
-      content={<Brush />}
+      open={open}
+      setOpen={setOpen}
+      trigger={<ToolCard text='Pen' icon={selectedIcon} />}
+      content={<Brush onClick={handleSelection} />}
     />
   );
 };

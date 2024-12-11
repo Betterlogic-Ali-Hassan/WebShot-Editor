@@ -6,7 +6,6 @@ import { Button, Group, Input, Label } from "react-aria-components";
 
 export default function InputWithBtn({ text }: { text: string }) {
   const [value, setValue] = useState<number>(16);
-
   const handleIncrement = () => setValue((prev) => prev + 1);
   const handleDecrement = () => setValue((prev) => (prev > 0 ? prev - 1 : 0));
 
@@ -18,6 +17,7 @@ export default function InputWithBtn({ text }: { text: string }) {
           className='flex-1 bg-background px-3 py-2 tabular-nums text-foreground focus:outline-none'
           value={`${value}px`}
           aria-label={`${text} value`}
+          onChange={(e) => setValue(parseInt(e.target.value))}
         />
         <div className='flex h-[calc(100%+2px)] flex-col'>
           <Button

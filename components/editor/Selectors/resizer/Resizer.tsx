@@ -5,14 +5,19 @@ import { Checkbox } from "../../../ui/checkbox";
 
 import InputWithBtn from "../../InputWithBtn";
 import { Label } from "../../../ui/label";
-
-const Resizer = () => {
+interface Props {
+  onClick: () => void;
+}
+const Resizer = ({ onClick }: Props) => {
   return (
     <div className='flex flex-col gap-2 p-4'>
       <div className='flex gap-4 items-center'>
         <InputWithBtn text='Width' />
         <InputWithBtn text='Height' />
-        <Button className='bg-black text-white  hover:bg-black/80 mt-7'>
+        <Button
+          className='bg-black text-white  hover:bg-black/80 mt-7'
+          onClick={onClick}
+        >
           Change
         </Button>
       </div>

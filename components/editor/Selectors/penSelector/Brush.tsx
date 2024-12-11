@@ -1,22 +1,22 @@
-import { EditPage } from "@/components/svgs";
+import { brushData } from "@/constant/PencilData";
 import React from "react";
-
-const Brush = () => {
+interface Props {
+  onClick: (icon: React.ReactNode) => void;
+}
+const Brush = ({ onClick }: Props) => {
   return (
     <>
       <ul className='flex flex-col gap-3 w-full'>
-        <li className='flex items-center justify-between p-2 px-3  hover:bg-light cursor-pointer text-sm'>
-          Brush
-          <EditPage />
-        </li>
-        <li className='flex items-center justify-between p-2 px-3 hover:bg-light cursor-pointer text-sm'>
-          Oil Brush
-          <EditPage />
-        </li>
-        <li className='flex items-center justify-between gap-4 p-2 px-3 hover:bg-light cursor-pointer text-sm'>
-          Natural Pencil
-          <EditPage />
-        </li>
+        {brushData.map((item, index) => (
+          <li
+            key={index}
+            className='flex items-center justify-between p-2 px-3 hover:bg-light cursor-pointer text-sm'
+            onClick={() => onClick(item.icon)}
+          >
+            {item.name}
+            {item.icon}
+          </li>
+        ))}
       </ul>
     </>
   );

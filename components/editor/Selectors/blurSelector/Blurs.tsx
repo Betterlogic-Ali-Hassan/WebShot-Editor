@@ -1,17 +1,21 @@
+import { blurData } from "@/constant/blurData";
 import React from "react";
-import { Drop } from "../../../svgs";
-
-const Blurs = () => {
+interface Props {
+  onClick: (icon: React.ReactNode) => void;
+}
+const Blurs = ({ onClick }: Props) => {
   return (
     <ul className='flex flex-col gap-3 w-full'>
-      <li className='flex items-center justify-between p-2 px-3  hover:bg-light cursor-pointer text-sm'>
-        Blur Area
-        <Drop height={20} width={20} />
-      </li>
-      <li className='flex items-center justify-between p-2 px-3  hover:bg-light cursor-pointer text-sm'>
-        Blur Area
-        <Drop height={20} width={20} />
-      </li>
+      {blurData.map((item) => (
+        <li
+          key={item.id}
+          className='flex items-center justify-between p-2 px-3 hover:bg-light cursor-pointer text-sm'
+          onClick={() => onClick(item.icon)}
+        >
+          {item.name}
+          {item.icon}
+        </li>
+      ))}
     </ul>
   );
 };
