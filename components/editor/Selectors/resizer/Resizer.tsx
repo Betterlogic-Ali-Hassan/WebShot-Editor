@@ -5,8 +5,10 @@ import { Checkbox } from "../../../ui/checkbox";
 
 import InputWithBtn from "../../InputWithBtn";
 import { Label } from "../../../ui/label";
-
-const Resizer = () => {
+interface Props {
+  handleId: () => void;
+}
+const Resizer = ({ handleId }: Props) => {
   return (
     <div className='flex flex-col gap-3 px-4 py-2'>
       <div className='flex gap-4 items-center'>
@@ -18,7 +20,10 @@ const Resizer = () => {
             Proportional
           </Label>
         </div>
-        <Button className='bg-black text-white  hover:bg-black/80 mt-7'>
+        <Button
+          onClick={handleId}
+          className='bg-black text-white  hover:bg-black/80 mt-7'
+        >
           Change
         </Button>
       </div>
