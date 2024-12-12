@@ -8,7 +8,7 @@ import Revision from "./Revision";
 
 const RevisionContent = () => {
   const [open, setOpen] = useState(false);
-  const handleSelection = (icon: React.ReactNode) => {
+  const handleSelection = () => {
     setOpen(false);
   };
   return (
