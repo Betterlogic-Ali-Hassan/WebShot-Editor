@@ -10,11 +10,12 @@ import { usePopover } from "@/context/PopOverContext";
 
 interface Props {
   trigger: React.ReactNode;
-  content: React.ReactNode;
+  content?: React.ReactNode;
   id: string;
+  isEmpty?: boolean;
 }
 
-const ToolDropdown = ({ trigger, content, id }: Props) => {
+const ToolDropdown = ({ trigger, content, id, isEmpty = false }: Props) => {
   const { openPopoverId, setOpenPopoverId } = usePopover();
 
   const isOpen = openPopoverId === id;
@@ -28,25 +29,38 @@ const ToolDropdown = ({ trigger, content, id }: Props) => {
   };
 
   const handleContentClick = () => {
-    if (id === "num27" || id === "num7") {
+    if (id === "num27" || id === "num7" || id === "num43") {
       setOpenPopoverId(null);
     }
   };
+
+  const handleEmptyTriggerClick = () => {
+    if (isEmpty) {
+      setOpenPopoverId(null);
+    }
+  };
+
   useEffect(() => {
     if (id === "num42") {
       setOpenPopoverId(null);
     }
-  }, [id]);
+  }, [id, setOpenPopoverId]);
+
+  if (isEmpty) {
+    return <div onClick={handleEmptyTriggerClick}>{trigger}</div>;
+  }
 
   return (
     <Popover open={isOpen} onOpenChange={handleOpenChange}>
       <PopoverTrigger className='focus:outline-none'>{trigger}</PopoverTrigger>
-      <PopoverContent
-        className='bg-white max-h-[350px] overflow-y-auto scrollbar focus:outline-none'
-        onClick={handleContentClick}
-      >
-        {content}
-      </PopoverContent>
+      {content && (
+        <PopoverContent
+          className='bg-white max-h-[350px] overflow-y-auto scrollbar focus:outline-none'
+          onClick={handleContentClick}
+        >
+          {content}
+        </PopoverContent>
+      )}
     </Popover>
   );
 };
