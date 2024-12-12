@@ -67,7 +67,7 @@ const ToolCards = () => {
           slidesPerView='auto'
           spaceBetween={16}
           navigation={{ nextEl: "#next", prevEl: "#prev" }}
-          className='mySwiper relative'
+          className='mySwiper relative max-[1400px]:w-[93%] px-4'
         >
           <SliderBtn
             icon={<ChevronRight size={20} />}
