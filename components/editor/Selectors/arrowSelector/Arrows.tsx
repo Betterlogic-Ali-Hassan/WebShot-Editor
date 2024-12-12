@@ -14,8 +14,8 @@ const Arrows = ({ onClick, selectedIcon }: Props) => {
         <li
           key={index}
           className={cn(
-            "flex items-center gap-2 rounded-md py-2 px-3 hover:bg-light cursor-pointer text-sm",
-            selectedIcon === item.icon && " border-2 border-dotted"
+            "flex items-center gap-2 rounded-md py-2 px-3 hover:bg-light cursor-pointer text-sm border-2 border-white",
+            selectedIcon === item.icon && " border-border  border-dotted"
           )}
           onClick={() => onClick(item.icon)}
         >

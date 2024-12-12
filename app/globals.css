@@ -73,3 +73,11 @@ body {
 .chrome-picker {
   box-shadow: none !important;
 }
+#rc-editable-input-2 {
+  padding: 16px 8px;
+  font-size: 14px !important;
+  font-weight: 500;
+}
+.flexbox-fix {
+  gap: 6px;
+}

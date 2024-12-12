@@ -11,15 +11,11 @@ const ShapeSelector = () => {
     <Screen height={24} width={24} />
   );
 
-  const [open, setOpen] = useState(false);
   const handleSelection = (icon: React.ReactNode) => {
     setSelectedIcon(icon);
-    setOpen(false);
   };
   return (
     <ToolDropdown
-      open={open}
-      setOpen={setOpen}
       trigger={<ToolCard text='Square' icon={selectedIcon} id={10} />}
       content={<Shapes onClick={handleSelection} selectedIcon={selectedIcon} />}
     />

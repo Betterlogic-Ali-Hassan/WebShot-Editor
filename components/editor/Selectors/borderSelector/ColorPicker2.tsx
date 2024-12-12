@@ -8,13 +8,21 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ArrowLeftRight, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ChromePicker } from "react-color";
+import { Theme } from "@/components/svgs";
+import { FaCheck } from "react-icons/fa6";
+
 export default function ColorPicker({ select }: { select?: boolean }) {
   const [selectedColor, setSelectedColor] = useState("#FF0000");
   const [recentColors, setRecentColors] = useState<string[]>([]);
   const [showPicker, setShowPicker] = useState(false);
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const handlePopOver = () => {
+    setPopoverOpen(false);
+    setShowPicker(false);
+  };
 
   const colors = [
     // Row 1
@@ -80,7 +88,7 @@ export default function ColorPicker({ select }: { select?: boolean }) {
   };
   return (
     <div className={cn("mt-5", select && "mt-0")}>
-      <Popover>
+      <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
         <PopoverTrigger asChild>
           {select ? (
             <Button variant='outline' className=' border-0 justify-start p-2'>
@@ -105,7 +113,7 @@ export default function ColorPicker({ select }: { select?: boolean }) {
           )}
         </PopoverTrigger>
         <PopoverContent
-          className='min-w-[240px] p-3 bg-white mt-0 max-h-[285px] overflow-y-auto scrollbar '
+          className='min-w-[240px] p-3 bg-white mt-0 max-h-[350px] overflow-y-auto scrollbar '
           side='bottom'
         >
           <div className='p-2'>
@@ -119,14 +127,25 @@ export default function ColorPicker({ select }: { select?: boolean }) {
                   <span className='uppercase'>{selectedColor}</span>
                 </div>
               </Button>
-              <Button
-                variant='outline'
-                size='icon'
-                className='h-8 w-8'
-                onClick={() => setShowPicker(!showPicker)}
-              >
-                <ArrowLeftRight className='h-4 w-4' />
-              </Button>
+              {!showPicker ? (
+                <Button
+                  variant='outline'
+                  size='icon'
+                  className='h-8 w-8'
+                  onClick={() => setShowPicker(true)}
+                >
+                  <Theme />
+                </Button>
+              ) : (
+                <Button
+                  variant='outline'
+                  size='icon'
+                  className='h-8 w-8'
+                  onClick={handlePopOver}
+                >
+                  <FaCheck size={20} />
+                </Button>
+              )}
             </div>
 
             {showPicker ? (

@@ -14,8 +14,8 @@ const Shapes = ({ onClick, selectedIcon }: Props) => {
         <li
           key={index}
           className={cn(
-            "flex items-center gap-1.5 rounded-md py-2 px-3  hover:bg-light cursor-pointer text-sm ",
-            selectedIcon === item.icon && "border-2 border-dotted"
+            "flex items-center gap-1.5 rounded-md py-2 px-3  hover:bg-light cursor-pointer text-sm border-2 border-white ",
+            selectedIcon === item.icon && " border-dotted border-border"
           )}
           onClick={() => onClick(item.icon)}
         >
@@ -23,7 +23,7 @@ const Shapes = ({ onClick, selectedIcon }: Props) => {
           <span className='mt-0.5'>{item.name}</span>
         </li>
       ))}
-      <li className='flex items-center gap-1.5 rounded-md hover:bg-light cursor-pointer'>
+      <li className='flex items-center gap-1.5 rounded-md hover:bg-light cursor-pointer '>
         <ColorPicker select />
       </li>
       <li className='flex items-center gap-1.5 rounded-md hover:bg-light cursor-pointer'>

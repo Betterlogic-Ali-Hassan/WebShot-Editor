@@ -8,15 +8,11 @@ import { useState } from "react";
 
 const ArrowSelector = () => {
   const [selectedIcon, setSelectedIcon] = useState<React.ReactNode>(<Arrow />);
-  const [open, setOpen] = useState(false);
   const handleSelection = (icon: React.ReactNode) => {
     setSelectedIcon(icon);
-    setOpen(false);
   };
   return (
     <ToolDropdown
-      open={open}
-      setOpen={setOpen}
       trigger={<ToolCard text='Arrows' icon={selectedIcon} id={1} />}
       content={<Arrows onClick={handleSelection} selectedIcon={selectedIcon} />}
     />

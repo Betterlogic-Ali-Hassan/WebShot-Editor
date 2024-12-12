@@ -18,7 +18,7 @@ export default function LinePicker() {
           <div className=' bg-black w-[60px] h-[1.2px] ' />
         </div>
       </SelectTrigger>
-      <SelectContent className='bg-white '>
+      <SelectContent className='bg-white py-2 !px-0 '>
         {options.map((option) => (
           <SelectItem
             key={option.value}

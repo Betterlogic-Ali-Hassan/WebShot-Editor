@@ -52,3 +52,4 @@ export { default as Cross } from "./Cross.svg";
 export { default as Revision } from "./Revision.svg";
 export { default as Export } from "./Export.svg";
 export { default as Cloud } from "./Cloud.svg";
+export { default as Theme } from "./Theme.svg";
