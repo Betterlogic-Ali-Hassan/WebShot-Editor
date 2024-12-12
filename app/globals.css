@@ -66,3 +66,7 @@ body {
   height: calc(100vh - 60px);
   overflow-y: auto;
 }
+.react-colorful__pointer {
+  height: 16px !important;
+  width: 16px !important;
+}

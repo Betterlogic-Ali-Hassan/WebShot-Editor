@@ -17,7 +17,7 @@ const ColorPicker = () => {
           onChange={(e) => setColor(e.target.value)}
           className='pl-10 group'
         />
-        <div className='absolute inset-y-0 left-0 flex items-center p-1 '>
+        <div className='absolute inset-y-0 left-0 flex items-center p-1 px-2 '>
           <div
             className='w-6 h-6 rounded-sm border border-light  '
             style={{ backgroundColor: color }}
