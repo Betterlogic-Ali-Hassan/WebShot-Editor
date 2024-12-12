@@ -9,6 +9,7 @@ const ZoomSelector = () => {
     <ToolDropdown
       trigger={<ToolCard text='Zoom' icon={<ZoomIn />} id={16} />}
       content={<Zoom />}
+      id='num14'
     />
   );
 };

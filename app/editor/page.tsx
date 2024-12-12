@@ -1,15 +1,16 @@
 import DummyImage from "@/components/DummyImage";
 import Editor from "@/components/editor/Editor";
+import { PopoverProvider } from "@/context/PopOverContext";
 import React from "react";
 
 const page = () => {
   return (
-    <div>
+    <PopoverProvider>
       <Editor />
       <div>
         <DummyImage />
       </div>
-    </div>
+    </PopoverProvider>
   );
 };
 

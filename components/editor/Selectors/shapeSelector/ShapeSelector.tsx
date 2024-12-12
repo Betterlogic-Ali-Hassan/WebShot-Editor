@@ -18,6 +18,7 @@ const ShapeSelector = () => {
     <ToolDropdown
       trigger={<ToolCard text='Square' icon={selectedIcon} id={10} />}
       content={<Shapes onClick={handleSelection} selectedIcon={selectedIcon} />}
+      id='num9'
     />
   );
 };

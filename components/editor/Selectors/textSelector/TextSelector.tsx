@@ -10,6 +10,7 @@ const TextSelector = () => {
     <ToolDropdown
       trigger={<ToolCard text='Text' icon={<Text />} id={12} />}
       content={<Fonts />}
+      id='num11'
     />
   );
 };

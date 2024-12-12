@@ -9,6 +9,7 @@ const BorderSelector = () => {
     <ToolDropdown
       trigger={<ToolCard text='Border' icon={<Border />} id={3} />}
       content={<BrowserContent />}
+      id='num2'
     />
   );
 };

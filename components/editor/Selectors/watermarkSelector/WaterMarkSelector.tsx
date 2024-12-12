@@ -11,6 +11,7 @@ const WaterMarkSelector = () => {
         <ToolCard text='Watermark' icon={<LiaStampSolid size={24} />} id={15} />
       }
       content={<WatermarkContent />}
+      id='num13'
     />
   );
 };
