@@ -104,7 +104,10 @@ export default function ColorPicker({ select }: { select?: boolean }) {
             </Button>
           )}
         </PopoverTrigger>
-        <PopoverContent className='min-w-[240px] p-3 bg-white mt-0'>
+        <PopoverContent
+          className='min-w-[240px] p-3 bg-white mt-0 max-h-[285px] overflow-y-auto scrollbar '
+          side='bottom'
+        >
           <div className='p-2'>
             <div className='flex items-center justify-between mb-3'>
               <Button variant='outline' className=' justify-start'>
