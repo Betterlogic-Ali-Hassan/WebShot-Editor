@@ -20,7 +20,7 @@ const ArrowSelector = () => {
       open={open}
       setOpen={setOpen}
       trigger={<ToolCard text='Arrows' icon={selectedIcon} id={1} />}
-      content={<Arrows onClick={handleSelection} />}
+      content={<Arrows onClick={handleSelection} selectedIcon={selectedIcon} />}
     />
   );
 };

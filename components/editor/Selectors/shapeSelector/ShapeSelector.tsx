@@ -21,7 +21,7 @@ const ShapeSelector = () => {
       open={open}
       setOpen={setOpen}
       trigger={<ToolCard text='Square' icon={selectedIcon} id={10} />}
-      content={<Shapes onClick={handleSelection} />}
+      content={<Shapes onClick={handleSelection} selectedIcon={selectedIcon} />}
     />
   );
 };
