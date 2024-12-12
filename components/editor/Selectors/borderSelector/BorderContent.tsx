@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { useRef, useState } from "react";
 import Padding from "./Padding";
 import Browser from "./Browser";
-import ColorPicker from "./ColorPicker";
+import ColorPicker from "./ColorPicker2";
 
 export default function BrowserContent() {
   const [browser, setBrowser] = useState(false);

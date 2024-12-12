@@ -1,6 +1,8 @@
 import { brushData } from "@/constant/PencilData";
 import { cn } from "@/lib/utils";
 import React from "react";
+import LinePicker from "../BorderPicker";
+import ColorPicker from "../borderSelector/ColorPicker2";
 interface Props {
   onClick: (icon: React.ReactNode) => void;
   selectedIcon?: React.ReactNode;
@@ -13,7 +15,7 @@ const Brush = ({ onClick, selectedIcon }: Props) => {
           <li
             key={index}
             className={cn(
-              "flex items-center gap-3 rounded-md py-2 px-3 hover:bg-light cursor-pointer text-sm ",
+              "flex items-center gap-1.5 rounded-md py-2 px-3 hover:bg-light cursor-pointer text-sm ",
               selectedIcon === item.icon && " border-2 border-dotted"
             )}
             onClick={() => onClick(item.icon)}
@@ -22,6 +24,12 @@ const Brush = ({ onClick, selectedIcon }: Props) => {
             {item.name}
           </li>
         ))}
+        <li className='flex items-center gap-1.5 rounded-md hover:bg-light cursor-pointer'>
+          <ColorPicker select />
+        </li>
+        <li className='flex items-center gap-1.5 rounded-md hover:bg-light cursor-pointer'>
+          <LinePicker />
+        </li>
       </ul>
     </>
   );

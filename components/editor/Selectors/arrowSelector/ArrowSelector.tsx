@@ -7,9 +7,7 @@ import Arrows from "./Arrows";
 import { useState } from "react";
 
 const ArrowSelector = () => {
-  const [selectedIcon, setSelectedIcon] = useState<React.ReactNode>(
-    <Arrow height={20} width={20} />
-  );
+  const [selectedIcon, setSelectedIcon] = useState<React.ReactNode>(<Arrow />);
   const [open, setOpen] = useState(false);
   const handleSelection = (icon: React.ReactNode) => {
     setSelectedIcon(icon);

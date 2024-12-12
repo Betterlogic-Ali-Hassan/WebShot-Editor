@@ -70,3 +70,6 @@ body {
   height: 16px !important;
   width: 16px !important;
 }
+.chrome-picker {
+  box-shadow: none !important;
+}
