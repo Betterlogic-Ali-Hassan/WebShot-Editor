@@ -10,7 +10,7 @@ export default function InputWithBtn({ text }: { text: string }) {
   const handleDecrement = () => setValue((prev) => (prev > 0 ? prev - 1 : 0));
 
   return (
-    <div className='space-y-2 flex flex-col'>
+    <div className='space-y-1 flex flex-col'>
       <Label className='text-sm font-medium text-foreground'>{text}</Label>
       <Group className='relative inline-flex h-[42px] items-center overflow-hidden whitespace-nowrap rounded-lg border border-input text-sm shadow-sm shadow-black/5 transition-shadow data-[focus-within]:border-ring data-[disabled]:opacity-50 data-[focus-within]:outline-none w-[110px] justify-between'>
         <Input
