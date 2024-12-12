@@ -67,17 +67,17 @@ const Browser = () => {
       </div>
 
       <div className='space-y-2'>
-        <div className='flex items-center space-x-2 '>
-          <Checkbox id='include-url' defaultChecked />
+        <div className='flex items-center  justify-between py-1 '>
           <Label htmlFor='include-url' className='text-sm cursor-pointer'>
             Include URL
           </Label>
+          <Checkbox id='include-url' defaultChecked />
         </div>
-        <div className='flex items-center space-x-2 '>
-          <Checkbox id='include-date' defaultChecked />
+        <div className='flex items-center  justify-between pb-1.5 '>
           <Label htmlFor='include-date' className='text-sm cursor-pointer'>
             Include Date
           </Label>
+          <Checkbox id='include-date' defaultChecked />
         </div>
       </div>
     </>

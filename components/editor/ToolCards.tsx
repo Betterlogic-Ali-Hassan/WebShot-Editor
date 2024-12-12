@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -22,30 +22,34 @@ import BorderSelector from "./Selectors/borderSelector/BorderSelector";
 import StickersSelector from "./Selectors/stickersSelector/StickersSelector";
 import SliderBtn from "./SliderBtn";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const selectors = [
-  ImgSelector,
-  ZoomSelector,
-  ResizerSelector,
-  CropSelector,
-  PenSelector,
-  ShapeSelector,
-  ArrowSelector,
-  TextSelector,
-  NumberSelector,
-  StickersSelector,
-  BlurSelector,
-  BorderSelector,
-  WaterMarkSelector,
-  UndoSelector,
-  RedoSelector,
-  UndoAllSelector,
-  UndoAllSelector,
-  UndoAllSelector,
-  UndoAllSelector,
+  { component: ImgSelector, id: 1 },
+  { component: ZoomSelector, id: 2 },
+  { component: ResizerSelector, id: 3 },
+  { component: CropSelector, id: 4 },
+  { component: PenSelector, id: 5 },
+  { component: ShapeSelector, id: 6 },
+  { component: ArrowSelector, id: 7 },
+  { component: TextSelector, id: 8 },
+  { component: NumberSelector, id: 9 },
+  { component: StickersSelector, id: 10 },
+  { component: BlurSelector, id: 11 },
+  { component: BorderSelector, id: 12 },
+  { component: WaterMarkSelector, id: 13 },
+  { component: UndoSelector, id: 14 },
+  { component: RedoSelector, id: 15 },
+  { component: UndoAllSelector, id: 16 },
 ];
 
 const ToolCards = () => {
+  const [selectedCard, setSelectedCard] = useState<number | null>(null);
+
+  const handleSelect = (id: number) => {
+    setSelectedCard((prev) => (prev === id ? id : id));
+  };
+
   return (
     <header className='flex items-center justify-center py-4 bg-white border-b border-border shadow-sm px-4'>
       <Swiper
@@ -60,10 +64,19 @@ const ToolCards = () => {
           id='next'
           className='right-2'
         />
-        <div className='flex items-center '>
-          {selectors.map((SelectorComponent, index) => (
-            <SwiperSlide key={index} className='max-w-max'>
-              <SelectorComponent />
+        <div className='flex items-center'>
+          {selectors.map(({ component: SelectorComponent, id }) => (
+            <SwiperSlide key={id} className='max-w-max'>
+              <div
+                className={cn(
+                  "cursor-pointer rounded-[16px] border-2 border-light",
+                  selectedCard === id &&
+                    "border-2 border-dotted border-border bg-secondary"
+                )}
+                onClick={() => handleSelect(id)}
+              >
+                <SelectorComponent />
+              </div>
             </SwiperSlide>
           ))}
         </div>

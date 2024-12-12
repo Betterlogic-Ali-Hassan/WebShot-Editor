@@ -11,7 +11,7 @@ export default function BrowserContent() {
   const [browser, setBrowser] = useState(false);
   const [padding, setPadding] = useState(false);
   return (
-    <div className='w-60 p-4 space-y-4'>
+    <div className='w-60 px-4 py-2 space-y-4'>
       <div className='flex items-center justify-between'>
         <Label htmlFor='browser' className='font-medium'>
           Browser

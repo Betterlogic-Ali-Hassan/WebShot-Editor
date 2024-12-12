@@ -15,13 +15,15 @@ const Padding = () => {
     setValue((prev) => [Math.min(maxValue, prev[0] + steps)]);
   return (
     <div className='space-y-3 pt-2'>
-      <Label className='tabular-nums'>Size : {value[0]}% </Label>
+      <Label className='tabular-nums flex items-center font-medium justify-between w-full pt-2.5 pb-1'>
+        Size <span>{value[0]}px</span>{" "}
+      </Label>
       <div className='flex items-center gap-4'>
         <div>
           <Button
             variant='outline'
             size='icon'
-            className='size-8'
+            className='size-8 disabled:opacity-50'
             aria-label='Decrease value'
             onClick={decreaseValue}
             disabled={value[0] === 0}
@@ -42,7 +44,7 @@ const Padding = () => {
           <Button
             variant='outline'
             size='icon'
-            className='size-8'
+            className='size-8 disabled:opacity-50'
             aria-label='Increase value'
             onClick={increaseValue}
             disabled={value[0] === 200}
