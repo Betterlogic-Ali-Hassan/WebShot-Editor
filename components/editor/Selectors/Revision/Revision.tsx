@@ -6,15 +6,15 @@ interface Props {
 const Revision = ({ onClick }: Props) => {
   return (
     <>
-      <ul className='flex  items-center gap-2 w-full px-4'>
+      <ul className='flex  flex-col gap-0.5 w-full '>
         {revisionData.map((item, index) => (
           <li
             key={index}
-            className='flex items-center gap-3 rounded-md py-2 px-3 border-2 border-dotted hover:bg-light cursor-pointer text-sm'
+            className='flex items-center gap-3  py-2 px-3  hover:bg-light cursor-pointer text-sm justify-between'
             onClick={() => onClick(item.icon)}
           >
-            {item.icon}
             {item.name}
+            {item.icon}
           </li>
         ))}
       </ul>
