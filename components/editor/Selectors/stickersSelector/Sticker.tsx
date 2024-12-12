@@ -5,11 +5,11 @@ interface Props {
 }
 const Sticker = ({ onClick }: Props) => {
   return (
-    <div className='grid grid-cols-3 gap-x-1 gap-y-2 px-2'>
+    <div className='flex items-center gap-2 px-4'>
       {stickers.map((item, i) => (
         <div
           key={i}
-          className=' py-2 px-3 hover:bg-light cursor-pointer '
+          className='hover:bg-light cursor-pointer p-2 rounded-md inline-flex items-center justify-center border-2 border-dotted  '
           onClick={() => onClick(item.src)}
         >
           {item.src}

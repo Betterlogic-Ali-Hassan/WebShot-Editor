@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 import React, { useState } from "react";
 
 const Browser = () => {
@@ -13,33 +14,35 @@ const Browser = () => {
     <>
       <div className='space-y-2'>
         <div
-          className={cn(
-            "h-8 bg-secondary rounded flex items-center px-2 space-x-2 border border-gray-200 cursor-pointer",
-            selected === "first" && "border-black border-2"
-          )}
+          className='flex items-center cursor-pointer'
           onClick={() => handleSelectedItem("first")}
         >
-          <div className='flex space-x-1.5'>
-            <div className='w-2.5 h-2.5 rounded-full bg-white' />
-            <div className='w-2.5 h-2.5 rounded-full bg-white' />
-            <div className='w-2.5 h-2.5 rounded-full bg-white' />
-          </div>
-          <div className='flex-1 h-4 bg-light rounded' />
+          <Image
+            src='/win.png'
+            alt='img'
+            height={200}
+            width={200}
+            className={cn(
+              "rounded-md object-cover border-2 border-border",
+              selected === "first" && "border-black border-2"
+            )}
+          />
         </div>
 
         <div
-          className={cn(
-            "h-8 bg-secondary rounded flex items-center px-2 space-x-2 border border-gray-200 cursor-pointer",
-            selected === "second" && "border-black border-2"
-          )}
+          className=' flex items-center   cursor-pointer'
           onClick={() => handleSelectedItem("second")}
         >
-          <div className='flex space-x-1.5'>
-            <div className='w-2.5 h-2.5 rounded-full bg-white' />
-            <div className='w-2.5 h-2.5 rounded-full bg-white' />
-            <div className='w-2.5 h-2.5 rounded-full bg-white' />
-          </div>
-          <div className='flex-1 h-4 bg-light rounded' />
+          <Image
+            src='/mac.png'
+            alt='img'
+            height={200}
+            width={200}
+            className={cn(
+              "rounded-md object-cover border-2 border-border",
+              selected === "second" && "border-black border-2"
+            )}
+          />
         </div>
       </div>
 

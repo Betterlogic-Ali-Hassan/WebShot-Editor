@@ -6,7 +6,9 @@ const page = () => {
   return (
     <div>
       <Editor />
-      <DummyImage />
+      <div>
+        <DummyImage />
+      </div>
     </div>
   );
 };

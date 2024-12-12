@@ -14,12 +14,11 @@ import ShapeSelector from "./Selectors/shapeSelector/ShapeSelector";
 import TextSelector from "./Selectors/textSelector/TextSelector";
 import NumberSelector from "./Selectors/numberSelector/NumberSelector";
 import BlurSelector from "./Selectors/blurSelector/BlurSelector";
-import UndoSelector from "./Selectors/undoSelector/UndoSelector";
-import RedoSelector from "./Selectors/RedoSelector/RedoSelector";
-import UndoAllSelector from "./Selectors/undoAllSelector/UndoAllSelector";
 import WaterMarkSelector from "./Selectors/watermarkSelector/WaterMarkSelector";
 import BorderSelector from "./Selectors/borderSelector/BorderSelector";
 import StickersSelector from "./Selectors/stickersSelector/StickersSelector";
+import RevisionContent from "./Selectors/Revision/RevisionContent";
+import ExportSelector from "./Selectors/exportSelector/ExportSelector";
 import SliderBtn from "./SliderBtn";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -39,9 +38,8 @@ const selectors = [
   { component: BlurSelector, id: 11 },
   { component: BorderSelector, id: 12 },
   { component: WaterMarkSelector, id: 13 },
-  { component: UndoSelector, id: 14 },
-  { component: RedoSelector, id: 15 },
-  { component: UndoAllSelector, id: 16 },
+  { component: RevisionContent, id: 14 },
+  { component: ExportSelector, id: 15 },
 ];
 
 const ToolCards = () => {

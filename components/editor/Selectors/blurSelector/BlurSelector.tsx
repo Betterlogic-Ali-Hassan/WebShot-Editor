@@ -1,9 +1,9 @@
 import React from "react";
 import ToolCard from "../../ToolCard";
-import { Drop } from "@/components/svgs";
+import { BlurIcon } from "@/components/svgs";
 
 const BlurSelector = () => {
-  return <ToolCard text='Blur' icon={<Drop />} id={2} />;
+  return <ToolCard text='Blur' icon={<BlurIcon />} id={2} />;
 };
 
 export default BlurSelector;
