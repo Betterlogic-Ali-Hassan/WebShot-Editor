@@ -2,7 +2,7 @@
 
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Padding from "./Padding";
 import Browser from "./Browser";
 import ColorPicker from "./ColorPicker";
@@ -10,6 +10,23 @@ import ColorPicker from "./ColorPicker";
 export default function BrowserContent() {
   const [browser, setBrowser] = useState(false);
   const [padding, setPadding] = useState(false);
+
+  // Reference for padding content
+  const paddingRef = useRef<HTMLDivElement | null>(null);
+
+  const handlePaddingToggle = () => {
+    setPadding(!padding);
+    if (!padding) {
+      // Scroll to the padding content when switch is turned on
+      setTimeout(() => {
+        paddingRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100); // Adding a slight delay for smooth rendering
+    }
+  };
+
   return (
     <div className='w-60 px-4 py-2 space-y-4'>
       <div className='flex items-center justify-between'>
@@ -34,16 +51,14 @@ export default function BrowserContent() {
           <Switch
             id='padding'
             checked={padding}
-            onClick={() => {
-              setPadding(!padding);
-            }}
+            onClick={handlePaddingToggle}
           />
         </div>
         {padding && (
-          <>
+          <div ref={paddingRef}>
             <Padding />
             <ColorPicker />
-          </>
+          </div>
         )}
       </div>
     </div>

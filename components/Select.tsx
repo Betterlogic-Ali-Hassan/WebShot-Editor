@@ -10,7 +10,9 @@ import {
 const Select = () => {
   return (
     <>
-      <h2 className='font-medium mb-2 text-[15px]'>Action after the capture</h2>
+      <h2 className='font-semibold mb-2 text-[15px] '>
+        Action After The Capture
+      </h2>
       <SelectBase>
         <SelectTrigger className='w-full h-[50px] border-border'>
           <SelectValue placeholder='Select Action' />

@@ -25,9 +25,9 @@ const MainCard = () => {
     <Card className='overflow-hidden w-[388px] relative high-shadow border-none max-h-[600px] overflow-y-auto scrollbar '>
       <CardHeader className='border-b py-3 px-4 flex flex-row items-center justify-between'>
         <div>
-          <CardTitle className='text-[15px] font-medium flex items-center gap-2'>
+          <CardTitle className='text-[15px] font-semibold flex items-center gap-2'>
             <Image src='/logo.svg' alt='logo' height={24} width={24} />
-            Webshot{" "}
+            WebShot{" "}
             <span className='py-1 px-2 bg-secondary rounded-md text-xs font-medium'>
               v1.0
             </span>

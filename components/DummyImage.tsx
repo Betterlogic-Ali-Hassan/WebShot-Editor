@@ -3,13 +3,13 @@ import React from "react";
 
 const DummyImage = () => {
   return (
-    <div className='min-h-screen flex items-center justify-center pt-12 '>
+    <div className='min-h-screen  pt-3 '>
       <Image
-        src='/dummy.jpg'
+        src='/dummy.png'
         alt='img'
-        height={500}
-        width={500}
-        className='object-cover'
+        height={2000}
+        width={2000}
+        className='object-cover w-screen'
       />
     </div>
   );

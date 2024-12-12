@@ -1,27 +1,27 @@
 import React from "react";
-import { fonts } from "@/constant/Fonts";
-import FontCounter from "../../fontCounter";
-interface Props {
-  onClick: () => void;
-}
-const Fonts = ({ onClick }: Props) => {
+import FontSelector from "./FontSelector";
+import FontSizeSelector from "./FontSizeSelector";
+import { TextEditor } from "./TextEditor";
+import { TextAlign } from "./TextAlign";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+const Fonts = () => {
   return (
-    <div>
-      <div className='flex flex-col  gap-2 text-sm font-medium pb-4 pt-2 px-3 '>
-        Font Size:
-        <FontCounter />
+    <div className='flex items-center gap-4 px-4 py-2'>
+      <FontSelector />
+      <FontSizeSelector />
+      <Separator orientation='vertical' />
+      <TextEditor />
+      <Separator orientation='vertical' />
+      <TextAlign />
+      <Separator orientation='vertical' />
+      <div>
+        <div className='flex items-center space-x-2'>
+          <Checkbox id='terms' className='h-5 w-5' />
+          <Label htmlFor='terms'>Background fill</Label>
+        </div>
       </div>
-      <ul className='flex flex-col gap-1.5 border-t pt-2'>
-        {fonts.map((font, i) => (
-          <li
-            key={i}
-            className='font-medium p-1.5 px-3 text-sm cursor-pointer hover:bg-light '
-            onClick={onClick}
-          >
-            {font}
-          </li>
-        ))}
-      </ul>
     </div>
   );
 };

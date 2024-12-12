@@ -15,7 +15,7 @@ const SliderBtn = ({
     <Button
       size='icon'
       className={cn(
-        "bg-light flex items-center justify-center h-8 w-8 rounded-full hover:bg-secondary absolute top-[50%] z-50 translate-y-[-35%] border border-border cursor-pointer",
+        "bg-light flex items-center justify-center h-8 w-8 rounded-full hover:bg-secondary absolute top-[50%] z-50 translate-y-[-50%] border border-border cursor-pointer",
         className
       )}
       id={id}
