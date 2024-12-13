@@ -20,11 +20,11 @@ export default function ProgressBar() {
   }, []);
 
   return (
-    <div className='w-full  mx-auto mt-3'>
+    <div className='w-full  mx-auto mt-2'>
       <div className='relative pt-1'>
         <div className='flex mb-2 items-center justify-between'>
           <div>
-            <span className='text-sm font-semibold inline-block  '>
+            <span className='text-[15px] font-semibold inline-block  '>
               Full Page Capturing...
             </span>
           </div>

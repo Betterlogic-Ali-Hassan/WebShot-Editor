@@ -8,10 +8,10 @@ const ExportContent = () => {
         {exportData.map((item, index) => (
           <li
             key={index}
-            className='flex items-center justify-between py-2 px-3  hover:bg-light cursor-pointer text-sm'
+            className='flex items-center gap-3 py-2 px-3  hover:bg-light cursor-pointer text-sm'
           >
-            {item.name}
             {item.icon}
+            {item.name}
           </li>
         ))}
       </ul>
