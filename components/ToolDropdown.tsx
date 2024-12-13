@@ -23,13 +23,20 @@ const ToolDropdown = ({ trigger, content, id, isEmpty = false }: Props) => {
   const handleOpenChange = (open: boolean) => {
     if (open) {
       setOpenPopoverId(id);
-    } else if (id === "num27" || id === "num7") {
+    } else if (
+      id === "num27" ||
+      id === "num14" ||
+      id === "num7" ||
+      id === "num6" ||
+      id === "num13" ||
+      id === "num2"
+    ) {
       setOpenPopoverId(null);
     }
   };
 
   const handleContentClick = () => {
-    if (id === "num27" || id === "num7" || id === "num43") {
+    if (id === "num27" || id === "num43") {
       setOpenPopoverId(null);
     }
   };

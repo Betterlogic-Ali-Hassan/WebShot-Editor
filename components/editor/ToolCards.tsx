@@ -25,29 +25,31 @@ import { cn } from "@/lib/utils";
 import CardSkelton from "./CardSkelton";
 
 const selectors = [
-  { component: ImgSelector, id: 1 },
-  { component: ZoomSelector, id: 2 },
-  { component: ResizerSelector, id: 3 },
-  { component: CropSelector, id: 4 },
-  { component: PenSelector, id: 5 },
-  { component: ShapeSelector, id: 6 },
-  { component: ArrowSelector, id: 7 },
-  { component: TextSelector, id: 8 },
-  { component: NumberSelector, id: 9 },
-  { component: StickersSelector, id: 10 },
-  { component: BlurSelector, id: 11 },
-  { component: BorderSelector, id: 12 },
-  { component: WaterMarkSelector, id: 13 },
-  { component: RevisionContent, id: 14 },
-  { component: ExportSelector, id: 15 },
+  { component: ImgSelector, id: 1, selection: false },
+  { component: ZoomSelector, id: 2, selection: false },
+  { component: ResizerSelector, id: 3, selection: false },
+  { component: CropSelector, id: 4, selection: true },
+  { component: PenSelector, id: 5, selection: true },
+  { component: ShapeSelector, id: 6, selection: true },
+  { component: ArrowSelector, id: 7, selection: true },
+  { component: TextSelector, id: 8, selection: true },
+  { component: NumberSelector, id: 9, selection: true },
+  { component: StickersSelector, id: 10, selection: true },
+  { component: BlurSelector, id: 11, selection: true },
+  { component: BorderSelector, id: 12, selection: false },
+  { component: WaterMarkSelector, id: 13, selection: false },
+  { component: RevisionContent, id: 14, selection: false },
+  { component: ExportSelector, id: 15, selection: false },
 ];
 
 const ToolCards = () => {
   const [loading, setLoading] = useState(true);
   const [selectedCard, setSelectedCard] = useState<number | null>(null);
 
-  const handleSelect = (id: number) => {
-    setSelectedCard((prev) => (prev === id ? id : id));
+  const handleSelect = (id: number, selection: boolean) => {
+    if (selection) {
+      setSelectedCard((prev) => (prev === id ? id : id));
+    }
   };
   useEffect(() => {
     setLoading(true);
@@ -73,20 +75,23 @@ const ToolCards = () => {
             className='right-0'
           />
           <div className='flex items-center '>
-            {selectors.map(({ component: SelectorComponent, id }) => (
-              <SwiperSlide key={id} className='max-w-max'>
-                <div
-                  className={cn(
-                    "cursor-pointer rounded-[16px] border-2 border-light",
-                    selectedCard === id &&
-                      "border-2 border-dotted border-border bg-secondary"
-                  )}
-                  onClick={() => handleSelect(id)}
-                >
-                  <SelectorComponent />
-                </div>
-              </SwiperSlide>
-            ))}
+            {selectors.map(
+              ({ component: SelectorComponent, id, selection }) => (
+                <SwiperSlide key={id} className='max-w-max'>
+                  <div
+                    className={cn(
+                      "cursor-pointer rounded-[16px] border-2 border-light",
+                      selectedCard === id &&
+                        selection &&
+                        "border-2 border-dotted border-border bg-secondary"
+                    )}
+                    onClick={() => handleSelect(id, selection)}
+                  >
+                    <SelectorComponent />
+                  </div>
+                </SwiperSlide>
+              )
+            )}
           </div>
           <SliderBtn
             icon={<ChevronLeft size={20} />}
