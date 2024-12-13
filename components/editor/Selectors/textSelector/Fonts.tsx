@@ -10,19 +10,23 @@ import LinePicker from "../BorderPicker";
 import ColorPicker from "../borderSelector/ColorPicker2";
 const Fonts = () => {
   return (
-    <div className='flex items-center gap-4 px-4 py-2'>
-      <FontSelector />
-      <FontSizeSelector />
-      <Separator orientation='vertical' />
-      <ColorPicker select />
-      <LinePicker />
-      <Separator orientation='vertical' />
+    <div className='flex items-center max-lg:flex-col gap-4 px-4 py-2'>
+      <div className='flex max-lg:flex-col gap-4'>
+        <FontSelector />
+        <FontSizeSelector />
+      </div>
+      <Separator orientation='vertical' className='max-lg:hidden' />
+      <div className='flex items-center gap-4 mb-2'>
+        <ColorPicker select />
+        <LinePicker />
+      </div>
+      <Separator orientation='vertical' className='max-lg:hidden' />
       <TextEditor />
-      <Separator orientation='vertical' />
+      <Separator orientation='vertical' className='max-lg:hidden' />
       <TextAlign />
-      <Separator orientation='vertical' />
+      <Separator orientation='vertical' className='max-lg:hidden' />
       <div>
-        <div className='flex items-center space-x-2 '>
+        <div className='flex items-center space-x-2 max-lg:mt-2 '>
           <Checkbox id='terms' className='h-4 w-4' />
           <Label htmlFor='terms' className='whitespace-nowrap cursor-pointer'>
             Background fill

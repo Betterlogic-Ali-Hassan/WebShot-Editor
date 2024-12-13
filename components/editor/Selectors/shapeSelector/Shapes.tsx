@@ -9,12 +9,12 @@ interface Props {
 }
 const Shapes = ({ onClick, selectedIcon }: Props) => {
   return (
-    <ul className='flex items-center gap-2 px-4 w-full'>
+    <ul className='flex items-center max-sm:flex-col gap-2 px-4 w-full'>
       {shapesData.map((item, index) => (
         <li
           key={index}
           className={cn(
-            "flex items-center gap-1.5 rounded-md py-2 px-3  hover:bg-light cursor-pointer text-sm border-2 border-white ",
+            "flex items-center gap-1.5 rounded-md py-2 px-3  hover:bg-light cursor-pointer text-sm border-2 border-white max-sm:w-full ",
             selectedIcon === item.icon && " border-dotted border-border"
           )}
           onClick={() => onClick(item.icon)}

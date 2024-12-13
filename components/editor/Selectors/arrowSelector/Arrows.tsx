@@ -9,12 +9,12 @@ interface Props {
 }
 const Arrows = ({ onClick, selectedIcon }: Props) => {
   return (
-    <ul className='flex items-center gap-2 px-4 w-full'>
+    <ul className='flex items-center max-sm:flex-col gap-2 px-4 w-full'>
       {arrows.map((item, index) => (
         <li
           key={index}
           className={cn(
-            "flex items-center gap-2 rounded-md py-2 px-3 hover:bg-light cursor-pointer text-sm border-2 border-white",
+            "flex items-center gap-2 rounded-md py-2 px-3 hover:bg-light cursor-pointer text-sm border-2 border-white max-sm:w-full",
             selectedIcon === item.icon && " border-border  border-dotted"
           )}
           onClick={() => onClick(item.icon)}

@@ -11,10 +11,10 @@ interface Props {
 const Resizer = ({ handleId }: Props) => {
   return (
     <div className='flex flex-col gap-3 px-4 py-2'>
-      <div className='flex gap-4 items-center'>
+      <div className='flex gap-4 items-center max-sm:flex-col  '>
         <InputWithBtn text='Width' />
         <InputWithBtn text='Height' />
-        <div className='flex items-center gap-2 mt-[28px]'>
+        <div className='flex items-center gap-2 mt-2 sm:mt-[28px]'>
           <Checkbox id='checkbox' />
           <Label htmlFor='checkbox' className='cursor-pointer'>
             Proportional
@@ -22,7 +22,7 @@ const Resizer = ({ handleId }: Props) => {
         </div>
         <Button
           onClick={handleId}
-          className='bg-black text-white  hover:bg-black/80 mt-7'
+          className='bg-black text-white  hover:bg-black/80 mt-4 sm:mt-7 max-sm:w-full'
         >
           Change
         </Button>

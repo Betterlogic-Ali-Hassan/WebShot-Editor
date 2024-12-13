@@ -11,7 +11,7 @@ export default function FontSizeSelector() {
   return (
     <div className='space-y-2'>
       <Select>
-        <SelectTrigger className='w-auto min-w-20 max-w-full'>
+        <SelectTrigger className=' lg:w-auto min-w-20 w-full '>
           <SelectValue placeholder={10} />
         </SelectTrigger>
         <SelectContent className='bg-white'>
