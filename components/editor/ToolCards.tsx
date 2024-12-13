@@ -60,7 +60,11 @@ const ToolCards = () => {
   return (
     <header className='flex items-center justify-center gap-5 py-4 bg-white border-b border-border shadow-sm px-5 '>
       {loading ? (
-        selectors.map((item) => <CardSkelton key={item.id} />)
+        <div className='px-4 flex items-center gap-5 w-[90%]'>
+          {selectors.map((item) => (
+            <CardSkelton key={item.id} />
+          ))}
+        </div>
       ) : (
         <Swiper
           modules={[Navigation]}
