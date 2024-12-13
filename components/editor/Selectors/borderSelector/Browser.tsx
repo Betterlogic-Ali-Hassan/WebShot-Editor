@@ -20,8 +20,8 @@ const Browser = () => {
           <Image
             src='/win.png'
             alt='img'
-            height={40}
-            width={160}
+            height={200}
+            width={200}
             className={cn(
               "rounded-md object-cover border-2 border-border",
               selected === "first" && "border-black border-2"
