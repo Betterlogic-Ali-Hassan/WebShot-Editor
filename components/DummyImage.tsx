@@ -3,9 +3,9 @@ import React from "react";
 
 const DummyImage = () => {
   return (
-    <div className='img pt-[180px]  overflow-auto'>
+    <div className='img pt-[200px]  overflow-auto'>
       <Image
-        src='/dummy.png'
+        src='/dummy.jpg'
         alt='img'
         height={2000}
         width={2000}
