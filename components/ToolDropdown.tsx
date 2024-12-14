@@ -7,6 +7,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { usePopover } from "@/context/PopOverContext";
+import { X } from "lucide-react";
 
 interface Props {
   trigger: React.ReactNode;
@@ -36,9 +37,7 @@ const ToolDropdown = ({ trigger, content, id, isEmpty = false }: Props) => {
   };
 
   const handleContentClick = () => {
-    if (id === "num27" || id === "num43") {
-      setOpenPopoverId(null);
-    }
+    setOpenPopoverId(null);
   };
 
   const handleEmptyTriggerClick = () => {
@@ -57,15 +56,33 @@ const ToolDropdown = ({ trigger, content, id, isEmpty = false }: Props) => {
     return <div onClick={handleEmptyTriggerClick}>{trigger}</div>;
   }
 
+  // IDs ke liye cross icon na dikhana
+  const shouldShowCrossIcon = !(
+    id === "num27" ||
+    id === "num14" ||
+    id === "num7" ||
+    id === "num6" ||
+    id === "num13" ||
+    id === "num2"
+  );
+
   return (
     <Popover open={isOpen} onOpenChange={handleOpenChange}>
       <PopoverTrigger className='focus:outline-none'>{trigger}</PopoverTrigger>
       {content && (
         <PopoverContent
-          className='bg-white max-h-[350px]  overflow-y-auto scrollbar focus:outline-none'
+          className='bg-white max-h-[350px] overflow-y-auto scrollbar focus:outline-none relative'
           onClick={handleContentClick}
         >
           {content}
+          {shouldShowCrossIcon && (
+            <button
+              className='absolute top-1 right-1 hover:bg-light  focus:outline-none'
+              onClick={() => setOpenPopoverId(null)}
+            >
+              <X size={18} />
+            </button>
+          )}
         </PopoverContent>
       )}
     </Popover>
