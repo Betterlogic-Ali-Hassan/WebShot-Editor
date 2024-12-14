@@ -71,16 +71,16 @@ const ToolDropdown = ({ trigger, content, id, isEmpty = false }: Props) => {
       <PopoverTrigger className='focus:outline-none'>{trigger}</PopoverTrigger>
       {content && (
         <PopoverContent
-          className='bg-white max-h-[350px] overflow-y-auto scrollbar focus:outline-none relative'
+          className='bg-white max-h-[350px] overflow-y-auto scrollbar focus:outline-none '
           onClick={handleContentClick}
         >
           {content}
           {shouldShowCrossIcon && (
             <button
-              className='absolute top-1 right-1 hover:bg-light  focus:outline-none'
+              className='absolute top-0   p-[2px] rounded-full border mt-5 bg-white shadow-md  right-[10px] hover:bg-light  focus:outline-none'
               onClick={() => setOpenPopoverId(null)}
             >
-              <X size={18} />
+              <X size={16} />
             </button>
           )}
         </PopoverContent>
