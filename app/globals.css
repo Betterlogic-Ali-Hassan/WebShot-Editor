@@ -62,7 +62,11 @@ body {
   height: 40px;
   border-radius: 4px;
 }
-
+.img {
+  height: 100vh;
+  overflow-y: auto;
+  padding-top: 105px;
+}
 .react-colorful__pointer {
   height: 16px !important;
   width: 16px !important;
