@@ -37,7 +37,9 @@ const ToolDropdown = ({ trigger, content, id, isEmpty = false }: Props) => {
   };
 
   const handleContentClick = () => {
-    setOpenPopoverId(null);
+    if (id === "num27" || id === "num43") {
+      setOpenPopoverId(null);
+    }
   };
 
   const handleEmptyTriggerClick = () => {
@@ -55,8 +57,6 @@ const ToolDropdown = ({ trigger, content, id, isEmpty = false }: Props) => {
   if (isEmpty) {
     return <div onClick={handleEmptyTriggerClick}>{trigger}</div>;
   }
-
-  // IDs ke liye cross icon na dikhana
   const shouldShowCrossIcon = !(
     id === "num27" ||
     id === "num14" ||
