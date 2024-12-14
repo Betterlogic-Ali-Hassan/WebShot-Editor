@@ -3,7 +3,7 @@ import React from "react";
 
 const DummyImage = () => {
   return (
-    <div className='min-h-screen pt-[190px]  overflow-auto'>
+    <div className='min-h-screen'>
       <Image
         src='/dummy.png'
         alt='img'
