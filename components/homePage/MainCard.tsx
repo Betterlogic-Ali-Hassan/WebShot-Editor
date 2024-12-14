@@ -11,10 +11,12 @@ import Menu from "./Options";
 import { smallCard } from "@/constant/smallCardData";
 import Rating from "../Rating/Rating";
 import { cn } from "@/lib/utils";
+import UploadingBox from "../UploadingBox";
 
 const MainCard = () => {
   const [ratingOpen, setRatingOpen] = useState(false);
   const [alert, setAlert] = useState(true);
+  const [screeShot, setScreenShot] = useState(false);
   const handleClose = () => {
     setAlert(false);
   };
@@ -49,21 +51,30 @@ const MainCard = () => {
           <Rating setRatingOpen={setRatingOpen} />
         ) : (
           <>
-            {alert && <Alert handleClose={handleClose} />}
-            <div className=' py-6 grid grid-cols-3 gap-3'>
-              {smallCard.map((item, i) => (
-                <SmallCard
-                  key={i}
-                  icon={item.icon}
-                  text={item.name}
-                  content={item.key}
-                />
-              ))}
-            </div>
-            <Menu />
-            <div className='pt-6'>
-              <Select />
-            </div>
+            {screeShot ? (
+              <div className='py-6'>
+                <UploadingBox />
+              </div>
+            ) : (
+              <>
+                {alert && <Alert handleClose={handleClose} />}
+                <div className=' py-6 grid grid-cols-3 gap-3'>
+                  {smallCard.map((item, i) => (
+                    <SmallCard
+                      setScreenShot={setScreenShot}
+                      key={i}
+                      icon={item.icon}
+                      text={item.name}
+                      content={item.key}
+                    />
+                  ))}
+                </div>
+                <Menu />
+                <div className='pt-6'>
+                  <Select />
+                </div>
+              </>
+            )}
           </>
         )}
       </CardContent>
