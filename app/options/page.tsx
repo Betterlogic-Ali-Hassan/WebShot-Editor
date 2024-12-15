@@ -1,10 +1,10 @@
-import OptionPageCard from "@/components/optionsPage/OptionPageCard";
+import OptionPage from "@/components/optionsPage/OptionPage";
 import React from "react";
 
 const page = () => {
   return (
     <div className='flex items-center justify-center'>
-      <OptionPageCard />
+      <OptionPage />
     </div>
   );
 };

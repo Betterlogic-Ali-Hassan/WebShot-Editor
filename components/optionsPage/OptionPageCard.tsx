@@ -1,18 +1,14 @@
-import Link from "next/link";
 import React from "react";
+import OptionsTabs from "./OptionsTabs";
+import OptionPageSwitch from "./OptionPageSwitch";
+import OptionSelect from "./OptionSelect";
 
 const OptionPageCard = () => {
   return (
-    <div className='min-h-screen flex flex-grow flex-col max-w-[640px] w-[640px]'>
-      <div className='flex items-center w-full min-h-[60px] top-0 sticky justify-center'>
-        <Link
-          href='#'
-          className='p-2 max-w-full text-base font-semibold relative'
-        >
-          Settings
-        </Link>
-      </div>
-      <div></div>
+    <div className='pt-6 px-6 rounded-[24px] border-[#d5d5d5] optionCardShadow border-[0.5px]'>
+      <OptionsTabs />
+      <OptionPageSwitch />
+      <OptionSelect />
     </div>
   );
 };
