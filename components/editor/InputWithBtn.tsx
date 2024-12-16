@@ -33,7 +33,7 @@ export default function InputWithBtn({
             " bg-background px-3 py-2  text-foreground focus:outline-none max-w-[70px] ",
             InputWidth
           )}
-          value={cn(value, unit)}
+          value={String(value) + (unit ? ` ${unit}` : "")}
           onChange={(e) => setValue(parseInt(e.target.value))}
         />
         <div className='flex h-[calc(100%+2px)] flex-col'>
