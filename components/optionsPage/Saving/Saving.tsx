@@ -5,8 +5,10 @@ import SavingInput from "./SavingInput";
 
 const Saving = () => {
   return (
-    <div className='mt-6'>
-      <h4 className='text-[15px] font-semibold mb-2'>Saving Preferences</h4>
+    <div className='pb-4'>
+      <h4 className='text-base font-semibold mb-2 border-b border-[#00000026] py-4 '>
+        Saving Preferences
+      </h4>
       <SavingRadio />
       <OptionPageSwitch
         label='Always get shareable links for screenshots uploaded to

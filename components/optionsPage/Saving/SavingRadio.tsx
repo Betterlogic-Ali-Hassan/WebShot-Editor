@@ -12,7 +12,7 @@ const settings = [
 ];
 const SavingRadio = () => {
   return (
-    <div className='py-3'>
+    <>
       {settings.map((setting) => (
         <Radio
           key={setting.title}
@@ -21,7 +21,7 @@ const SavingRadio = () => {
           defaultValue={setting.defaultValue}
         />
       ))}
-    </div>
+    </>
   );
 };
 

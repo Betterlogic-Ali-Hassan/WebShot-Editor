@@ -5,7 +5,7 @@ import Image from "next/image";
 
 const OptionPage = () => {
   return (
-    <div className='min-h-screen flex flex-grow flex-col max-w-[640px] w-[640px] mb-6'>
+    <div className='min-h-screen flex flex-grow flex-col max-w-[640px] w-[640px] '>
       <div className='flex items-center w-full min-h-[60px]  justify-center'>
         <Link
           href='#'

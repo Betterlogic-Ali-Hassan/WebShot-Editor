@@ -13,7 +13,7 @@ const settings = [
 ];
 const SettingRadio = () => {
   return (
-    <div className='py-3'>
+    <div>
       {settings.map((setting) => (
         <Radio
           key={setting.title}
