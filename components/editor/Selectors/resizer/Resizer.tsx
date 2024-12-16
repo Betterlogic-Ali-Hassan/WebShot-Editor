@@ -12,8 +12,14 @@ const Resizer = ({ handleId }: Props) => {
   return (
     <div className='flex flex-col gap-3 px-4 py-2'>
       <div className='flex gap-4 items-center max-sm:flex-col  '>
-        <InputWithBtn text='Width' />
-        <InputWithBtn text='Height' />
+        <div className='space-y-1 flex flex-col'>
+          <Label className='text-sm font-medium text-foreground'>Width</Label>
+          <InputWithBtn val={16} unit='px' />
+        </div>
+        <div className='space-y-1 flex flex-col'>
+          <Label className='text-sm font-medium text-foreground'>Height</Label>
+          <InputWithBtn val={16} unit='px' />
+        </div>
         <div className='flex items-center gap-2 mt-2 sm:mt-[28px]'>
           <Checkbox id='checkbox' />
           <Label htmlFor='checkbox' className='cursor-pointer'>

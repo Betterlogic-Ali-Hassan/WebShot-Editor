@@ -126,3 +126,33 @@ body {
 .optionCardShadow {
   box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.04);
 }
+.support-item {
+  background-size: 990px auto;
+  border-radius: 3px;
+  display: inline-block;
+  height: 26px;
+  margin-left: 12px;
+  opacity: 1;
+  position: relative;
+  top: -1px;
+  vertical-align: middle;
+  width: 68px;
+}
+.slack {
+  background-position: 0 0;
+}
+.trello {
+  background-position: -68px 0 !important;
+}
+.asana {
+  background-position: -136px 0 !important;
+}
+.github {
+  background-position: -272px 0 !important;
+}
+.jira {
+  background-position: -476px 0 !important;
+}
+.gmail {
+  background-position: -68px 0 !important;
+}

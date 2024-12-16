@@ -1,13 +1,18 @@
 import React from "react";
 import { Switch } from "../ui/switch";
-import { Lock } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-const OptionPageSwitch = () => {
+const OptionPageSwitch = ({
+  label,
+  className,
+}: {
+  label: string;
+  className?: string;
+}) => {
   return (
-    <div className='flex items-center justify-between py-3'>
+    <div className={cn("flex items-center justify-between py-3", className)}>
       <div className='flex items-center pr-3'>
-        <Lock size={20} />
-        <span className='pl-3 text-[15px]'>Private profile</span>
+        <span className='text-[15px]'>{label}</span>
       </div>
       <Switch id='switch-01' />
     </div>
