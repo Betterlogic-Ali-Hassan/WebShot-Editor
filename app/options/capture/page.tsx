@@ -1,3 +1,4 @@
+"use client";
 import Capture from "@/components/optionsPage/capture/Capture";
 import OptionPageCard from "@/components/optionsPage/OptionPageCard";
 import React from "react";
