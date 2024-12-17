@@ -5,7 +5,10 @@ import InputWithBtn from "@/components/editor/InputWithBtn";
 
 const Record = () => {
   return (
-    <div>
+    <>
+      <h4 className='text-base font-semibold mb-2 border-b border-[#00000026] pb-4 '>
+        Record Preferences
+      </h4>
       <div className='flex items-center justify-between py-3'>
         <h3 className='text-[15px] flex flex-col'>
           Countdown Timer
@@ -32,7 +35,7 @@ const Record = () => {
           Manage
         </Link>
       </div>
-    </div>
+    </>
   );
 };
 

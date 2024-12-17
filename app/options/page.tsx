@@ -1,12 +1,5 @@
-import OptionPage from "@/components/optionsPage/OptionPage";
-import React from "react";
+import { redirect } from "next/navigation";
 
-const page = () => {
-  return (
-    <div className='flex items-center justify-center'>
-      <OptionPage />
-    </div>
-  );
-};
-
-export default page;
+export default function OptionsPage() {
+  redirect("/options/capture");
+}

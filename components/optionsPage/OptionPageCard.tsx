@@ -1,41 +1,26 @@
 import React from "react";
+import Link from "next/link";
+import Image from "next/image";
 import OptionsTabs from "./OptionsTabs";
-import OptionSelect from "./OptionSelect";
-import { settings } from "@/constant/settings";
-import { Radio } from "./Radio";
-import Record from "./Record/Record";
-import Saving from "./Saving/Saving";
-import MoreSetting from "./moreSettings/MoreSetting";
 
-const OptionPageCard = () => {
+const OptionPageCard = ({ children }: { children?: React.ReactNode }) => {
   return (
-    <div className='py-6 px-6 rounded-t-[24px] border-[#d5d5d5] optionCardShadow border-[0.5px]'>
-      <OptionsTabs />
-      <h4 className='text-base font-semibold border-b border-[#00000026] pb-4'>
-        Capture Preferences
-      </h4>
-      <div className='border-b border-[#00000026]'>
-        <OptionSelect />
+    <div className='flex items-center justify-center mb-4'>
+      <div className='min-h-screen flex flex-grow flex-col max-w-[640px] w-[640px] '>
+        <div className='flex items-center w-full min-h-[60px]  justify-center'>
+          <Link
+            href='#'
+            className='p-2 max-w-full text-base font-semibold relative flex items-center gap-1'
+          >
+            <Image src='/logo.svg' alt='logo' height={24} width={24} />
+            WebShot
+          </Link>
+        </div>
+        <div className='py-6 px-6 rounded-[24px] border-[#d5d5d5] optionCardShadow border-[0.5px]'>
+          <OptionsTabs />
+          {children}
+        </div>
       </div>
-      <div className='py-2 border-b border-[#00000026]'>
-        {settings.map((setting) => (
-          <Radio
-            key={setting.title}
-            title={setting.title}
-            options={setting.options}
-            defaultValue={setting.defaultValue}
-          />
-        ))}
-      </div>
-
-      <div className=' border-b border-[#00000026] pb-4'>
-        <h4 className='text-base font-semibold mb-2 border-b border-[#00000026] py-4 '>
-          Record Preferences
-        </h4>
-        <Record />
-      </div>
-      <Saving />
-      <MoreSetting />
     </div>
   );
 };

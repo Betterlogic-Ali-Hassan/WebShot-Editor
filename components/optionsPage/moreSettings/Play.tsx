@@ -8,7 +8,7 @@ const Play = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className='py-3'>
+    <div className='pt-3'>
       <div className='flex items-center justify-between'>
         <div className='flex items-center pr-3'>
           <span className='text-[15px]'>Play video on the page</span>
