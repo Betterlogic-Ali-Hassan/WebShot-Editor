@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import OptionPageSwitch from "../OptionPageSwitch";
 import SavingRadio from "./SavingRadio";
