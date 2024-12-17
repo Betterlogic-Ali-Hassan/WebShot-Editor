@@ -71,7 +71,7 @@ const ToolDropdown = ({ trigger, content, id, isEmpty = false }: Props) => {
       <PopoverTrigger className='focus:outline-none'>{trigger}</PopoverTrigger>
       {content && (
         <PopoverContent
-          className='bg-white max-h-[350px] overflow-y-auto scrollbar focus:outline-none '
+          className='bg-white max-h-[350px] overflow-y-auto scrollbar focus:outline-none border-border '
           onClick={handleContentClick}
         >
           {content}
