@@ -1,3 +1,4 @@
+"use client";
 import HotKeys from "@/components/option2Page/OptionsSetting/HotKeys";
 import MainMenu from "@/components/option2Page/OptionsSetting/MainMenu";
 import ScreenShot from "@/components/option2Page/OptionsSetting/screenshot/ScreenShot";
