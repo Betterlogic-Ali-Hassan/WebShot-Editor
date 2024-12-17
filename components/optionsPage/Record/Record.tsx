@@ -6,10 +6,7 @@ import InputWithBtn from "@/components/editor/InputWithBtn";
 const Record = () => {
   return (
     <>
-      <h4 className='text-base font-semibold mb-2 border-b border-[#00000026] pb-4 '>
-        Record Preferences
-      </h4>
-      <div className='flex items-center justify-between py-3'>
+      <div className='flex items-center justify-between pb-3 pt-6'>
         <h3 className='text-[15px] flex flex-col'>
           Countdown Timer
           <span className='text-[#9AA0A6] text-[13px]'>
@@ -23,9 +20,7 @@ const Record = () => {
           InputWidth='max-w-[50px]'
         />
       </div>
-      <div className='py-3'>
-        <OptionPageSwitch label='Allow reminder when Microphone is turned off.' />
-      </div>
+      <OptionPageSwitch label='Allow reminder when Microphone is turned off.' />
       <div className='flex items-center justify-between py-3'>
         <h3>Recording shortcuts </h3>
         <Link

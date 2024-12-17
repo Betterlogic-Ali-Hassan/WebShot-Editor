@@ -12,6 +12,7 @@ import { smallCard } from "@/constant/smallCardData";
 import Rating from "../Rating/Rating";
 import { cn } from "@/lib/utils";
 import UploadingBox from "../UploadingBox";
+import Link from "next/link";
 
 const MainCard = () => {
   const [ratingOpen, setRatingOpen] = useState(false);
@@ -43,7 +44,14 @@ const MainCard = () => {
             onClick={handleRatingOpen}
             className={cn("", ratingOpen && "bg-light")}
           />
-          <Tooltip content='Settings' trigger={<Setting />} />
+          <Tooltip
+            content='Settings'
+            trigger={
+              <Link href='/setting'>
+                <Setting />
+              </Link>
+            }
+          />
         </div>
       </CardHeader>
       <CardContent>

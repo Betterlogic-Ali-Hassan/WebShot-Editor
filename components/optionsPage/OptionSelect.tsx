@@ -39,7 +39,7 @@ export default function OptionSelect() {
   };
 
   return (
-    <div className='py-3'>
+    <div className='pb-3 pt-0'>
       {radioOptions.map((option) => (
         <div key={option.id} className=' flex items-center justify-between'>
           <div className='flex items-center gap-2 py-3'>

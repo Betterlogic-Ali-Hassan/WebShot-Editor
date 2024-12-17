@@ -7,7 +7,7 @@ import React from "react";
 const OptionsTabs = () => {
   const path = usePathname();
   return (
-    <div className='grid grid-cols-3 w-full mb-6'>
+    <div className='grid grid-cols-3 w-full '>
       <div
         className={cn(
           "border-b  text-center border-[#00000026] text-[#999]",

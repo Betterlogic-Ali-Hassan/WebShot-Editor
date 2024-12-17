@@ -3,7 +3,13 @@ import Link from "next/link";
 import Image from "next/image";
 import OptionsTabs from "./OptionsTabs";
 
-const OptionPageCard = ({ children }: { children?: React.ReactNode }) => {
+const OptionPageCard = ({
+  children,
+  tabs,
+}: {
+  children?: React.ReactNode;
+  tabs?: boolean;
+}) => {
   return (
     <div className='flex items-center justify-center mb-4'>
       <div className='min-h-screen flex flex-grow flex-col max-w-[640px] w-[640px] '>
@@ -17,7 +23,7 @@ const OptionPageCard = ({ children }: { children?: React.ReactNode }) => {
           </Link>
         </div>
         <div className='py-6 px-6 rounded-[24px] border-[#d5d5d5] optionCardShadow border-[0.5px]'>
-          <OptionsTabs />
+          {!tabs && <OptionsTabs />}
           {children}
         </div>
       </div>

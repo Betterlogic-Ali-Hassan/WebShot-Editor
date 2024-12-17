@@ -5,10 +5,7 @@ import OptionSelect from "../OptionSelect";
 
 const Capture = () => {
   return (
-    <div>
-      <h4 className='text-base font-semibold border-b border-[#00000026] pb-4'>
-        Capture Preferences
-      </h4>
+    <div className='pt-5'>
       <div className='border-b border-[#00000026]'>
         <OptionSelect />
       </div>
