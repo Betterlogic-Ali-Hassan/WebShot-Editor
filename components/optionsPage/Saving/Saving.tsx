@@ -10,6 +10,7 @@ const Saving = () => {
       <OptionPageSwitch
         label='Always get shareable links for screenshots uploaded to
       Google Drive'
+        checked
       />
       <SavingInput />
       <div className='py-3'>

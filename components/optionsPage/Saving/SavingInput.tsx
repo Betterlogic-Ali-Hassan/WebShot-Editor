@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import React, { useState } from "react";
 
 const SavingInput = () => {
-  const [disabled, setDisabled] = useState(false);
+  const [disabled, setDisabled] = useState(true);
   return (
     <div className='py-3'>
       <div className='flex items-center justify-between '>

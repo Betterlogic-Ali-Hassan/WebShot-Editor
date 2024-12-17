@@ -5,7 +5,7 @@ import PlayCards from "./PlayCards";
 import { cn } from "@/lib/utils";
 
 const Play = () => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
 
   return (
     <div className='pt-3'>
