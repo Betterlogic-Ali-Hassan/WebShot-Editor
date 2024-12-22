@@ -9,7 +9,7 @@ const ExportContent = () => {
       <ul className='flex  flex-col gap-0.5 min-w-[180px]'>
         {exportData.map((item, index) => (
           <li
-            onClick={() => showToast()}
+            onClick={() => showToast(item.toast)}
             key={index}
             className={cn(
               "flex items-center gap-3 py-2 px-3  hover:bg-light cursor-pointer text-sm",
