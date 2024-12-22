@@ -3,13 +3,28 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import BrowserSkeleton from "./Skelton";
 
 const Browser = () => {
   const [selected, setSelected] = useState("first");
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   const handleSelectedItem = (item: string) => {
     setSelected(item);
   };
+
+  if (isLoading) {
+    return <BrowserSkeleton />;
+  }
   return (
     <>
       <div className='space-y-2'>
@@ -23,7 +38,7 @@ const Browser = () => {
             height={200}
             width={200}
             className={cn(
-              "rounded-md object-cover border-2 border-border",
+              "rounded-md object-cover border-2 border-border ",
               selected === "first" && "border-black border-2"
             )}
           />
@@ -49,7 +64,7 @@ const Browser = () => {
       <div className='space-y-2'>
         <Button
           className={cn(
-            "text-sm text-black bg-secondary border w-full border-border rounded ",
+            "text-sm text-black bg-secondary hover:bg-black hover:text-white border w-full border-border rounded ",
             selected === "urlTop" && "border-black border-2"
           )}
           size='sm'
@@ -59,7 +74,7 @@ const Browser = () => {
         </Button>
         <Button
           className={cn(
-            "text-sm text-black bg-light border border-border w-full rounded",
+            "text-sm text-black hover:bg-black hover:text-white bg-light border border-border w-full rounded",
             selected === "urlBottom" && "border-black border-2"
           )}
           size='sm'
