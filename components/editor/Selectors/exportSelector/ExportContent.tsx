@@ -13,6 +13,7 @@ const ExportContent = () => {
             onClick={() => {
               toast({
                 description: item.toast,
+                duration: item.duration,
               });
             }}
             key={index}
