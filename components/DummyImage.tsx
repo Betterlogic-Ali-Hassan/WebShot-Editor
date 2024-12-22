@@ -3,13 +3,13 @@ import React from "react";
 
 const DummyImage = () => {
   return (
-    <div className=' img  '>
+    <div className=' img  px-[70px]'>
       <Image
         src='/dummy.png'
         alt='img'
         height={2000}
         width={2000}
-        className='object-cover '
+        className='object-cover rounded-[22px]   '
         priority
       />
     </div>

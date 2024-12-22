@@ -105,7 +105,7 @@ body {
 .img {
   height: 100vh;
   overflow-y: auto;
-  padding-top: 105px;
+  padding-top: 116px;
 }
 .react-colorful__pointer {
   height: 16px !important;
@@ -154,4 +154,7 @@ body {
 }
 .gmail {
   background-position: -68px 0 !important;
+}
+.icon:hover {
+  background: #ccc;
 }
