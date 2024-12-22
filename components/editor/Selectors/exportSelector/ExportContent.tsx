@@ -1,4 +1,5 @@
 import { exportData } from "@/constant/ExportData";
+import { cn } from "@/lib/utils";
 import React from "react";
 
 const ExportContent = () => {
@@ -8,7 +9,10 @@ const ExportContent = () => {
         {exportData.map((item, index) => (
           <li
             key={index}
-            className='flex items-center gap-3 py-2 px-3  hover:bg-light cursor-pointer text-sm'
+            className={cn(
+              "flex items-center gap-3 py-2 px-3  hover:bg-light cursor-pointer text-sm",
+              item.border && "border-b border-t py-[10px] mt-1"
+            )}
           >
             {item.icon}
             {item.name}
