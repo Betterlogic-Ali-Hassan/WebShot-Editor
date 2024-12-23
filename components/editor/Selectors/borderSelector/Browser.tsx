@@ -22,10 +22,6 @@ const Browser = () => {
 
   const allImagesLoaded = imagesLoaded.win && imagesLoaded.mac;
 
-  if (!allImagesLoaded) {
-    return <BrowserSkeleton />;
-  }
-
   return (
     <>
       <div className='space-y-2'>
@@ -36,13 +32,14 @@ const Browser = () => {
           <Image
             src='/win.png'
             alt='Windows browser'
-            height={200}
+            height={53}
             width={200}
             className={cn(
               "rounded-md object-cover border-2 border-border max-h-[53px] ",
               selected === "first" && "border-black border-2"
             )}
-            onLoad={() => handleImageLoad("win")}
+            onLoadingComplete={() => handleImageLoad("win")}
+            priority
           />
         </div>
 
@@ -53,54 +50,61 @@ const Browser = () => {
           <Image
             src='/mac.png'
             alt='Mac browser'
-            height={200}
+            height={53}
             width={200}
             className={cn(
               "rounded-md object-cover border-2 border-border max-h-[53px]",
               selected === "second" && "border-black border-2"
             )}
-            onLoad={() => handleImageLoad("mac")}
+            onLoadingComplete={() => handleImageLoad("mac")}
+            priority
           />
         </div>
       </div>
 
-      <div className='space-y-2'>
-        <Button
-          className={cn(
-            "text-sm text-black bg-secondary hover:bg-black hover:text-white border w-full border-border rounded ",
-            selected === "urlTop" && "border-black border-2"
-          )}
-          size='sm'
-          onClick={() => handleSelectedItem("urlTop")}
-        >
-          URL on top
-        </Button>
-        <Button
-          className={cn(
-            "text-sm text-black hover:bg-black hover:text-white bg-light border border-border w-full rounded",
-            selected === "urlBottom" && "border-black border-2"
-          )}
-          size='sm'
-          onClick={() => handleSelectedItem("urlBottom")}
-        >
-          URL on bottom
-        </Button>
-      </div>
+      {!allImagesLoaded && <BrowserSkeleton />}
 
-      <div className='space-y-2'>
-        <div className='flex items-center justify-between py-1'>
-          <Label htmlFor='include-url' className='text-sm cursor-pointer'>
-            Include URL
-          </Label>
-          <Checkbox id='include-url' defaultChecked />
-        </div>
-        <div className='flex items-center justify-between pb-1.5'>
-          <Label htmlFor='include-date' className='text-sm cursor-pointer'>
-            Include Date
-          </Label>
-          <Checkbox id='include-date' defaultChecked />
-        </div>
-      </div>
+      {allImagesLoaded && (
+        <>
+          <div className='space-y-2'>
+            <Button
+              className={cn(
+                "text-sm text-black bg-secondary hover:bg-black hover:text-white border w-full border-border rounded ",
+                selected === "urlTop" && "border-black border-2"
+              )}
+              size='sm'
+              onClick={() => handleSelectedItem("urlTop")}
+            >
+              URL on top
+            </Button>
+            <Button
+              className={cn(
+                "text-sm text-black hover:bg-black hover:text-white bg-light border border-border w-full rounded",
+                selected === "urlBottom" && "border-black border-2"
+              )}
+              size='sm'
+              onClick={() => handleSelectedItem("urlBottom")}
+            >
+              URL on bottom
+            </Button>
+          </div>
+
+          <div className='space-y-2'>
+            <div className='flex items-center justify-between py-1'>
+              <Label htmlFor='include-url' className='text-sm cursor-pointer'>
+                Include URL
+              </Label>
+              <Checkbox id='include-url' defaultChecked />
+            </div>
+            <div className='flex items-center justify-between pb-1.5'>
+              <Label htmlFor='include-date' className='text-sm cursor-pointer'>
+                Include Date
+              </Label>
+              <Checkbox id='include-date' defaultChecked />
+            </div>
+          </div>
+        </>
+      )}
     </>
   );
 };
