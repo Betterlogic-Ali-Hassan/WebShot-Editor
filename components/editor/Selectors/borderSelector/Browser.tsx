@@ -1,30 +1,31 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import BrowserSkeleton from "./Skelton";
 
 const Browser = () => {
   const [selected, setSelected] = useState("first");
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, []);
+  const [imagesLoaded, setImagesLoaded] = useState({ win: false, mac: false });
 
   const handleSelectedItem = (item: string) => {
     setSelected(item);
   };
 
-  if (isLoading) {
+  const handleImageLoad = (imageName: "win" | "mac") => {
+    setImagesLoaded((prev) => ({ ...prev, [imageName]: true }));
+  };
+
+  const allImagesLoaded = imagesLoaded.win && imagesLoaded.mac;
+
+  if (!allImagesLoaded) {
     return <BrowserSkeleton />;
   }
+
   return (
     <>
       <div className='space-y-2'>
@@ -34,29 +35,31 @@ const Browser = () => {
         >
           <Image
             src='/win.png'
-            alt='img'
+            alt='Windows browser'
             height={200}
             width={200}
             className={cn(
               "rounded-md object-cover border-2 border-border max-h-[53px] ",
               selected === "first" && "border-black border-2"
             )}
+            onLoad={() => handleImageLoad("win")}
           />
         </div>
 
         <div
-          className=' flex items-center   cursor-pointer'
+          className='flex items-center cursor-pointer'
           onClick={() => handleSelectedItem("second")}
         >
           <Image
             src='/mac.png'
-            alt='img'
+            alt='Mac browser'
             height={200}
             width={200}
             className={cn(
               "rounded-md object-cover border-2 border-border max-h-[53px]",
               selected === "second" && "border-black border-2"
             )}
+            onLoad={() => handleImageLoad("mac")}
           />
         </div>
       </div>
@@ -85,13 +88,13 @@ const Browser = () => {
       </div>
 
       <div className='space-y-2'>
-        <div className='flex items-center  justify-between py-1 '>
+        <div className='flex items-center justify-between py-1'>
           <Label htmlFor='include-url' className='text-sm cursor-pointer'>
             Include URL
           </Label>
           <Checkbox id='include-url' defaultChecked />
         </div>
-        <div className='flex items-center  justify-between pb-1.5 '>
+        <div className='flex items-center justify-between pb-1.5'>
           <Label htmlFor='include-date' className='text-sm cursor-pointer'>
             Include Date
           </Label>
