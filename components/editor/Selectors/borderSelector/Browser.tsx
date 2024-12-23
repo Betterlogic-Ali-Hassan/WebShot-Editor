@@ -13,7 +13,7 @@ const Browser = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 1000);
+    }, 3000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -38,7 +38,7 @@ const Browser = () => {
             height={200}
             width={200}
             className={cn(
-              "rounded-md object-cover border-2 border-border ",
+              "rounded-md object-cover border-2 border-border max-h-[53px] ",
               selected === "first" && "border-black border-2"
             )}
           />
@@ -54,7 +54,7 @@ const Browser = () => {
             height={200}
             width={200}
             className={cn(
-              "rounded-md object-cover border-2 border-border",
+              "rounded-md object-cover border-2 border-border max-h-[53px]",
               selected === "second" && "border-black border-2"
             )}
           />
