@@ -32,13 +32,11 @@ export default function ColorPicker({
   const handlePickerChange = (color: ColorResult) => {
     const { r, g, b, a } = color.rgb;
     const rgba = `rgba(${r}, ${g}, ${b}, ${a})`;
-    setSelectedColor(rgba); // Update live color state
+    setSelectedColor(rgba);
   };
 
   const handlePopoverClose = (isOpen: boolean) => {
     setPopoverOpen(isOpen);
-
-    // Only update recent colors when closing the picker
     if (!isOpen) {
       setRecentColors((prev) => {
         const updatedColors = [
@@ -90,7 +88,7 @@ export default function ColorPicker({
         >
           <SketchPicker
             color={selectedColor}
-            onChange={handlePickerChange} // Live updates while dragging
+            onChange={handlePickerChange}
             className='min-w-[220px] !p-3'
             presetColors={recentColors}
           />
