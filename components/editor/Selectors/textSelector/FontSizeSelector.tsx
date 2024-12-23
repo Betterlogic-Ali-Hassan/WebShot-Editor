@@ -25,14 +25,6 @@ export default function NumberSelector() {
 
   return (
     <div className='inline-flex items-center'>
-      <Button
-        variant='outline'
-        size='icon'
-        className='h-9 rounded-none rounded-l-md border-r-0'
-        onClick={decrement}
-      >
-        <Plus className='h-4 w-4' />
-      </Button>
       <Select
         value={value.toString()}
         onValueChange={(val) => setValue(parseInt(val))}
@@ -40,6 +32,14 @@ export default function NumberSelector() {
         <SelectTrigger className='h-9 w-[72px] rounded-none border-y px-2 [&>span]:mx-auto [&>svg]:hidden'>
           <SelectValue>{value}</SelectValue>
         </SelectTrigger>
+        <Button
+          variant='outline'
+          size='icon'
+          className='h-9 rounded-none rounded-r-md border-l-0'
+          onClick={increment}
+        >
+          <Minus className='h-4 w-4' />
+        </Button>
         <SelectContent>
           {Array.from({ length: 36 }, (_, i) => i + 1).map((num) => (
             <SelectItem key={num} value={num.toString()}>
@@ -51,10 +51,10 @@ export default function NumberSelector() {
       <Button
         variant='outline'
         size='icon'
-        className='h-9 rounded-none rounded-r-md border-l-0'
-        onClick={increment}
+        className='h-9 rounded-none rounded-l-md border-r-0'
+        onClick={decrement}
       >
-        <Minus className='h-4 w-4' />
+        <Plus className='h-4 w-4' />
       </Button>
     </div>
   );
