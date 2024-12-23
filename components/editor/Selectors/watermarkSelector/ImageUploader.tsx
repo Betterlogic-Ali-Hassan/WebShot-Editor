@@ -48,17 +48,17 @@ const ImageUploader: React.FC = () => {
           />
         </Button>
       ) : (
-        <div className='relative w-[240px] h-[200px]'>
+        <div className='relative h-[150px] w-full flex items-center justify-center'>
           <Image
             src={uploadedImage}
             alt='Uploaded'
-            className='w-full h-full object-cover rounded'
-            height={250}
-            width={250}
+            className='w-[150px] h-[150px] object-cover rounded'
+            height={150}
+            width={150}
           />
           <button
             onClick={handleRemoveImage}
-            className='absolute top-2 right-2 p-2 bg-white rounded-full shadow-lg hover:bg-secondary'
+            className='absolute top-2 right-14 p-1 bg-white rounded-full shadow-lg hover:bg-secondary'
           >
             <X className='w-4 h-4 text-red-500' />
           </button>

@@ -14,7 +14,13 @@ import { ChromePicker } from "react-color";
 import { Theme } from "@/components/svgs";
 import { FaCheck } from "react-icons/fa6";
 
-export default function ColorPicker({ select }: { select?: boolean }) {
+export default function ColorPicker({
+  select,
+  icon,
+}: {
+  select?: boolean;
+  icon?: boolean;
+}) {
   const [selectedColor, setSelectedColor] = useState("#FF0000");
   const [recentColors, setRecentColors] = useState<string[]>([]);
   const [showPicker, setShowPicker] = useState(false);
@@ -96,9 +102,15 @@ export default function ColorPicker({ select }: { select?: boolean }) {
                 className='h-5 w-5 rounded border'
                 style={{ backgroundColor: selectedColor }}
               />
-              <span>
-                <ChevronDown className='h-4 w-4 ' />
-              </span>
+              {!icon ? (
+                <span>
+                  <ChevronDown className='h-4 w-4 ' />
+                </span>
+              ) : (
+                <p className='whitespace-nowrap cursor-pointer'>
+                  Background fill
+                </p>
+              )}
             </Button>
           ) : (
             <Button variant='outline' className='w-[200px] justify-start'>

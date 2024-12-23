@@ -3,9 +3,9 @@ import FontSelector from "./FontSelector";
 import FontSizeSelector from "./FontSizeSelector";
 import { TextEditor } from "./TextEditor";
 import { TextAlign } from "./TextAlign";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
+
 import ColorPicker from "../borderSelector/ColorPicker2";
+import { Separator } from "@/components/ui/separator";
 const Fonts = () => {
   return (
     <div className='flex items-center max-lg:flex-col gap-5 px-4 py-0.5 '>
@@ -16,13 +16,9 @@ const Fonts = () => {
       <ColorPicker select />
       <TextEditor />
       <TextAlign />
-      <div>
-        <div className='flex items-center space-x-2 max-lg:mt-2 '>
-          <Checkbox id='terms' className='h-4 w-4' />
-          <Label htmlFor='terms' className='whitespace-nowrap cursor-pointer'>
-            Background fill
-          </Label>
-        </div>
+      <div className='flex items-center gap-3'>
+        <Separator orientation='vertical' />
+        <ColorPicker icon select />
       </div>
     </div>
   );

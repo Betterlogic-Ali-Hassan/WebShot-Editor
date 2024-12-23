@@ -1,9 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { Button, Group, Input } from "react-aria-components";
 import { cn } from "@/lib/utils";
+
+interface InputWithBtnProps {
+  val: number;
+  unit: string;
+  className?: string;
+  InputWidth?: string;
+  onChange?: (value: number) => void;
+  increment?: () => void;
+  decrement?: () => void;
+}
 
 export default function InputWithBtn({
   val,
@@ -11,25 +21,33 @@ export default function InputWithBtn({
   className,
   InputWidth,
   onChange,
-}: {
-  val: number;
-  unit: string;
-  className?: string;
-  InputWidth?: string;
-  onChange?: (value: number) => void;
-}) {
+  increment,
+  decrement,
+}: InputWithBtnProps) {
   const [value, setValue] = useState<number>(val);
 
+  useEffect(() => {
+    setValue(val);
+  }, [val]);
+
   const handleIncrement = () => {
-    const newValue = value + 1;
-    setValue(newValue);
-    if (onChange) onChange(newValue);
+    if (increment) {
+      increment();
+    } else {
+      const newValue = value + 1;
+      setValue(newValue);
+      if (onChange) onChange(newValue);
+    }
   };
 
   const handleDecrement = () => {
-    const newValue = value > 0 ? value - 1 : 0;
-    setValue(newValue);
-    if (onChange) onChange(newValue);
+    if (decrement) {
+      decrement();
+    } else {
+      const newValue = value > 0 ? value - 1 : 0;
+      setValue(newValue);
+      if (onChange) onChange(newValue);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,10 +66,10 @@ export default function InputWithBtn({
       >
         <Input
           className={cn(
-            "bg-background px-3 py-2 text-foreground focus:outline-none max-w-[70px]",
+            "bg-background px-3 py-2 text-foreground focus:outline-none max-w-[85px]",
             InputWidth
           )}
-          value={String(value) + (unit ? ` ${unit}` : "")}
+          value={`${value}${unit ? ` ${unit}` : ""}`}
           onChange={handleInputChange}
         />
         <div className='flex h-[calc(100%+2px)] flex-col'>

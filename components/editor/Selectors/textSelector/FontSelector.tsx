@@ -11,7 +11,7 @@ export default function FontSelector() {
   return (
     <div className='space-y-2'>
       <Select>
-        <SelectTrigger className='w-auto min-w-48 max-w-full'>
+        <SelectTrigger className='w-auto min-w-48 max-w-full border-2'>
           <SelectValue placeholder='Calibri' />
         </SelectTrigger>
         <SelectContent className='bg-white'>

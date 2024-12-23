@@ -14,7 +14,9 @@ const StickersSelector = () => {
   return (
     <ToolDropdown
       trigger={<ToolCard text='Stickers' icon={selectedIcon} id={11} />}
-      content={<Sticker onClick={handleSelection} />}
+      content={
+        <Sticker onClick={handleSelection} selectedIcon={selectedIcon} />
+      }
       id='num10'
     />
   );
