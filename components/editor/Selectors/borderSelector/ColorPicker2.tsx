@@ -29,27 +29,32 @@ export default function ColorPicker({
     }
   }, []);
 
-  const handleColorSelect = (color: string) => {
-    setSelectedColor(color);
-    setRecentColors((prev) => {
-      const updatedColors = [color, ...prev.filter((c) => c !== color)].slice(
-        0,
-        12
-      );
-      localStorage.setItem("recentColors", JSON.stringify(updatedColors));
-      return updatedColors;
-    });
-  };
-
-  const handlePickerChangeComplete = (color: ColorResult) => {
+  const handlePickerChange = (color: ColorResult) => {
     const { r, g, b, a } = color.rgb;
     const rgba = `rgba(${r}, ${g}, ${b}, ${a})`;
-    handleColorSelect(rgba);
+    setSelectedColor(rgba); // Update live color state
+  };
+
+  const handlePopoverClose = (isOpen: boolean) => {
+    setPopoverOpen(isOpen);
+
+    // Only update recent colors when closing the picker
+    if (!isOpen) {
+      setRecentColors((prev) => {
+        const updatedColors = [
+          selectedColor,
+          ...prev.filter((color) => color !== selectedColor),
+        ].slice(0, 12);
+
+        localStorage.setItem("recentColors", JSON.stringify(updatedColors));
+        return updatedColors;
+      });
+    }
   };
 
   return (
     <div className={cn("mt-5", select && "mt-0")}>
-      <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+      <Popover open={popoverOpen} onOpenChange={handlePopoverClose}>
         <PopoverTrigger asChild>
           {select ? (
             <Button variant='outline' className='border-0 justify-start p-2'>
@@ -85,7 +90,7 @@ export default function ColorPicker({
         >
           <SketchPicker
             color={selectedColor}
-            onChangeComplete={handlePickerChangeComplete}
+            onChange={handlePickerChange} // Live updates while dragging
             className='min-w-[220px] !p-3'
             presetColors={recentColors}
           />

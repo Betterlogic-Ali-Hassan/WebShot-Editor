@@ -158,3 +158,17 @@ body {
 .icon:hover {
   background: #ccc;
 }
+/* Increase thumb size */
+.sketch-picker .hue-horizontal .slider,
+.sketch-picker .alpha .slider {
+  width: 20px !important; /* Increase the width */
+  height: 20px !important; /* Increase the height */
+  border-radius: 50% !important; /* Make them circular */
+}
+
+/* Optional: Customize the slider thumb color */
+.sketch-picker .hue-horizontal .slider,
+.sketch-picker .alpha .slider {
+  background-color: #000 !important; /* Set color to black */
+  border: 2px solid #fff !important; /* Add a white border */
+}
