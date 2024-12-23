@@ -18,7 +18,7 @@ export default function ColorPicker({
   select?: boolean;
   icon?: boolean;
 }) {
-  const [selectedColor, setSelectedColor] = useState("#FF0000");
+  const [selectedColor, setSelectedColor] = useState("rgba(255, 0, 0, 1)");
   const [recentColors, setRecentColors] = useState<string[]>([]);
   const [popoverOpen, setPopoverOpen] = useState(false);
 
@@ -42,7 +42,9 @@ export default function ColorPicker({
   };
 
   const handlePickerChangeComplete = (color: ColorResult) => {
-    handleColorSelect(color.hex);
+    const { r, g, b, a } = color.rgb;
+    const rgba = `rgba(${r}, ${g}, ${b}, ${a})`;
+    handleColorSelect(rgba);
   };
 
   return (
@@ -84,7 +86,7 @@ export default function ColorPicker({
           <SketchPicker
             color={selectedColor}
             onChangeComplete={handlePickerChangeComplete}
-            className='min-w-[220px]'
+            className='min-w-[220px] !p-3'
             presetColors={recentColors}
           />
         </PopoverContent>
