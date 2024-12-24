@@ -8,7 +8,7 @@ const Revision = () => {
         {revisionData.map((item, index) => (
           <li
             key={index}
-            className='flex items-center gap-3  py-2 px-3  hover:bg-light cursor-pointer text-sm justify-between'
+            className='flex items-center gap-3  py-2 px-3  hover:bg-light cursor-pointer text-sm '
           >
             {item.icon}
             {item.name}
