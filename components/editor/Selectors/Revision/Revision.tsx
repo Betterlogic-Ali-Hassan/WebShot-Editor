@@ -10,8 +10,8 @@ const Revision = () => {
             key={index}
             className='flex items-center gap-3  py-2 px-3  hover:bg-light cursor-pointer text-sm justify-between'
           >
-            {item.name}
             {item.icon}
+            {item.name}
           </li>
         ))}
       </ul>

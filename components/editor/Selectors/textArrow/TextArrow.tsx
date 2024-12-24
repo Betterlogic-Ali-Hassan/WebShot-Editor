@@ -6,14 +6,13 @@ interface Props {
   selectedIcon: React.ReactNode;
 }
 const TextArrow = ({ onClick, selectedIcon }: Props) => {
-  const [defaultIcon, setDefaultIcon] = useState<React.ReactNode>(
-    arrowBox[0].icon
-  );
+  const [defaultIcon, setDefaultIcon] = useState<React.ReactNode>(selectedIcon);
 
   const handleClick = (icon: React.ReactNode, name: string) => {
     onClick(icon, name);
     setDefaultIcon(icon);
   };
+
   return (
     <ul className='flex items-center max-sm:flex-col gap-2 px-4 w-full'>
       {arrowBox.map((item, index) => (
