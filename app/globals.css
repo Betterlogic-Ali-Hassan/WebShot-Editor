@@ -176,13 +176,12 @@ body {
   gap: 0 !important;
 }
 #rc-editable-input-2 {
-  font-size: 12px !important;
-  min-width: 60px !important;
+  font-size: 11px !important;
+  width: 100% !important;
 }
 #rc-editable-input-4,
 #rc-editable-input-6,
 #rc-editable-input-8,
 #rc-editable-input-10 {
-  min-width: 30px !important;
-  max-width: 100%;
+  width: 90% !important;
 }
