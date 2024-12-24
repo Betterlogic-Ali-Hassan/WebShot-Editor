@@ -172,3 +172,16 @@ body {
   background-color: #000 !important; /* Set color to black */
   border: 2px solid #fff !important; /* Add a white border */
 }
+.flexbox-fix {
+  gap: 0 !important;
+}
+#rc-editable-input-2 {
+  font-size: 12px !important;
+  width: 60px !important;
+}
+#rc-editable-input-4,
+#rc-editable-input-6,
+#rc-editable-input-8,
+#rc-editable-input-10 {
+  width: 30px !important;
+}

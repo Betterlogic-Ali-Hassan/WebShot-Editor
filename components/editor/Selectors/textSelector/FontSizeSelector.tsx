@@ -11,9 +11,10 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus } from "lucide-react";
+import { fontSizes } from "@/constant/fontSize";
 
 export default function NumberSelector() {
-  const [value, setValue] = useState(235);
+  const [value, setValue] = useState(8);
 
   const increment = () => {
     setValue((prev) => prev + 1);
@@ -41,7 +42,7 @@ export default function NumberSelector() {
           <SelectValue>{value}</SelectValue>
         </SelectTrigger>
         <SelectContent>
-          {Array.from({ length: 36 }, (_, i) => i + 1).map((num) => (
+          {fontSizes.map((num) => (
             <SelectItem key={num} value={num.toString()}>
               {num}
             </SelectItem>
