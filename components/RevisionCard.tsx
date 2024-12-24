@@ -5,11 +5,20 @@ import { Trash } from "lucide-react";
 
 const RevisionCard = () => {
   return (
-    <div className='bg-white flex items-center justify-center gap-2 px-2 focus:outline-none border-border fixed bottom-3 left-1/2 -translate-x-1/2 min-w-[180px] rounded-md border bg-popover py-2 shadow-md z-40 '>
+    <div className='bg-white flex items-center justify-center gap-2 px-2 focus:outline-none border-border fixed bottom-3 left-1/2 -translate-x-1/2 min-w-[180px]  border bg-popover py-2 shadow-md z-40 rounded-full'>
       {revisionData.map((item, id) => (
-        <Tooltip trigger={item.icon} key={id} content={item.name} />
+        <Tooltip
+          trigger={item.icon}
+          key={id}
+          content={item.name}
+          contentClass='bg-black text-white'
+        />
       ))}
-      <Tooltip trigger={<Trash size={20} />} content='Delete' />
+      <Tooltip
+        trigger={<Trash size={20} />}
+        content='Delete'
+        contentClass='bg-black text-white'
+      />
     </div>
   );
 };
