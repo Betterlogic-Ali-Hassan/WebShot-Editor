@@ -177,12 +177,12 @@ body {
 }
 #rc-editable-input-2 {
   font-size: 12px !important;
-  width: 60px !important;
+  min-width: 60px !important;
 }
 #rc-editable-input-4,
 #rc-editable-input-6,
 #rc-editable-input-8,
 #rc-editable-input-10 {
   min-width: 30px !important;
-  max-width: 100% !important;
+  max-width: 100%;
 }
