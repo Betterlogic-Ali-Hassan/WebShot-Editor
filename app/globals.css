@@ -183,5 +183,6 @@ body {
 #rc-editable-input-6,
 #rc-editable-input-8,
 #rc-editable-input-10 {
-  width: 30px !important;
+  min-width: 30px !important;
+  max-width: 100% !important;
 }
