@@ -10,7 +10,7 @@ const ShapeSelector = () => {
   const [selectedIcon, setSelectedIcon] = useState<React.ReactNode>(
     <Screen height={24} width={24} />
   );
-  const [selectedText, setSelectedText] = useState<string>("Pen");
+  const [selectedText, setSelectedText] = useState<string>("Shapes");
   const handleSelection = (icon: React.ReactNode, text: string) => {
     setSelectedIcon(icon);
     setSelectedText(text);
