@@ -1,16 +1,17 @@
 "use client";
 import React from "react";
 import ToolCard from "../../ToolCard";
-import { ArrowBox } from "@/components/svgs";
 import ToolDropdown from "@/components/ToolDropdown";
 import { useState } from "react";
 import TextArrow from "./TextArrow";
 
+import { arrowBox } from "@/constant/arrowBox";
+
 const TextArrowSelector = () => {
   const [selectedIcon, setSelectedIcon] = useState<React.ReactNode>(
-    <ArrowBox />
+    arrowBox[0].icon
   );
-  const [selectedText, setSelectedText] = useState<string>("Text Arrow");
+  const [selectedText, setSelectedText] = useState<string>(arrowBox[0].name);
   const handleSelection = (icon: React.ReactNode, text: string) => {
     setSelectedIcon(icon);
     setSelectedText(text);

@@ -1,16 +1,16 @@
 "use client";
 import React from "react";
 import ToolCard from "../../ToolCard";
-import { Screen } from "@/components/svgs";
 import ToolDropdown from "@/components/ToolDropdown";
 import Shapes from "./Shapes";
 import { useState } from "react";
+import { shapesData } from "@/constant/shapeData";
 
 const ShapeSelector = () => {
   const [selectedIcon, setSelectedIcon] = useState<React.ReactNode>(
-    <Screen height={24} width={24} />
+    shapesData[0].icon
   );
-  const [selectedText, setSelectedText] = useState<string>("Shapes");
+  const [selectedText, setSelectedText] = useState<string>(shapesData[0].name);
   const handleSelection = (icon: React.ReactNode, text: string) => {
     setSelectedIcon(icon);
     setSelectedText(text);
