@@ -10,7 +10,7 @@ const TextArrowSelector = () => {
   const [selectedIcon, setSelectedIcon] = useState<React.ReactNode>(
     <ArrowBox />
   );
-  const [selectedText, setSelectedText] = useState<string>("Text Box");
+  const [selectedText, setSelectedText] = useState<string>("Text Arrow");
   const handleSelection = (icon: React.ReactNode, text: string) => {
     setSelectedIcon(icon);
     setSelectedText(text);

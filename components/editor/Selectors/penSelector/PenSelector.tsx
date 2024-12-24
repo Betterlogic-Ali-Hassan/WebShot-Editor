@@ -8,7 +8,7 @@ import { useState } from "react";
 
 const PenSelector = () => {
   const [selectedIcon, setSelectedIcon] = useState<React.ReactNode>(<Pen />);
-  const [selectedText, setSelectedText] = useState<string>("Pen");
+  const [selectedText, setSelectedText] = useState<string>("Pencil");
   const handleSelection = (icon: React.ReactNode, text: string) => {
     setSelectedIcon(icon);
     setSelectedText(text);

@@ -8,7 +8,7 @@ import { useState } from "react";
 
 const ArrowSelector = () => {
   const [selectedIcon, setSelectedIcon] = useState<React.ReactNode>(<Arrow />);
-  const [selectedText, setSelectedText] = useState<string>("Arrows");
+  const [selectedText, setSelectedText] = useState<string>("Arrow Line");
   const handleSelection = (icon: React.ReactNode, text: string) => {
     setSelectedIcon(icon);
     setSelectedText(text);
