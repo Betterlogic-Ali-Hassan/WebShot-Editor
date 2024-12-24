@@ -28,7 +28,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ icon, text }) => {
       onClick={handleClick}
     >
       <span>{icon}</span>
-      <h4 className='mt-1.5 text-xs'>{text}</h4>
+      <h4 className='mt-1.5 text-xs max-w-[59px] truncate'>{text}</h4>
       {text.toLowerCase() === "image" && (
         <input
           type='file'

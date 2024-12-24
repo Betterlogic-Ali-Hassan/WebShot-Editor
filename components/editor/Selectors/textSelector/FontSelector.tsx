@@ -16,8 +16,12 @@ export default function FontSelector() {
         </SelectTrigger>
         <SelectContent className='bg-white'>
           {fonts.map((font, i) => (
-            <SelectItem value={font} key={i}>
-              {font}
+            <SelectItem
+              value={font.name}
+              key={i}
+              style={{ fontFamily: font.style }}
+            >
+              {font.name}
             </SelectItem>
           ))}
         </SelectContent>

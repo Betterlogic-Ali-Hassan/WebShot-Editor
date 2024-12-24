@@ -8,12 +8,14 @@ import { useState } from "react";
 
 const PenSelector = () => {
   const [selectedIcon, setSelectedIcon] = useState<React.ReactNode>(<Pen />);
-  const handleSelection = (icon: React.ReactNode) => {
+  const [selectedText, setSelectedText] = useState<string>("Pen");
+  const handleSelection = (icon: React.ReactNode, text: string) => {
     setSelectedIcon(icon);
+    setSelectedText(text);
   };
   return (
     <ToolDropdown
-      trigger={<ToolCard text='Pen' icon={selectedIcon} id={7} />}
+      trigger={<ToolCard text={selectedText} icon={selectedIcon} id={7} />}
       content={<Brush onClick={handleSelection} selectedIcon={selectedIcon} />}
       id='num4'
     />

@@ -4,7 +4,7 @@ import React from "react";
 import LinePicker from "../BorderPicker";
 import ColorPicker from "../borderSelector/ColorPicker2";
 interface Props {
-  onClick: (icon: React.ReactNode) => void;
+  onClick: (icon: React.ReactNode, text: string) => void;
   selectedIcon?: React.ReactNode;
 }
 const Brush = ({ onClick, selectedIcon }: Props) => {
@@ -18,7 +18,7 @@ const Brush = ({ onClick, selectedIcon }: Props) => {
               "flex items-center gap-1.5 max-sm:w-full rounded-md py-2 px-3 hover:bg-light cursor-pointer text-sm border-2 border-white",
               selectedIcon === item.icon && "  border-dotted border-border"
             )}
-            onClick={() => onClick(item.icon)}
+            onClick={() => onClick(item.icon, item.name)}
           >
             {item.icon}
             {item.name}

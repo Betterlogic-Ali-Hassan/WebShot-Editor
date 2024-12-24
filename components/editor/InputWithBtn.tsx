@@ -51,7 +51,8 @@ export default function InputWithBtn({
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = parseInt(e.target.value) || 0;
+    const inputValue = e.target.value.replace(/\D/g, ""); // Remove any non-numeric characters
+    const newValue = parseInt(inputValue, 10) || 0;
     setValue(newValue);
     if (onChange) onChange(newValue);
   };
@@ -64,14 +65,17 @@ export default function InputWithBtn({
           className
         )}
       >
-        <Input
-          className={cn(
-            "bg-background px-3 py-2 text-foreground focus:outline-none max-w-[85px]",
-            InputWidth
-          )}
-          value={`${value}${unit ? ` ${unit}` : ""}`}
-          onChange={handleInputChange}
-        />
+        <div className='flex items-center'>
+          <Input
+            className={cn(
+              "bg-background px-3 pr-0 py-2 text-foreground focus:outline-none w-[44px] max-w-max",
+              InputWidth
+            )}
+            value={value.toString()}
+            onChange={handleInputChange}
+          />
+          <span className='pl-1 text-muted-foreground'>{unit}</span>{" "}
+        </div>
         <div className='flex h-[calc(100%+2px)] flex-col'>
           <Button
             onPress={handleIncrement}

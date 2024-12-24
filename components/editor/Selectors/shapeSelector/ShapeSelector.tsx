@@ -10,13 +10,15 @@ const ShapeSelector = () => {
   const [selectedIcon, setSelectedIcon] = useState<React.ReactNode>(
     <Screen height={24} width={24} />
   );
-
-  const handleSelection = (icon: React.ReactNode) => {
+  const [selectedText, setSelectedText] = useState<string>("Pen");
+  const handleSelection = (icon: React.ReactNode, text: string) => {
     setSelectedIcon(icon);
+    setSelectedText(text);
   };
+
   return (
     <ToolDropdown
-      trigger={<ToolCard text='Square' icon={selectedIcon} id={10} />}
+      trigger={<ToolCard text={selectedText} icon={selectedIcon} id={10} />}
       content={<Shapes onClick={handleSelection} selectedIcon={selectedIcon} />}
       id='num9'
     />
