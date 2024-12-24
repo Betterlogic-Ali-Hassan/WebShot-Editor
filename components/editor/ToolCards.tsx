@@ -19,6 +19,7 @@ import BorderSelector from "./Selectors/borderSelector/BorderSelector";
 import StickersSelector from "./Selectors/stickersSelector/StickersSelector";
 import RevisionContent from "./Selectors/Revision/RevisionContent";
 import ExportSelector from "./Selectors/exportSelector/ExportSelector";
+import TextArrowSelector from "./Selectors/textArrow/TextArrowSelector";
 import SliderBtn from "./SliderBtn";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -32,6 +33,7 @@ const selectors = [
   { component: PenSelector, id: 5, selection: true },
   { component: ShapeSelector, id: 6, selection: true },
   { component: ArrowSelector, id: 7, selection: true },
+  { component: TextArrowSelector, id: 16, selection: true },
   { component: TextSelector, id: 8, selection: true },
   { component: NumberSelector, id: 9, selection: true },
   { component: StickersSelector, id: 10, selection: true },

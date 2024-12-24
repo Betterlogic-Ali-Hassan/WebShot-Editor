@@ -54,3 +54,5 @@ export { default as Export } from "./Export.svg";
 export { default as Cloud } from "./Cloud.svg";
 export { default as Theme } from "./Theme.svg";
 export { default as InstaLogo } from "./InstaLogo.svg";
+export { default as ArrowBox } from "./ArrowBox.svg";
+export { default as TextBox } from "./TextBox.svg";
