@@ -12,20 +12,24 @@ import Rating from "../Rating/Rating";
 import { cn } from "@/lib/utils";
 import UploadingBox from "../UploadingBox";
 import Link from "next/link";
+import ModeToggle from "../ModeToggle";
+import { useTheme } from "next-themes";
 
 const MainCard = () => {
   const [ratingOpen, setRatingOpen] = useState(false);
   const [alert, setAlert] = useState(true);
   const [screeShot, setScreenShot] = useState(false);
+  const { theme } = useTheme();
   const handleClose = () => {
     setAlert(false);
   };
   const handleRatingOpen = () => {
     setRatingOpen(!ratingOpen);
   };
+  const mode = theme === "dark" ? "Light Mode" : "Dark Mode";
   return (
     <Card className='overflow-hidden w-[388px] relative high-shadow border-none max-h-[600px] overflow-y-auto scrollbar '>
-      <CardHeader className='border-b  border-border py-3 px-4 flex flex-row items-center justify-between'>
+      <CardHeader className='border-b  border-light py-3 px-4 flex flex-row items-center justify-between'>
         <div>
           <CardTitle className='text-[15px] font-semibold flex items-center gap-2'>
             <Logo />
@@ -36,6 +40,7 @@ const MainCard = () => {
           </CardTitle>
         </div>
         <div className='flex items-center gap-2'>
+          <Tooltip content={mode} trigger={<ModeToggle />} />
           <Tooltip content='About Us' trigger={<About />} />
           <Tooltip
             content='Rate Us'

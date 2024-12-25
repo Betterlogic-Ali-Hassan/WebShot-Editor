@@ -19,7 +19,7 @@ body {
     --card-border: #b2b2b2;
   }
 
-  :root[data-theme="dark"] {
+  .dark {
     --text-dark: #fff;
     --bg-default: #111;
     --bg-light: #555;
