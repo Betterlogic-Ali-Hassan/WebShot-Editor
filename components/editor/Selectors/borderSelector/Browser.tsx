@@ -69,7 +69,7 @@ const Browser = () => {
           <div className='space-y-2'>
             <Button
               className={cn(
-                "text-sm text-black bg-secondary hover:bg-black hover:text-white border w-full border-border rounded ",
+                "text-sm text-black bg-light text-dark hover:bg-black hover:text-white border w-full border-border rounded ",
                 selected === "urlTop" && "border-black border-2"
               )}
               size='sm'
@@ -79,7 +79,7 @@ const Browser = () => {
             </Button>
             <Button
               className={cn(
-                "text-sm text-black hover:bg-black hover:text-white bg-light border border-border w-full rounded",
+                "text-sm text-black  hover:bg-black hover:text-white text-dark bg-light border border-border w-full rounded",
                 selected === "urlBottom" && "border-black border-2"
               )}
               size='sm'

@@ -17,7 +17,7 @@ const Select = () => {
         <SelectTrigger className='w-full h-[50px] border-border'>
           <SelectValue placeholder='Select Action' />
         </SelectTrigger>
-        <SelectContent className='bg-white ' side='top'>
+        <SelectContent side='top'>
           <SelectItem value='light'>Edit</SelectItem>
           <SelectItem value='dark'>Open uploading window</SelectItem>
           <SelectItem value='system'>Download</SelectItem>

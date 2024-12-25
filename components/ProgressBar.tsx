@@ -48,7 +48,7 @@ export default function ProgressBar({
             <div className='overflow-hidden h-2 mb-4 text-xs flex rounded bg-secondary'>
               <div
                 style={{ width: `${progress}%` }}
-                className='shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-black transition-all duration-500 ease-out'
+                className='shadow-none flex flex-col text-center whitespace-nowrap  justify-center bg-dark transition-all duration-500 ease-out'
               ></div>
             </div>
           </div>

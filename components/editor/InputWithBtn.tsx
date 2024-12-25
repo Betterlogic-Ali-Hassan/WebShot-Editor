@@ -61,14 +61,14 @@ export default function InputWithBtn({
     <div>
       <Group
         className={cn(
-          "relative inline-flex h-[42px] items-center overflow-hidden whitespace-nowrap rounded-lg border border-input text-sm shadow-sm shadow-black/5 transition-shadow data-[disabled]:opacity-50 data-[focus-within]:outline-none w-[110px] justify-between",
+          "relative inline-flex h-[42px] items-center overflow-hidden whitespace-nowrap rounded-lg border border-secondary text-sm shadow-sm shadow-black/5 transition-shadow data-[disabled]:opacity-50 data-[focus-within]:outline-none w-[110px] justify-between",
           className
         )}
       >
         <div className='flex items-center'>
           <Input
             className={cn(
-              "bg-background px-3 pr-0 py-2 text-foreground focus:outline-none w-[44px] max-w-max",
+              " px-3 pr-0 py-2 text-foreground focus:outline-none w-[44px] max-w-max bg-transparent",
               InputWidth
             )}
             value={value.toString()}
@@ -79,13 +79,13 @@ export default function InputWithBtn({
         <div className='flex h-[calc(100%+2px)] flex-col'>
           <Button
             onPress={handleIncrement}
-            className='flex h-1/2 w-6 items-center justify-center border border-input bg-background text-sm text-muted-foreground/80 transition-shadow hover:bg-light hover:text-foreground disabled:pointer-events-none disabled:opacity-50 focus:outline-none'
+            className='flex h-1/2 w-6 items-center justify-center border border-secondary bg-bg text-sm text-muted-foreground/80 transition-shadow hover:bg-light hover:text-foreground disabled:pointer-events-none disabled:opacity-50 focus:outline-none'
           >
             <ChevronUp size={12} strokeWidth={2} />
           </Button>
           <Button
             onPress={handleDecrement}
-            className='flex h-1/2 w-6 items-center justify-center border border-input bg-background text-sm text-muted-foreground/80 transition-shadow hover:bg-light hover:text-foreground disabled:pointer-events-none disabled:opacity-50 focus:outline-none'
+            className='flex h-1/2 w-6 items-center justify-center border border-secondary bg-bg text-sm text-muted-foreground/80 transition-shadow hover:bg-light hover:text-foreground disabled:pointer-events-none disabled:opacity-50 focus:outline-none'
           >
             <ChevronDown size={12} strokeWidth={2} />
           </Button>

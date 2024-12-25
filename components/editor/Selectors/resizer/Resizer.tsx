@@ -95,7 +95,7 @@ const Resizer = ({ handleId }: Props) => {
         </div>
         <Button
           onClick={handleId}
-          className='bg-black text-white hover:bg-black/80 mt-4 sm:mt-7 max-sm:w-full'
+          className='bg-dark text-bg hover:bg-dark/80 mt-4 sm:mt-7 max-sm:w-full'
         >
           Change
         </Button>

@@ -21,7 +21,7 @@ const ScreenShot = () => {
           unit='s'
           val={2}
           className='max-w-[80px]'
-          InputWidth='max-w-[55px]'
+          InputWidth='max-w-[22px]'
         />
       </div>
       <div className='flex items-center justify-between  pb-3'>
@@ -32,7 +32,7 @@ const ScreenShot = () => {
           unit='ms'
           val={2}
           className='max-w-[80px]'
-          InputWidth='max-w-[55px]'
+          InputWidth='max-w-[22px]'
         />
       </div>
       <div className='flex items-center justify-between  pb-3'>
@@ -43,7 +43,7 @@ const ScreenShot = () => {
           unit='px'
           val={2}
           className='max-w-[80px]'
-          InputWidth='max-w-[55px]'
+          InputWidth='max-w-[22px]'
         />
       </div>
       <div>

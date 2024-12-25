@@ -17,7 +17,7 @@ const Record = () => {
           unit='s'
           val={2}
           className='max-w-[75px]'
-          InputWidth='max-w-[50px]'
+          InputWidth='max-w-[22px]'
         />
       </div>
       <OptionPageSwitch label='Allow reminder when Microphone is turned off.' />

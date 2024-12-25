@@ -40,7 +40,7 @@ const Tooltip: React.FC<TooltipProps> = ({
           </div>
         )}
       </TooltipTrigger>
-      <TooltipContent className={cn("bg-white z-50", contentClass)}>
+      <TooltipContent className={cn("bg-bg z-50", contentClass)}>
         {content}
       </TooltipContent>
     </TooltipBase>

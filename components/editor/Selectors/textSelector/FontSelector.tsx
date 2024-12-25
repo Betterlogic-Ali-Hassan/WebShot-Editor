@@ -11,10 +11,10 @@ export default function FontSelector() {
   return (
     <div className='space-y-2'>
       <Select>
-        <SelectTrigger className='w-auto min-w-48 max-w-full border-2'>
+        <SelectTrigger className='w-auto min-w-48 max-w-full border-border'>
           <SelectValue placeholder='Calibri' />
         </SelectTrigger>
-        <SelectContent className='bg-white'>
+        <SelectContent>
           {fonts.map((font, i) => (
             <SelectItem
               value={font.name}

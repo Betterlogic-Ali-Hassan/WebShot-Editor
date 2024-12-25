@@ -26,12 +26,12 @@ const ShareLink = () => {
   return (
     <>
       <div className='w-full relative py-6 p-4'>
-        <h4 className='text-base font-semibold text-black'>
+        <h4 className='text-base font-semibold text-dark'>
           {!progressComplete
             ? "Uploading to cloud... Please wait."
             : " Screenshot uploaded successfully! Share it using link"}
         </h4>
-        <div className='relative rounded-xl flex items-center mt-4 min-h-[54px] px-4 bg-[#EAEDEF] w-full border max-[490px]:w-[95vw]'>
+        <div className='relative rounded-xl flex items-center mt-4 min-h-[54px] px-4 bg-light w-full border max-[490px]:w-[95vw]'>
           <input
             ref={inputRef}
             readOnly
@@ -52,7 +52,7 @@ const ShareLink = () => {
             ) : (
               <>
                 {" "}
-                <Copy size={16} /> Copy
+                <Copy size={16} className='!fill-none text-dark' /> Copy
               </>
             )}
           </button>

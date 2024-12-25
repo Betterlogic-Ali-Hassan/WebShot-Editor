@@ -24,7 +24,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ icon, text }) => {
 
   return (
     <div
-      className='flex items-center justify-center flex-col hover:bg-secondary cursor-pointer transition duration-300 h-[68px] w-[68px] rounded-[16px]'
+      className='flex items-center justify-center flex-col  cursor-pointer transition duration-300 h-[68px] w-[68px] rounded-[16px]'
       onClick={handleClick}
     >
       <span>{icon}</span>

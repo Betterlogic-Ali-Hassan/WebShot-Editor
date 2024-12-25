@@ -82,13 +82,13 @@ export default function ColorPicker({
           )}
         </PopoverTrigger>
         <PopoverContent
-          className='p-0 bg-white mt-0 overflow-y-auto scrollbar'
+          className='p-0 bg-bg mt-0 overflow-y-auto scrollbar'
           side='bottom'
         >
           <SketchPicker
             color={selectedColor}
             onChange={handlePickerChange}
-            className='min-w-[220px] !p-3'
+            className='min-w-[220px] !p-3 !text-black !bg-bg '
             presetColors={recentColors}
           />
         </PopoverContent>

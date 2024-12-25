@@ -60,7 +60,7 @@ const ToolCards = () => {
     }, 1000);
   }, []);
   return (
-    <header className='flex items-center justify-center gap-5 py-4 bg-white border-b border-border shadow-sm px-5 '>
+    <header className='flex items-center justify-center gap-5 py-4 bg-bg border-b border-border shadow-sm px-5 '>
       {loading ? (
         <div className='px-4 flex items-center gap-5 max-xl:w-[93%]'>
           {selectors.map((item) => (
@@ -86,10 +86,10 @@ const ToolCards = () => {
                 <SwiperSlide key={id} className='max-w-max'>
                   <div
                     className={cn(
-                      "cursor-pointer rounded-[16px] border-2 border-light",
+                      "cursor-pointer rounded-[16px] border-2 border-light hover:bg-secondary",
                       selectedCard === id &&
                         selection &&
-                        "border-2 border-dotted border-border bg-secondary"
+                        "border-2 border-dotted border-border bg-secondary "
                     )}
                     onClick={() => handleSelect(id, selection)}
                   >

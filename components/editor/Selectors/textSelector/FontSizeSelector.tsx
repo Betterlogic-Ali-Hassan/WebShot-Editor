@@ -29,7 +29,7 @@ export default function NumberSelector() {
       <Button
         variant='outline'
         size='icon'
-        className='h-9 rounded-none rounded-l-md border-r-0'
+        className='h-9 rounded-none rounded-l-md border-r-0 bg-select'
         onClick={decrement}
       >
         <Minus className='h-4 w-4' />
@@ -38,10 +38,10 @@ export default function NumberSelector() {
         value={value.toString()}
         onValueChange={(val) => setValue(parseInt(val))}
       >
-        <SelectTrigger className='h-9 w-[72px] rounded-none border-y px-2 [&>span]:mx-auto [&>svg]:hidden'>
+        <SelectTrigger className='h-9 w-[72px] rounded-none border-l border-r border-t-0 border-b-0 px-2 [&>span]:mx-auto [&>svg]:hidden border-border'>
           <SelectValue>{value}</SelectValue>
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className='bg-bg'>
           {fontSizes.map((num) => (
             <SelectItem key={num} value={num.toString()}>
               {num}
@@ -52,7 +52,7 @@ export default function NumberSelector() {
       <Button
         variant='outline'
         size='icon'
-        className='h-9 rounded-none rounded-r-md border-l-0'
+        className='h-9 rounded-none rounded-r-md border-l-0 bg-select'
         onClick={increment}
       >
         <Plus className='h-4 w-4' />

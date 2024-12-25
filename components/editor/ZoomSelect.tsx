@@ -24,7 +24,7 @@ export default function ZoomSelect({
       <SelectTrigger className='w-[100px]'>
         <SelectValue>{zoomLevel}%</SelectValue>
       </SelectTrigger>
-      <SelectContent className='bg-white'>
+      <SelectContent>
         {percentage.map((zoom) => (
           <SelectItem key={zoom} value={zoom.toString()}>
             {zoom}%

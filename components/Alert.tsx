@@ -9,9 +9,9 @@ interface Props {
 const Alert = ({ handleClose }: Props) => {
   return (
     <div className='pt-6 '>
-      <AlertBase className='bg-[#FEF7EE] relative  dark:border-none '>
+      <AlertBase className='bg-alert  relative  dark:border-none '>
         <AlertDescription className='flex gap-3 text-[13px]'>
-          <span className='h-6 w-6 flex items-center flex-shrink-0 justify-center bg-[#FFE7CB] dark:bg-[#A6754C] rounded-full'>
+          <span className='h-6 w-6 flex items-center flex-shrink-0 justify-center bg-alert-icon rounded-full'>
             <BsInfo size={20} />
           </span>
           Screenshot upload server is temporarily <br /> down for maintenance.
