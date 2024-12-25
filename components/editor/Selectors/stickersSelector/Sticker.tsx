@@ -14,7 +14,7 @@ const Sticker = ({ onClick, selectedIcon }: Props) => {
           className={cn(
             "hover:bg-light cursor-pointer p-2 rounded-md inline-flex items-center justify-center border-2 border-transparent  max-sm:w-full",
             selectedIcon === item.src &&
-              "border-dotted border-2 border-border bg-secondary"
+              "border-dotted border-2 border-card-border bg-secondary"
           )}
           onClick={() => onClick(item.src)}
         >

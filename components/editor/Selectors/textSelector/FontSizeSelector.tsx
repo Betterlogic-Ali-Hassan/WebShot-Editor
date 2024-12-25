@@ -29,7 +29,7 @@ export default function NumberSelector() {
       <Button
         variant='outline'
         size='icon'
-        className='h-9 rounded-none rounded-l-md border-r-0 bg-select'
+        className='h-9 rounded-none rounded-l-md border-r-0 bg-select hover:bg-light'
         onClick={decrement}
       >
         <Minus className='h-4 w-4' />
@@ -52,7 +52,7 @@ export default function NumberSelector() {
       <Button
         variant='outline'
         size='icon'
-        className='h-9 rounded-none rounded-r-md border-l-0 bg-select'
+        className='h-9 rounded-none rounded-r-md border-l-0 bg-select hover:bg-light'
         onClick={increment}
       >
         <Plus className='h-4 w-4' />

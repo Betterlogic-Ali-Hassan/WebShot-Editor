@@ -19,6 +19,7 @@ export default {
         alert: "var(--alert)", 
         'alert-icon': 'var(--alert-icon)',
         select: "var(--select)", 
+        'card-border': "var(--card-border)", 
       },
     },
   },

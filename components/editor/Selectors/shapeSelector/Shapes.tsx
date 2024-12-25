@@ -16,7 +16,7 @@ const Shapes = ({ onClick, selectedIcon }: Props) => {
           className={cn(
             "flex items-center gap-1.5 rounded-md py-2 px-3  hover:bg-light cursor-pointer text-sm border-2 border-transparent max-sm:w-full ",
             selectedIcon === item.icon &&
-              " border-dotted border-border bg-secondary"
+              " border-dotted border-card-border bg-secondary"
           )}
           onClick={() => onClick(item.icon, item.name)}
         >

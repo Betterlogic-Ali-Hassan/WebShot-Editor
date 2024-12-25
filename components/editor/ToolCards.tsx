@@ -89,7 +89,7 @@ const ToolCards = () => {
                       "cursor-pointer rounded-[16px] border-2 border-light hover:bg-secondary",
                       selectedCard === id &&
                         selection &&
-                        "border-2 border-dotted border-border bg-secondary "
+                        "border-2 border-dotted border-card-border bg-secondary "
                     )}
                     onClick={() => handleSelect(id, selection)}
                   >

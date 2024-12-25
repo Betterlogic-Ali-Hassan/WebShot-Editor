@@ -16,6 +16,7 @@ body {
     --alert: #fef7ee;
     --alert-icon: #ffe7cb;
     --select: #fff;
+    --card-border: #b2b2b2;
   }
 
   :root[data-theme="dark"] {
@@ -28,6 +29,7 @@ body {
     --alert: #555;
     --alert-icon: #a6754c;
     --select: #444;
+    --card-border: #fff;
   }
 }
 

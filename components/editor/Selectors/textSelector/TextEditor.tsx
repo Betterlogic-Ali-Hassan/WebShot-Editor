@@ -12,28 +12,28 @@ export function TextEditor() {
       <ToggleGroupItem
         value='bold'
         aria-label='Toggle bold'
-        className='data-[state=on]:bg-secondary hover:bg-secondary border border-secondary data-[state=on]:border-2 data-[state=on]:border-dotted data-[state=on]:border-border [&_svg]:size-5 '
+        className='data-[state=on]:bg-secondary hover:bg-secondary border border-secondary data-[state=on]:border-2 data-[state=on]:border-dotted data-[state=on]:border-card-border [&_svg]:size-5 '
       >
         <MdFormatBold />
       </ToggleGroupItem>
       <ToggleGroupItem
         value='italic'
         aria-label='Toggle italic'
-        className='data-[state=on]:bg-secondary hover:bg-secondary border border-secondary data-[state=on]:border-2 data-[state=on]:border-dotted data-[state=on]:border-border [&_svg]:size-5'
+        className='data-[state=on]:bg-secondary hover:bg-secondary border border-secondary data-[state=on]:border-2 data-[state=on]:border-dotted data-[state=on]:border-card-border [&_svg]:size-5'
       >
         <MdFormatItalic />
       </ToggleGroupItem>
       <ToggleGroupItem
         value='underline'
         aria-label='Toggle underline'
-        className='data-[state=on]:bg-secondary hover:bg-secondary border border-secondary data-[state=on]:border-2 data-[state=on]:border-dotted data-[state=on]:border-border  [&_svg]:size-5'
+        className='data-[state=on]:bg-secondary hover:bg-secondary border border-secondary data-[state=on]:border-2 data-[state=on]:border-dotted data-[state=on]:border-card-border  [&_svg]:size-5'
       >
         <MdFormatUnderlined />
       </ToggleGroupItem>
       <ToggleGroupItem
         value='Strikethrough'
         aria-label='Toggle Strikethrough'
-        className='data-[state=on]:bg-secondary hover:bg-secondary border border-secondary data-[state=on]:border-2 data-[state=on]:border-dotted data-[state=on]:border-border [&_svg]:size-5'
+        className='data-[state=on]:bg-secondary hover:bg-secondary border border-secondary data-[state=on]:border-2 data-[state=on]:border-dotted data-[state=on]:border-card-border [&_svg]:size-5'
       >
         <MdOutlineStrikethroughS />
       </ToggleGroupItem>

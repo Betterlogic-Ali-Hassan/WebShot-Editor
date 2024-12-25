@@ -11,11 +11,11 @@ const PlayCard = ({
   name: string;
 }) => {
   return (
-    <div className='bg-secondary border border-[#d9d9d9] rounded-[4px] float-left px-[10px] text-center mr-[30px] mb-[30px] min-w-[118px] max-w-[118px] min-h-[50px]  flex items-center justify-center '>
+    <div className='bg-secondary border border-light rounded-[4px] float-left px-[10px] text-center mr-[30px] mb-[30px] min-w-[118px] max-w-[118px] min-h-[50px]  flex items-center justify-center '>
       <label className='flex items-center cursor-pointer'>
         <span>
           <Checkbox
-            className='rounded-full h-4 w-4 mt-1.5'
+            className='rounded-full h-[18px] w-[18px] mt-1.5'
             defaultChecked
             value={name}
             id={name}

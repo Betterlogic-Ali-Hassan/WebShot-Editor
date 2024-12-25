@@ -6,7 +6,7 @@ import Play from "./Play";
 const MoreSetting = () => {
   return (
     <>
-      <h4 className='text-lg font-semibold  pb-3 border-b  border-[#00000026]'>
+      <h4 className='text-lg font-semibold  pb-3 border-b  border-light'>
         Settings
       </h4>
       <div className='pt-2'>

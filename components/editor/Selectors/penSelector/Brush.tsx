@@ -17,7 +17,7 @@ const Brush = ({ onClick, selectedIcon }: Props) => {
             className={cn(
               "flex items-center gap-1.5 max-sm:w-full rounded-md py-2 px-3 hover:bg-light cursor-pointer text-sm border-2 border-transparent",
               selectedIcon === item.icon &&
-                "  border-dotted border-border bg-secondary"
+                "  border-dotted border-card-border bg-secondary"
             )}
             onClick={() => onClick(item.icon, item.name)}
           >

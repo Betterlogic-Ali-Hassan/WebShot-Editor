@@ -13,7 +13,7 @@ const RateBtns = ({ ratingSelected, handleSubmit, setRatingOpen }: Props) => {
       <Button
         variant='outline'
         className={cn(
-          "font-bold bg-secondary text-black border  h-[48px] w-full rounded-[30px] tracking-[1px] text-[15px] mt-4",
+          "font-bold bg-secondary text-dark border  h-[48px] w-full rounded-[30px] tracking-[1px] text-[15px] mt-4",
           ratingSelected && "bg-black  text-white hover:bg-[#2a2a2a] border"
         )}
         onClick={handleSubmit}

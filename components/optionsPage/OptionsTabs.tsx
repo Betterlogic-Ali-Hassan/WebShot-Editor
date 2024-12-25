@@ -11,7 +11,7 @@ const OptionsTabs = () => {
       <div
         className={cn(
           "border-b  text-center border-[#00000026] text-[#999]",
-          path === "/options/capture" && "border-black text-black"
+          path === "/options/capture" && "border-dark text-dark"
         )}
       >
         <Link
@@ -24,7 +24,7 @@ const OptionsTabs = () => {
       <div
         className={cn(
           "border-b  text-center border-[#00000026] text-[#999]",
-          path === "/options/record" && "border-black text-black"
+          path === "/options/record" && "border-dark text-dark"
         )}
       >
         <Link
@@ -37,7 +37,7 @@ const OptionsTabs = () => {
       <div
         className={cn(
           "border-b  text-center border-[#00000026] text-[#999]",
-          path === "/options/saving" && "border-black text-black"
+          path === "/options/saving" && "border-dark text-dark"
         )}
       >
         <Link
