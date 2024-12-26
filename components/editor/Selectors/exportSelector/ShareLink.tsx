@@ -31,7 +31,7 @@ const ShareLink = () => {
             ? "Uploading to cloud... Please wait."
             : " Screenshot uploaded successfully! Share it using link"}
         </h4>
-        <div className='relative rounded-xl flex items-center mt-4 min-h-[54px] px-4 bg-light w-full border max-[490px]:w-[95vw]'>
+        <div className='relative rounded-xl flex items-center mt-4 min-h-[54px] px-4 bg-light w-full border '>
           <input
             ref={inputRef}
             readOnly
