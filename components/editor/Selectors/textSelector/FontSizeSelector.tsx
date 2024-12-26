@@ -25,7 +25,7 @@ export default function NumberSelector() {
   };
 
   return (
-    <div className='inline-flex items-center'>
+    <div className='inline-flex items-center max-sm:justify-center'>
       <Button
         variant='outline'
         size='icon'
