@@ -17,7 +17,7 @@ const Fonts = () => {
       <TextEditor />
       <TextAlign />
       <div className='flex items-center gap-3'>
-        <Separator orientation='vertical' />
+        <Separator orientation='vertical' className='max-sm:hidden' />
         <ColorPicker icon select />
       </div>
     </div>

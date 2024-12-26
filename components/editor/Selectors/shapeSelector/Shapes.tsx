@@ -31,7 +31,7 @@ const Shapes = ({ onClick, selectedIcon }: Props) => {
       <li className='flex items-center gap-1.5 rounded-md hover:bg-light cursor-pointer'>
         <LinePicker />
       </li>
-      <li className='flex items-center gap-1.5 ml-2'>
+      <li className='flex items-center gap-1.5 ml-2 max-sm:mb-1'>
         <Checkbox id='const' />
         <label htmlFor='const'>Constrained</label>
       </li>
