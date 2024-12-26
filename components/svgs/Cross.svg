@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="形状_511_1_" x="0px" y="0px" width="80px" height="80px" viewBox="0 0 200 200" enable-background="new 0 0 200 200" xml:space="preserve">
-<g id="形状_511">
+<g id="形状_511" fill = 'currentColor'>
 	<g>
 		<polygon fill-rule="evenodd" clip-rule="evenodd" fill="#FF3333" points="196.475,22.133 177.867,3.524 100,81.392 22.133,3.524     3.525,22.133 81.392,100 3.525,177.867 22.133,196.475 100,118.607 177.867,196.475 196.475,177.867 118.607,100   "/>
 	</g>

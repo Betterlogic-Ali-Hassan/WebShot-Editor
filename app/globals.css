@@ -161,6 +161,3 @@ body {
 #rc-editable-input-10 {
   width: 90% !important;
 }
-svg {
-  fill: var(--text-dark);
-}

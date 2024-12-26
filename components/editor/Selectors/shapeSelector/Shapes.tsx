@@ -3,6 +3,7 @@ import { shapesData } from "@/constant/shapeData";
 import { cn } from "@/lib/utils";
 import ColorPicker from "../borderSelector/ColorPicker2";
 import LinePicker from "../BorderPicker";
+import { Checkbox } from "@/components/ui/checkbox";
 interface Props {
   onClick: (icon: React.ReactNode, text: string) => void;
   selectedIcon?: React.ReactNode;
@@ -29,6 +30,10 @@ const Shapes = ({ onClick, selectedIcon }: Props) => {
       </li>
       <li className='flex items-center gap-1.5 rounded-md hover:bg-light cursor-pointer'>
         <LinePicker />
+      </li>
+      <li className='flex items-center gap-1.5 ml-2'>
+        <Checkbox id='const' />
+        <label htmlFor='const'>Constrained</label>
       </li>
     </ul>
   );

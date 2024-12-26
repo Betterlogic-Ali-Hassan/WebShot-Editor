@@ -57,3 +57,4 @@ export { default as InstaLogo } from "./InstaLogo.svg";
 export { default as ArrowBox } from "./ArrowBox.svg";
 export { default as TextBox } from "./TextBox.svg";
 export { default as Logo } from "./logo.svg";
+export { default as ZoomIcon } from "./Zoom.svg";

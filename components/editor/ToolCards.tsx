@@ -76,7 +76,7 @@ const ToolCards = () => {
           className='mySwiper relative max-[1400px]:w-[93%] px-4'
         >
           <SliderBtn
-            icon={<ChevronRight size={20} className='text-black' />}
+            icon={<ChevronRight size={20} className='text-dark !fill-none' />}
             id='next'
             className='right-0'
           />
@@ -100,7 +100,7 @@ const ToolCards = () => {
             )}
           </div>
           <SliderBtn
-            icon={<ChevronLeft size={20} className='text-black' />}
+            icon={<ChevronLeft size={20} className='text-dark !fill-none' />}
             id='prev'
             className='left-0 '
           />
