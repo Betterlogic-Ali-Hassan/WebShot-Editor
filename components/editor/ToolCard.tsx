@@ -24,11 +24,11 @@ const ToolCard: React.FC<ToolCardProps> = ({ icon, text }) => {
 
   return (
     <div
-      className='flex items-center justify-center flex-col gap-4  cursor-pointer transition duration-300 h-[68px] w-[68px] rounded-[16px]'
+      className='flex items-center justify-center flex-col gap-3.5  cursor-pointer transition duration-300 h-[68px] w-[68px] rounded-[16px]'
       onClick={handleClick}
     >
-      <span className='h-[25%]'>{icon}</span>
-      <h4 className=' text-xs max-w-[59px] truncate h-[25%] '>{text}</h4>
+      <span className='h-[26%]'>{icon}</span>
+      <h4 className=' text-xs max-w-[59px] truncate h-[26%] '>{text}</h4>
       {text.toLowerCase() === "image" && (
         <input
           type='file'
