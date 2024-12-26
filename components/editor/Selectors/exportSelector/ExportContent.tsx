@@ -19,7 +19,8 @@ const ExportContent = () => {
             key={index}
             className={cn(
               "flex items-center gap-3 py-2 px-3  hover:bg-light cursor-pointer text-sm",
-              item.border && "border-b border-t py-[10px] mt-1 "
+              item.border &&
+                "border-b border-t dark:border-secondary py-[10px] mt-1 "
             )}
           >
             {item.icon}

@@ -61,7 +61,7 @@ export default function InputWithBtn({
     <div>
       <Group
         className={cn(
-          "relative inline-flex h-[42px] items-center overflow-hidden whitespace-nowrap rounded-lg border  text-sm shadow-sm shadow-black/5 transition-shadow data-[disabled]:opacity-50 data-[focus-within]:outline-none w-[110px] justify-between",
+          "relative inline-flex h-[42px] items-center overflow-hidden whitespace-nowrap rounded-lg border dark:border-secondary  text-sm shadow-sm shadow-black/5 transition-shadow data-[disabled]:opacity-50 data-[focus-within]:outline-none w-[110px] justify-between",
           className
         )}
       >
@@ -79,13 +79,13 @@ export default function InputWithBtn({
         <div className='flex h-[calc(100%+2px)] flex-col'>
           <Button
             onPress={handleIncrement}
-            className='flex h-1/2 w-6 items-center justify-center border border-r-0 bg-bg text-sm text-muted-foreground/80 transition-shadow hover:bg-light hover:text-foreground disabled:pointer-events-none disabled:opacity-50 focus:outline-none'
+            className='flex h-1/2 w-6 items-center justify-center dark:hover:bg-light border border-r-0 bg-bg dark:bg-select text-sm text-muted-foreground/80 transition-shadow hover:bg-light hover:text-foreground disabled:pointer-events-none disabled:opacity-50 focus:outline-none'
           >
             <ChevronUp size={12} strokeWidth={2} />
           </Button>
           <Button
             onPress={handleDecrement}
-            className='flex h-1/2 w-6 items-center justify-center border border-r-0 border-t-0 bg-bg text-sm text-muted-foreground/80 transition-shadow hover:bg-light hover:text-foreground disabled:pointer-events-none disabled:opacity-50 focus:outline-none'
+            className='flex h-1/2 w-6 items-center justify-center border border-r-0 border-t-0 bg-bg text-sm text-muted-foreground/80 transition-shadow hover:bg-light  dark:bg-select dark:hover:bg-light hover:text-foreground disabled:pointer-events-none disabled:opacity-50 focus:outline-none'
           >
             <ChevronDown size={12} strokeWidth={2} />
           </Button>

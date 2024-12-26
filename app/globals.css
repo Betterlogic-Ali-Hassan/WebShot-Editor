@@ -151,13 +151,23 @@ body {
   gap: 0 !important;
   border-color: var(--bg-light) !important;
 }
-#rc-editable-input-2 {
+
+#rc-editable-input-2,#rc-editable-input-12 {
   font-size: 11px !important;
   width: 100% !important;
+  color: var(--text-dark) !important ;
+}
+label[for = 'rc-editable-input-4'], label[for = 'rc-editable-input-6'],label[for = 'rc-editable-input-8'],label[for = 'rc-editable-input-10'],label[for = 'rc-editable-input-12'],label[for = 'rc-editable-input-14'],label[for = 'rc-editable-input-16'],label[for = 'rc-editable-input-18'],label[for = 'rc-editable-input-20'] {
+  color: var(--text-dark) !important ;
 }
 #rc-editable-input-4,
 #rc-editable-input-6,
 #rc-editable-input-8,
-#rc-editable-input-10 {
+#rc-editable-input-10,
+#rc-editable-input-14,
+#rc-editable-input-16,
+#rc-editable-input-18,
+#rc-editable-input-20 {
   width: 90% !important;
+  color: var(--text-dark) !important ;
 }

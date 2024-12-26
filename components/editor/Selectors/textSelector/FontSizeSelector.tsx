@@ -38,7 +38,7 @@ export default function NumberSelector() {
         value={value.toString()}
         onValueChange={(val) => setValue(parseInt(val))}
       >
-        <SelectTrigger className='h-9 w-[72px] rounded-none border dark:border-t-0 dark:border-b-0   px-2 [&>span]:mx-auto [&>svg]:hidden '>
+        <SelectTrigger className='h-9 w-[72px] rounded-none border    px-2 [&>span]:mx-auto [&>svg]:hidden '>
           <SelectValue>{value}</SelectValue>
         </SelectTrigger>
         <SelectContent className='bg-bg'>

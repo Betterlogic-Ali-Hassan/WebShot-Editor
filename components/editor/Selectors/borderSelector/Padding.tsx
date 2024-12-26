@@ -23,7 +23,7 @@ const Padding = () => {
           <Button
             variant='outline'
             size='icon'
-            className='size-8 disabled:opacity-50'
+            className='size-8 disabled:opacity-50 dark:bg-select dark:hover:bg-light'
             aria-label='Decrease value'
             onClick={decreaseValue}
             disabled={value[0] === 0}
@@ -44,7 +44,7 @@ const Padding = () => {
           <Button
             variant='outline'
             size='icon'
-            className='size-8 disabled:opacity-50'
+            className='size-8 disabled:opacity-50 dark:bg-select dark:hover:bg-light'
             aria-label='Increase value'
             onClick={increaseValue}
             disabled={value[0] === 200}

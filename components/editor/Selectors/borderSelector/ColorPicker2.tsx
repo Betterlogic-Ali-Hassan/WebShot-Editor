@@ -54,7 +54,7 @@ export default function ColorPicker({
       <Popover open={popoverOpen} onOpenChange={handlePopoverClose}>
         <PopoverTrigger asChild>
           {select ? (
-            <Button variant='outline' className='border-0 justify-start p-2'>
+            <Button variant='outline' className='border-0   justify-start p-2'>
               <div
                 className='h-5 w-5 rounded border'
                 style={{ backgroundColor: selectedColor }}

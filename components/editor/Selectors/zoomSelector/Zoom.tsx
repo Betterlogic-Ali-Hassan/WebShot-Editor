@@ -24,7 +24,7 @@ export default function Zoom() {
           <Button
             variant='outline'
             size='icon'
-            className='size-8 hover:bg-secondary'
+            className='size-8 hover:bg-secondary dark:bg-select dark:hover:bg-light disabled:opacity-30 opacity-100'
             aria-label='Decrease value'
             onClick={() => adjustZoom(-10)}
             disabled={zoomLevel === 10}
@@ -44,7 +44,7 @@ export default function Zoom() {
           <Button
             variant='outline'
             size='icon'
-            className='size-8 hover:bg-secondary'
+            className='size-8 hover:bg-secondary dark:bg-select dark:hover:bg-light disabled:opacity-30 opacity-100 '
             aria-label='Increase value'
             onClick={() => adjustZoom(10)}
             disabled={zoomLevel === 800}

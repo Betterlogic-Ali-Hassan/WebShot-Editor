@@ -41,7 +41,7 @@ const ShareLink = () => {
           />
           <button
             className={cn(
-              "absolute text-sm font-medium -translate-y-1/2 top-1/2 right-2 min-h-[36px] bg-brand-default  bg-[#f4f4f4] rounded-3xl disabled:cursor-not-allowed px-4 transition duration-150 flex items-center gap-2",
+              "absolute text-sm font-medium -translate-y-1/2 top-1/2 right-2 min-h-[36px] bg-brand-default  bg-[#f4f4f4] text-black rounded-3xl disabled:cursor-not-allowed px-4 transition duration-150 flex items-center gap-2",
               progressComplete && "bg-black text-white"
             )}
             disabled={!progressComplete}
@@ -52,7 +52,7 @@ const ShareLink = () => {
             ) : (
               <>
                 {" "}
-                <Copy size={16} className='!fill-none text-dark' /> Copy
+                <Copy size={16} className='!fill-none text-white' /> Copy
               </>
             )}
           </button>
