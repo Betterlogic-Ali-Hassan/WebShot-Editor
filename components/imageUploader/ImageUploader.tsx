@@ -23,7 +23,12 @@ const ImageUploader = () => {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      console.log("Selected file:", file.name);
+      const imageUrl = URL.createObjectURL(file);
+      setLoading(true);
+      setTimeout(() => {
+        setLoading(false);
+        setImage(imageUrl);
+      }, 2000);
     }
   };
   // URL validation regex
@@ -33,7 +38,6 @@ const ImageUploader = () => {
     const value = e.target.value;
     setInputValue(value);
 
-    // Check if the URL matches the regex
     if (value === "" || urlRegex.test(value)) {
       setError("");
     } else {
@@ -61,12 +65,19 @@ const ImageUploader = () => {
       }
     }
   };
-  const handleBtnLoading = () => {
-    setBtnLoading(true);
+  const handleBtn = () => {
+    setBtnLoading(true); // Start button loading
+
     setTimeout(() => {
-      setBtnLoading(false);
+      setBtnLoading(false); // Stop button loading
+      setLoading(true); // Start image loading
     }, 1000);
+
+    setTimeout(() => {
+      setLoading(false); // Stop image loading after 2 seconds
+    }, 2000); // 2 seconds timeout
   };
+
   return (
     <>
       {image ? (
@@ -94,7 +105,7 @@ const ImageUploader = () => {
                     />
                     <Button
                       className='bg-dark hover:bg-black/90 text-white dark:text-black h-full rounded-l-none font-medium '
-                      onClick={handleBtnLoading}
+                      onClick={handleBtn}
                     >
                       {btnLoading && (
                         <Loader2 size={20} className='animate-spin' />
