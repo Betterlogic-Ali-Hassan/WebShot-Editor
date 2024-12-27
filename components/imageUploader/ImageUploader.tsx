@@ -50,7 +50,7 @@ const ImageUploader = () => {
                 <h2 className='mb-6 font-semibold'>
                   Capture Screenshot from URL
                 </h2>
-                <div className='w-full border shadow-md rounded-full h-[54px] flex items-center  overflow-hidden max-w-[700px]'>
+                <div className='w-full border  rounded-full h-[54px] flex items-center  overflow-hidden max-w-[700px]'>
                   <Input
                     placeholder='Enter Website URL e.g., https://example.com'
                     className='bg-transparent shadow-none border-none px-4 '
