@@ -67,8 +67,8 @@ const Brush = ({ onClick, selectedIcon }: Props) => {
         <div
           style={{
             position: "fixed",
-            left: cursorPosition.x - 160, // Offset by 10px to be near the cursor
-            top: cursorPosition.y - 100,
+            left: cursorPosition.x - 150, // Offset by 10px to be near the cursor
+            top: cursorPosition.y - 105,
             pointerEvents: "none",
             zIndex: 9999,
             transition: "opacity 0.1s ease-in-out",
