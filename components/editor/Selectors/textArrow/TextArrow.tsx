@@ -4,7 +4,6 @@ import { arrowBox } from "@/constant/arrowBox";
 interface Props {
   onClick: (icon: React.ReactNode, text: string) => void;
   selectedIcon: React.ReactNode;
-  setSelectedIcon: (icon: React.ReactNode) => void;
 }
 const TextArrow = ({ onClick, selectedIcon }: Props) => {
   const [isMouseDown, setIsMouseDown] = useState(false);

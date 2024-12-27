@@ -6,7 +6,6 @@ import { useCallback, useEffect, useState } from "react";
 interface Props {
   onClick: (icon: React.ReactNode, text: string) => void;
   selectedIcon: React.ReactNode;
-  setSelectedIcon: (icon: React.ReactNode) => void;
 }
 const Arrows = ({ onClick, selectedIcon }: Props) => {
   const [isMouseDown, setIsMouseDown] = useState(false);

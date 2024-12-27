@@ -18,13 +18,7 @@ const ArrowSelector = () => {
   return (
     <ToolDropdown
       trigger={<ToolCard text={selectedText} icon={selectedIcon} id={1} />}
-      content={
-        <Arrows
-          onClick={handleSelection}
-          selectedIcon={selectedIcon}
-          setSelectedIcon={setSelectedIcon}
-        />
-      }
+      content={<Arrows onClick={handleSelection} selectedIcon={selectedIcon} />}
       id='num1'
     />
   );
