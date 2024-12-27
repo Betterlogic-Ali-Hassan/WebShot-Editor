@@ -7,7 +7,6 @@ import { shapesData } from "@/constant/shapeData";
 interface Props {
   onClick: (icon: React.ReactNode, text: string) => void;
   selectedIcon: React.ReactNode;
-  setSelectedIcon: (icon: React.ReactNode) => void;
 }
 const Shapes = ({ onClick, selectedIcon }: Props) => {
   const [isMouseDown, setIsMouseDown] = useState(false);
