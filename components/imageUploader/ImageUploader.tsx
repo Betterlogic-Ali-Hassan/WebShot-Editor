@@ -1,16 +1,45 @@
 "use client";
-import React, { useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 import DummyImage from "../DummyImage";
 import { Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const ImageUploader = () => {
   const [image, setImage] = useState<string>("");
-
   const [loading, setLoading] = useState<boolean>(false);
+  const [inputValue, setInputValue] = useState<string>("");
+  const [error, setError] = useState<string>("");
+  const [btnLoading, setBtnLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const handleClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      console.log("Selected file:", file.name);
+    }
+  };
+  // URL validation regex
+  const urlRegex = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^\s]*)?$/;
+
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setInputValue(value);
+
+    // Check if the URL matches the regex
+    if (value === "" || urlRegex.test(value)) {
+      setError("");
+    } else {
+      setError("Invalid URL");
+    }
+  }, []);
   const handlePaste = (event: React.ClipboardEvent<HTMLDivElement>) => {
     const items = event.clipboardData.items;
     const imageItem = Array.from(items).find((item) =>
@@ -32,49 +61,81 @@ const ImageUploader = () => {
       }
     }
   };
-
+  const handleBtnLoading = () => {
+    setBtnLoading(true);
+    setTimeout(() => {
+      setBtnLoading(false);
+    }, 1000);
+  };
   return (
     <>
       {image ? (
         <DummyImage img={image} />
       ) : (
-        <div className='pt-[130px] max-w-[900px] mx-auto w-full px-4'>
-          <div
-            className=' p-4 rounded-[16px] border-dashed flex items-center  border-2 justify-center flex-col min-h-[420px] w-full '
-            onPaste={handlePaste}
-          >
-            {loading ? (
-              <Loader2 size={40} className='animate-spin' />
-            ) : (
-              <>
-                <h2 className='mb-6 font-semibold'>
-                  Capture Screenshot from URL
-                </h2>
-                <div className='w-full border  rounded-full h-[54px] flex items-center  overflow-hidden max-w-[700px]'>
-                  <Input
-                    placeholder='Enter Website URL e.g., https://example.com'
-                    className='bg-transparent shadow-none border-none px-4 '
-                  />
-                  <Button className='bg-dark hover:bg-black/90 text-white dark:text-black h-full rounded-l-none font-medium '>
-                    Capture Screenshot
+        <div className='min-h-screen flex items-center'>
+          <div className='pt-[80px] max-w-[900px] mx-auto w-full px-4'>
+            <div
+              className=' p-4 rounded-[16px] border-dashed flex items-center  border-2 justify-center flex-col min-h-[420px] w-full '
+              onPaste={handlePaste}
+            >
+              {loading ? (
+                <Loader2 size={40} className='animate-spin' />
+              ) : (
+                <>
+                  <h1 className='mb-6 font-semibold text-[30px]'>
+                    Capture Screenshot from URL
+                  </h1>
+                  <div className='w-full border  rounded-full h-[54px] flex items-center  overflow-hidden max-w-[700px]'>
+                    <Input
+                      placeholder='Enter Website URL e.g., https://example.com'
+                      className='bg-transparent shadow-none border-none px-4 '
+                      value={inputValue}
+                      onChange={handleChange}
+                    />
+                    <Button
+                      className='bg-dark hover:bg-black/90 text-white dark:text-black h-full rounded-l-none font-medium '
+                      onClick={handleBtnLoading}
+                    >
+                      {btnLoading && (
+                        <Loader2 size={20} className='animate-spin' />
+                      )}
+                      Capture Screenshot
+                    </Button>
+                  </div>
+
+                  <span
+                    className={cn(
+                      "text-red-500 mt-1   text-sm opacity-0",
+                      error && "opacity-100"
+                    )}
+                  >
+                    {error ? error : "hy"}
+                  </span>
+                  <div className='my-10 mt-8 flex items-center'>
+                    <Separator className='mr-4 w-[200px] bg-border' />
+                    <span>OR</span>
+                    <Separator className='ml-4 w-[200px] bg-border' />
+                  </div>
+                  <Button
+                    className=' px-10 h-12 rounded-full font-semibold hover:bg-black hover:text-white  '
+                    variant='outline'
+                    onClick={handleClick}
+                  >
+                    Upload Image
                   </Button>
-                </div>
-                <div className='my-10 flex items-center'>
-                  <Separator className='mr-4 w-[200px] bg-border' />
-                  <span>OR</span>
-                  <Separator className='ml-4 w-[200px] bg-border' />
-                </div>
-                <Button
-                  className=' px-10 h-12 rounded-full font-semibold hover:bg-black hover:text-white  '
-                  variant='outline'
-                >
-                  Upload Image
-                </Button>
-                <p className='text-[13px] mt-2 text-[#888] '>
-                  Or press Ctrl + V to paste an image directly.
-                </p>
-              </>
-            )}
+                  <input
+                    type='file'
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    accept='image/*'
+                    className='hidden'
+                  />
+                  <p className='text-[13px] mt-2 text-[#888] '>
+                    Or press Ctrl + V to paste an image directly.
+                  </p>
+                </>
+              )}
+            </div>
           </div>
         </div>
       )}
