@@ -83,7 +83,7 @@ const ImageUploader = () => {
       {image ? (
         <DummyImage img={image} />
       ) : (
-        <div className='min-h-screen flex items-center'>
+        <div className='min-h-screen   flex items-center'>
           <div className='pt-[80px] max-w-[900px] mx-auto w-full px-4'>
             <div
               className=' p-4 rounded-[16px] border-dashed flex items-center  border-2 justify-center flex-col min-h-[420px] w-full '
