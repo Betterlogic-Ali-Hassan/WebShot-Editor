@@ -2,23 +2,14 @@
 import React from "react";
 import ToolCard from "../../ToolCard";
 import ToolDropdown from "@/components/ToolDropdown";
-import { useState } from "react";
 import Numbers from "./Numbers";
-import { numbersData } from "@/constant/numbersData";
+import { Number } from "@/components/svgs";
 
 const PenSelector = () => {
-  const [selectedIcon, setSelectedIcon] = useState<React.ReactNode>(
-    numbersData[0].icon
-  );
-  const handleSelection = (icon: React.ReactNode) => {
-    setSelectedIcon(icon);
-  };
   return (
     <ToolDropdown
-      trigger={<ToolCard text='Number' icon={selectedIcon} id={6} />}
-      content={
-        <Numbers onClick={handleSelection} selectedIcon={selectedIcon} />
-      }
+      trigger={<ToolCard text='Number' icon={<Number />} id={6} />}
+      content={<Numbers />}
       id='num112s'
     />
   );
