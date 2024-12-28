@@ -117,7 +117,6 @@ export default function Numbers() {
                 ? `2px solid ${selectedColor}`
                 : "none",
             borderRadius: selected === 0 ? "50%" : selected === 1 ? "4px" : "0",
-            fontWeight: selected === 2 ? "bold" : "normal",
             fontSize: selected === 2 ? "18px" : "normal",
             height: "22px",
             width: "22px",
