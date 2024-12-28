@@ -80,7 +80,7 @@ const Arrows = ({ onClick, selectedIcon }: Props) => {
             opacity: isMouseDown ? 0 : 1,
             color: selectedColor,
           }}
-          className='[&_svg]:h-[22px] [&_svg]:w-[22px] '
+          className='[&_svg]:h-[18px] [&_svg]:w-[18px] '
         >
           {selectedIcon}
         </div>
