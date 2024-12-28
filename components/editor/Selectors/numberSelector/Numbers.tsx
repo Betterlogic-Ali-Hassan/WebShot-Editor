@@ -85,7 +85,7 @@ export default function Numbers() {
                 "border-2 border-dark text-[15px] h-5 font-bold w-5 flex justify-center items-center",
                 index === 0 && "rounded-full",
                 index === 1 && "rounded",
-                index === 2 && "border-0 w-auto text-base"
+                index === 2 && "border-0 w-auto text-lg"
               )}
               style={{
                 fontFamily: index === 2 ? "Be Vietnam Pro" : "",
