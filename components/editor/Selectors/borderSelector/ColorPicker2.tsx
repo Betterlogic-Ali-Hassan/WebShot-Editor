@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,9 +14,11 @@ import { SketchPicker, ColorResult } from "react-color";
 export default function ColorPicker({
   select,
   icon,
+  onColorChange, // Make this prop optional
 }: {
   select?: boolean;
   icon?: boolean;
+  onColorChange?: (color: string) => void; // Make the callback optional
 }) {
   const [selectedColor, setSelectedColor] = useState("rgba(255, 0, 0, 1)");
   const [recentColors, setRecentColors] = useState<string[]>([]);
@@ -32,6 +35,11 @@ export default function ColorPicker({
     const { r, g, b, a } = color.rgb;
     const rgba = `rgba(${r}, ${g}, ${b}, ${a})`;
     setSelectedColor(rgba);
+
+    if (onColorChange) {
+      // Check if onColorChange is passed before calling it
+      onColorChange(rgba); // Call the parent function if provided
+    }
   };
 
   const handlePopoverClose = (isOpen: boolean) => {
@@ -54,7 +62,7 @@ export default function ColorPicker({
       <Popover open={popoverOpen} onOpenChange={handlePopoverClose}>
         <PopoverTrigger asChild>
           {select ? (
-            <Button variant='outline' className='border-0   justify-start p-2'>
+            <Button variant='outline' className='border-0 justify-start p-2'>
               <div
                 className='h-5 w-5 rounded border'
                 style={{ backgroundColor: selectedColor }}

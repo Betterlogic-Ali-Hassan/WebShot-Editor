@@ -4,7 +4,14 @@
 
 body {
   font-family: Arial, Helvetica, sans-serif;
+  position: relative;
+  min-height: 100vh;
 }
+
+#main {
+  position: relative;
+}
+
 @layer base {
   :root {
     --text-dark: #000;
@@ -157,7 +164,7 @@ body {
   width: 100% !important;
   color: var(--text-dark) !important ;
 }
-label[for = 'rc-editable-input-2'] {
+label[for="rc-editable-input-2"] {
   color: var(--text-dark) !important ;
 }
 #rc-editable-input-4,
