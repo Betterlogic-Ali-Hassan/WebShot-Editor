@@ -10,14 +10,12 @@ const PenSelector = () => {
   const [selectedIcon, setSelectedIcon] = useState<React.ReactNode>(
     numbersData[0].icon
   );
-  const [selectedText, setSelectedText] = useState<string>(numbersData[0].name);
-  const handleSelection = (icon: React.ReactNode, text: string) => {
+  const handleSelection = (icon: React.ReactNode) => {
     setSelectedIcon(icon);
-    setSelectedText(text);
   };
   return (
     <ToolDropdown
-      trigger={<ToolCard text={selectedText} icon={selectedIcon} id={6} />}
+      trigger={<ToolCard text='Number' icon={selectedIcon} id={6} />}
       content={
         <Numbers onClick={handleSelection} selectedIcon={selectedIcon} />
       }

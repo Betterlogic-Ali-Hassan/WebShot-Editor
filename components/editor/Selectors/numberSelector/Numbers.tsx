@@ -6,7 +6,7 @@ import ColorPicker from "../borderSelector/ColorPicker2";
 import { numbersData } from "@/constant/numbersData";
 
 interface Props {
-  onClick: (icon: React.ReactNode, text: string) => void;
+  onClick: (icon: React.ReactNode) => void;
   selectedIcon?: React.ReactNode;
 }
 
@@ -54,10 +54,9 @@ const Numbers = ({ onClick, selectedIcon }: Props) => {
               selectedIcon === item.icon &&
                 "border-dotted border-card-border bg-secondary"
             )}
-            onClick={() => onClick(item.icon, item.name)}
+            onClick={() => onClick(item.icon)}
           >
             {item.icon}
-            {item.name}
           </li>
         ))}
         <li className='flex items-center gap-1.5 rounded-md hover:bg-light cursor-pointer'>
