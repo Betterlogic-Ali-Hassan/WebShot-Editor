@@ -82,11 +82,14 @@ export default function Numbers() {
           >
             <span
               className={cn(
-                "border h-6 w-6 flex justify-center items-center",
+                "border-2 border-dark text-[15px] h-5 font-bold w-5 flex justify-center items-center",
                 index === 0 && "rounded-full",
                 index === 1 && "rounded",
-                index === 2 && "border-0 w-auto"
+                index === 2 && "border-0 w-auto text-base"
               )}
+              style={{
+                fontFamily: index === 2 ? "Be Vietnam Pro" : "",
+              }}
             >
               {count}
             </span>
@@ -116,10 +119,10 @@ export default function Numbers() {
             borderRadius: selected === 0 ? "50%" : selected === 1 ? "4px" : "0",
             fontWeight: selected === 2 ? "bold" : "normal",
             fontSize: selected === 2 ? "18px" : "normal",
-            height: "24px",
-            width: "24px",
+            height: "22px",
+            width: "22px",
           }}
-          className='flex items-center justify-center '
+          className='flex items-center justify-center font-bold '
         >
           {counters[selected]}
         </div>
