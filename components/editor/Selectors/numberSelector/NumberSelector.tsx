@@ -1,16 +1,29 @@
+"use client";
 import React from "react";
-import ToolDropdown from "@/components/ToolDropdown";
 import ToolCard from "../../ToolCard";
-import { Number } from "@/components/svgs";
+import ToolDropdown from "@/components/ToolDropdown";
+import { useState } from "react";
+import Numbers from "./Numbers";
+import { numbersData } from "@/constant/numbersData";
 
-const NumberSelector = () => {
+const PenSelector = () => {
+  const [selectedIcon, setSelectedIcon] = useState<React.ReactNode>(
+    numbersData[0].icon
+  );
+  const [selectedText, setSelectedText] = useState<string>(numbersData[0].name);
+  const handleSelection = (icon: React.ReactNode, text: string) => {
+    setSelectedIcon(icon);
+    setSelectedText(text);
+  };
   return (
     <ToolDropdown
-      trigger={<ToolCard text='Numbers' icon={<Number />} id={6} />}
-      id='num43'
-      isEmpty={true}
+      trigger={<ToolCard text={selectedText} icon={selectedIcon} id={6} />}
+      content={
+        <Numbers onClick={handleSelection} selectedIcon={selectedIcon} />
+      }
+      id='num112s'
     />
   );
 };
 
-export default NumberSelector;
+export default PenSelector;

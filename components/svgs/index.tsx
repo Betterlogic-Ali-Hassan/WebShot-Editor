@@ -58,3 +58,5 @@ export { default as ArrowBox } from "./ArrowBox.svg";
 export { default as TextBox } from "./TextBox.svg";
 export { default as Logo } from "./logo.svg";
 export { default as ZoomIcon } from "./Zoom.svg";
+export { default as SquareNumber } from "./SquareNumber.svg";
+export { default as SimpleNumber } from "./SimpleNumber.svg";

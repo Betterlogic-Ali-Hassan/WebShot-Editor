@@ -5,15 +5,21 @@ import Sticker from "./Sticker";
 import ToolDropdown from "@/components/ToolDropdown";
 
 const StickersSelector = () => {
-  const [selectedIcon, setSelectedIcon] = useState<React.ReactNode>(
-    <Stickers />
-  );
+  const [selectedIcon, setSelectedIcon] = useState<React.ReactNode>(null); // No selection initially
+
   const handleSelection = (icon: React.ReactNode) => {
-    setSelectedIcon(icon);
+    setSelectedIcon(icon); // Update icon when a selection is made
   };
+
   return (
     <ToolDropdown
-      trigger={<ToolCard text='Stickers' icon={selectedIcon} id={11} />}
+      trigger={
+        <ToolCard
+          text='Stickers'
+          icon={selectedIcon || <Stickers />} // Use default icon if none is selected
+          id={11}
+        />
+      }
       content={
         <Sticker onClick={handleSelection} selectedIcon={selectedIcon} />
       }
