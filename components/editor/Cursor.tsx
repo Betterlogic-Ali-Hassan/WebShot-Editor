@@ -24,7 +24,7 @@ const Cursor = forwardRef<HTMLDivElement, CursorProps>(
   ) => {
     const [isMouseDown, setIsMouseDown] = useState(false);
     const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
-    const [isInRestrictedArea, setIsInRestrictedArea] = useState(false);
+    const [isNearHeader, setIsNearHeader] = useState(false);
 
     const handleMouseMove = (e: MouseEvent) => {
       if (containerRef && "current" in containerRef && containerRef.current) {
@@ -35,10 +35,12 @@ const Cursor = forwardRef<HTMLDivElement, CursorProps>(
         });
 
         if (!cursor) {
-          const target = e.target as HTMLElement;
-          const isInHeader = target.closest("header.fixed") !== null;
-          const isInInput = target.closest("input, textarea, select") !== null;
-          setIsInRestrictedArea(isInHeader || isInInput);
+          const header = document.querySelector(".header") as HTMLElement;
+          if (header) {
+            const headerRect = header.getBoundingClientRect();
+            const isNear = e.clientY <= headerRect.bottom + 15; // Check if cursor is within 5px below header
+            setIsNearHeader(isNear);
+          }
         }
       }
     };
@@ -60,7 +62,7 @@ const Cursor = forwardRef<HTMLDivElement, CursorProps>(
 
     return (
       <>
-        {!isMouseDown && !isInRestrictedArea && selectedIcon && (
+        {!isMouseDown && !isNearHeader && selectedIcon && (
           <div
             style={{
               position: "fixed",
@@ -68,7 +70,7 @@ const Cursor = forwardRef<HTMLDivElement, CursorProps>(
               top: cursorPosition.y + positionY,
               pointerEvents: "none",
               zIndex: 9999,
-              opacity: isMouseDown ? 0 : 1,
+              opacity: isMouseDown || isNearHeader ? 0 : 1, // Hide icon near header
               color: selectedColor ? selectedColor : "currentcolor",
             }}
             className={cn("[&_svg]:h-[18px] [&_svg]:w-[18px]", className)}

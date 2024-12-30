@@ -12,7 +12,7 @@ const UploadingBox = () => {
         <br />
         <br />
         For very long pages or infinite scroll pages, you can end the capturing
-        manually by clicking{" "}
+        manually by clicking
         <a href='#' className='underline'>
           Stop.
         </a>
