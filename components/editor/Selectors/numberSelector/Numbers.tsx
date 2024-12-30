@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import ColorPicker from "../borderSelector/ColorPicker2";
 import Cursor from "../../Cursor";
 
@@ -13,21 +13,21 @@ export default function Numbers() {
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
   const [isCursorOverPicker, setIsCursorOverPicker] = useState(false);
 
-  useEffect(() => {
-    if (selected >= 0) {
-      document.body.classList.add("hide-cursor");
-    } else {
-      document.body.classList.remove("hide-cursor");
-    }
+  // useEffect(() => {
+  //   if (selected >= 0) {
+  //     document.body.classList.add("hide-cursor");
+  //   } else {
+  //     document.body.classList.remove("hide-cursor");
+  //   }
 
-    if (isColorPickerOpen && isCursorOverPicker) {
-      document.body.classList.remove("hide-cursor");
-    }
+  //   if (isColorPickerOpen && isCursorOverPicker) {
+  //     document.body.classList.remove("hide-cursor");
+  //   }
 
-    return () => {
-      document.body.classList.remove("hide-cursor");
-    };
-  }, [selected, isColorPickerOpen, isCursorOverPicker]);
+  //   return () => {
+  //     document.body.classList.remove("hide-cursor");
+  //   };
+  // }, [selected, isColorPickerOpen, isCursorOverPicker]);
 
   const handleColorChange = (color: string) => {
     setSelectedColor(color);
@@ -88,9 +88,8 @@ export default function Numbers() {
             </div>
           </div>
           <Cursor
-            cursor
-            positionX={10}
-            positionY={28}
+            positionX={26}
+            positionY={16}
             ref={containerRef}
             selectedColor={selectedColor}
             selectedIcon={counters[selected]}
