@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"; // Ensure this utility is implemented or replace with clsx/classnames.
 import React, { forwardRef, useEffect, useState } from "react";
 
 interface CursorProps {
@@ -24,7 +24,7 @@ const Cursor = forwardRef<HTMLDivElement, CursorProps>(
   ) => {
     const [isMouseDown, setIsMouseDown] = useState(false);
     const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
-    const [isNearHeaderOrTool, setIsNearHeaderOrTool] = useState(false);
+    const [isRestrictedArea, setIsRestrictedArea] = useState(false);
     const [hasMoved, setHasMoved] = useState(false);
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -37,14 +37,19 @@ const Cursor = forwardRef<HTMLDivElement, CursorProps>(
           y: e.clientY - rect.top,
         });
 
+        // Check if cursor is in restricted areas (header, tool, or input)
         if (!cursor) {
           const header = document.querySelector(".header") as HTMLElement;
           const tool = document.querySelector(".tool") as HTMLElement;
+          const input =
+            e.target instanceof HTMLElement &&
+            e.target.closest("input, textarea, select");
 
-          let isNear = false;
+          let isInRestricted = false;
+
           if (header) {
             const headerRect = header.getBoundingClientRect();
-            isNear = e.clientY <= headerRect.bottom + 15;
+            isInRestricted = e.clientY <= headerRect.bottom + 15;
           }
 
           if (tool) {
@@ -55,11 +60,15 @@ const Cursor = forwardRef<HTMLDivElement, CursorProps>(
               e.clientY >= toolRect.top - 20 &&
               e.clientY <= toolRect.bottom + 15
             ) {
-              isNear = true;
+              isInRestricted = true;
             }
           }
 
-          setIsNearHeaderOrTool(isNear);
+          if (input) {
+            isInRestricted = true;
+          }
+
+          setIsRestrictedArea(isInRestricted);
         }
       }
     };
@@ -81,7 +90,7 @@ const Cursor = forwardRef<HTMLDivElement, CursorProps>(
 
     return (
       <>
-        {hasMoved && !isMouseDown && !isNearHeaderOrTool && selectedIcon && (
+        {hasMoved && !isMouseDown && !isRestrictedArea && selectedIcon && (
           <div
             style={{
               position: "fixed",
@@ -89,8 +98,8 @@ const Cursor = forwardRef<HTMLDivElement, CursorProps>(
               top: cursorPosition.y + positionY,
               pointerEvents: "none",
               zIndex: 9999,
-              opacity: isMouseDown || isNearHeaderOrTool ? 0 : 1,
-              color: selectedColor ? selectedColor : "currentcolor",
+              opacity: isMouseDown || isRestrictedArea ? 0 : 1,
+              color: selectedColor || "currentcolor",
             }}
             className={cn("[&_svg]:h-[18px] [&_svg]:w-[18px]", className)}
           >
