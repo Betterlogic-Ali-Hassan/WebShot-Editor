@@ -24,7 +24,7 @@ const Cursor = forwardRef<HTMLDivElement, CursorProps>(
   ) => {
     const [isMouseDown, setIsMouseDown] = useState(false);
     const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
-    const [isNearHeader, setIsNearHeader] = useState(false);
+    const [isNearHeaderOrTool, setIsNearHeaderOrTool] = useState(false);
 
     const handleMouseMove = (e: MouseEvent) => {
       if (containerRef && "current" in containerRef && containerRef.current) {
@@ -36,11 +36,27 @@ const Cursor = forwardRef<HTMLDivElement, CursorProps>(
 
         if (!cursor) {
           const header = document.querySelector(".header") as HTMLElement;
+          const tool = document.querySelector(".tool") as HTMLElement;
+
+          let isNear = false;
           if (header) {
             const headerRect = header.getBoundingClientRect();
-            const isNear = e.clientY <= headerRect.bottom + 15; // Check if cursor is within 5px below header
-            setIsNearHeader(isNear);
+            isNear = e.clientY <= headerRect.bottom + 15;
           }
+
+          if (tool) {
+            const toolRect = tool.getBoundingClientRect();
+            if (
+              e.clientX >= toolRect.left - 28 &&
+              e.clientX <= toolRect.right &&
+              e.clientY >= toolRect.top + 15 &&
+              e.clientY <= toolRect.bottom + 15
+            ) {
+              isNear = true; // Cursor is inside the .tool container
+            }
+          }
+
+          setIsNearHeaderOrTool(isNear);
         }
       }
     };
@@ -62,7 +78,7 @@ const Cursor = forwardRef<HTMLDivElement, CursorProps>(
 
     return (
       <>
-        {!isMouseDown && !isNearHeader && selectedIcon && (
+        {!isMouseDown && !isNearHeaderOrTool && selectedIcon && (
           <div
             style={{
               position: "fixed",
@@ -70,7 +86,7 @@ const Cursor = forwardRef<HTMLDivElement, CursorProps>(
               top: cursorPosition.y + positionY,
               pointerEvents: "none",
               zIndex: 9999,
-              opacity: isMouseDown || isNearHeader ? 0 : 1, // Hide icon near header
+              opacity: isMouseDown || isNearHeaderOrTool ? 0 : 1, // Hide icon near header or inside .tool
               color: selectedColor ? selectedColor : "currentcolor",
             }}
             className={cn("[&_svg]:h-[18px] [&_svg]:w-[18px]", className)}
