@@ -10,6 +10,8 @@ export default function Numbers() {
   const [selected, setSelected] = useState<number>(-1);
   const containerRef = useRef<HTMLDivElement>(null);
   const [selectedColor, setSelectedColor] = useState("rgba(255, 0, 0, 1)");
+  const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
+  const [isCursorOverPicker, setIsCursorOverPicker] = useState(false);
 
   useEffect(() => {
     if (selected >= 0) {
@@ -17,10 +19,15 @@ export default function Numbers() {
     } else {
       document.body.classList.remove("hide-cursor");
     }
+
+    if (isColorPickerOpen && isCursorOverPicker) {
+      document.body.classList.remove("hide-cursor");
+    }
+
     return () => {
       document.body.classList.remove("hide-cursor");
     };
-  }, [selected]);
+  }, [selected, isColorPickerOpen, isCursorOverPicker]);
 
   const handleColorChange = (color: string) => {
     setSelectedColor(color);
@@ -69,26 +76,35 @@ export default function Numbers() {
                 {buttonText[index]}
               </div>
             ))}
-            <div>
-              <ColorPicker select onColorChange={handleColorChange} />
+            <div
+              onMouseEnter={() => setIsCursorOverPicker(true)}
+              onMouseLeave={() => setIsCursorOverPicker(false)}
+            >
+              <ColorPicker
+                select
+                onColorChange={handleColorChange}
+                onOpen={setIsColorPickerOpen}
+              />
             </div>
           </div>
           <Cursor
             cursor
-            positionX={28}
-            positionY={16}
+            positionX={10}
+            positionY={28}
             ref={containerRef}
             selectedColor={selectedColor}
             selectedIcon={counters[selected]}
             className={cn(
               "flex items-center justify-center font-bold h-[22px] w-[22px]",
               selected === 2 ? "text-lg" : "normal",
+
               selected === 0
                 ? `rounded-full border-2 border-${selectedColor} `
                 : "border-none",
               selected === 1
-                ? "rounded-[4px] border-2 border-${selectedColor}"
-                : "rounded-none border-none"
+                ? `rounded-[4px] border-2 border-${selectedColor}`
+                : "rounded-none border-none",
+              isColorPickerOpen && isCursorOverPicker && "!opacity-0"
             )}
           />
         </div>

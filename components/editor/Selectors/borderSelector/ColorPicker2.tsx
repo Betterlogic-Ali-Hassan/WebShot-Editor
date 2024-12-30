@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Dispatch, SetStateAction } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -15,10 +15,12 @@ export default function ColorPicker({
   select,
   icon,
   onColorChange, // Make this prop optional
+  onOpen,
 }: {
   select?: boolean;
   icon?: boolean;
   onColorChange?: (color: string) => void; // Make the callback optional
+  onOpen?: Dispatch<SetStateAction<boolean>>;
 }) {
   const [selectedColor, setSelectedColor] = useState("rgba(255, 0, 0, 1)");
   const [recentColors, setRecentColors] = useState<string[]>([]);
@@ -43,6 +45,7 @@ export default function ColorPicker({
   };
 
   const handlePopoverClose = (isOpen: boolean) => {
+    if (onOpen) onOpen(isOpen);
     setPopoverOpen(isOpen);
     if (!isOpen) {
       setRecentColors((prev) => {
