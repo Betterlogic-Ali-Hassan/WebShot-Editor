@@ -3,9 +3,9 @@ import ToolCards from "./ToolCards";
 
 const Editor = () => {
   return (
-    <div className='fixed w-full top-0'>
+    <header className='fixed w-full top-0 z-50'>
       <ToolCards />
-    </div>
+    </header>
   );
 };
 
