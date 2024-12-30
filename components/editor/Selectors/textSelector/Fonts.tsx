@@ -10,6 +10,7 @@ import { Text } from "@/components/svgs";
 import Cursor from "../../Cursor";
 const Fonts = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+
   return (
     <div ref={containerRef}>
       <div className='flex items-center max-lg:flex-col gap-5 px-4 py-0.5 '>
@@ -28,8 +29,8 @@ const Fonts = () => {
       <Cursor
         selectedIcon={<Text />}
         ref={containerRef}
-        positionX={26}
-        positionY={13}
+        positionX={36}
+        positionY={16}
         className='[&_svg]:h-[20px] [&_svg]:w-[20px] '
       />
     </div>

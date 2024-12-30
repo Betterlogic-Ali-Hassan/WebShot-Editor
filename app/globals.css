@@ -173,3 +173,7 @@ label[for="rc-editable-input-2"] {
 .hide-cursor * {
   cursor: none !important;
 }
+.tool,
+header {
+  cursor: default;
+}

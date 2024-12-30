@@ -54,18 +54,18 @@ export default function Numbers() {
                 key={index}
                 onClick={() => incrementCounter(index)}
                 className={cn(
-                  "flex items-center gap-1.5 max-sm:w-full rounded-md py-2 px-3 hover:bg-light cursor-pointer border-2 border-transparent text-base",
+                  "flex items-center gap-1.5 max-sm:w-full rounded-md py-2 px-3 hover:bg-light cursor-pointer border-2 border-transparent text-sm",
                   selected === index &&
                     "border-dotted border-card-border bg-secondary"
                 )}
               >
                 <span
                   className={cn(
-                    "border-[2.4px] border-dark text-[16px] h-5 w-5 font-bold flex justify-center items-center",
+                    "border-[2.4px] border-dark text-[16px] mb-0.5 h-4 w-4 font-bold flex justify-center items-center",
                     index === 0 && "rounded-full p-[10px]",
                     index === 1 && "rounded p-[10px]",
                     index === 2 &&
-                      "border-0 w-auto text-lg leading-0 font-semibold mb-0.5"
+                      "border-0 w-auto text-lg leading-0 font-semibold mb-1"
                   )}
                   style={{
                     fontFamily: index === 2 ? "system-ui " : "",
@@ -94,15 +94,10 @@ export default function Numbers() {
             selectedColor={selectedColor}
             selectedIcon={counters[selected]}
             className={cn(
-              "flex items-center justify-center font-bold h-[22px] w-[22px]",
-              selected === 2 ? "text-lg" : "normal",
-
-              selected === 0
-                ? `rounded-full border-2 border-${selectedColor} `
-                : "border-none",
-              selected === 1
-                ? `rounded-[4px] border-2 border-${selectedColor}`
-                : "rounded-none border-none",
+              "flex items-center text-base justify-center border border-dark font-bold h-[22px] p-[9px] w-[22px]",
+              selected === 0 && `rounded-full border-2  `,
+              selected === 1 && `rounded-[4px] border-2 `,
+              selected === 2 && `rounded-[4px] border-none `,
               isColorPickerOpen && isCursorOverPicker && "!opacity-0"
             )}
           />
