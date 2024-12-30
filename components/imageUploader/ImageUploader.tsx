@@ -99,7 +99,7 @@ const ImageUploader = () => {
                   <div className='w-full border  rounded-full h-[54px] flex items-center  overflow-hidden max-w-[700px]'>
                     <Input
                       placeholder='Enter Website URL e.g., https://example.com'
-                      className='bg-transparent shadow-none border-none px-4 tool'
+                      className='bg-transparent shadow-none border-none px-4 '
                       value={inputValue}
                       onChange={handleChange}
                     />
