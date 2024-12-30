@@ -58,10 +58,10 @@ export default function Numbers() {
                     index === 0 && "rounded-full p-[10px]",
                     index === 1 && "rounded p-[10px]",
                     index === 2 &&
-                      "border-0 w-auto text-lg leading-0 font-normal mb-0.5"
+                      "border-0 w-auto text-lg leading-0 font-semibold mb-0.5"
                   )}
                   style={{
-                    fontFamily: index === 2 ? "system-ui" : "",
+                    fontFamily: index === 2 ? "system-ui " : "",
                   }}
                 >
                   {count}
