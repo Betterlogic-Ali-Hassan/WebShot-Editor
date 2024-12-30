@@ -6,7 +6,7 @@ import ColorPicker from "../borderSelector/ColorPicker2";
 import Cursor from "../../Cursor";
 
 export default function Numbers() {
-  const [counters, setCounters] = useState([0, 0, 0]);
+  const [counters, setCounters] = useState([1, 1, 1]);
   const [selected, setSelected] = useState<number>(-1);
   const containerRef = useRef<HTMLDivElement>(null);
   const [selectedColor, setSelectedColor] = useState("rgba(255, 0, 0, 1)");
@@ -35,7 +35,7 @@ export default function Numbers() {
     setSelected(index);
   };
 
-  const buttonText = ["Circled", "Squared", "Bold"];
+  const buttonText = ["Circled", "Squared", "Plain"];
 
   return (
     <>
@@ -49,19 +49,19 @@ export default function Numbers() {
                 className={cn(
                   "flex items-center gap-1.5 max-sm:w-full rounded-md py-2 px-3 hover:bg-light cursor-pointer border-2 border-transparent text-base",
                   selected === index &&
-                    "border-dotted border-card-border bg-secondary",
-                  index === 2 && "font-bold"
+                    "border-dotted border-card-border bg-secondary"
                 )}
               >
                 <span
                   className={cn(
-                    "border-2 border-dark text-[15px] h-5 font-bold w-5 flex justify-center items-center",
-                    index === 0 && "rounded-full",
-                    index === 1 && "rounded",
-                    index === 2 && "border-0 w-auto text-lg"
+                    "border-[2.4px] border-dark text-[16px] h-5 w-5 font-bold flex justify-center items-center",
+                    index === 0 && "rounded-full p-[10px]",
+                    index === 1 && "rounded p-[10px]",
+                    index === 2 &&
+                      "border-0 w-auto text-lg leading-0 font-normal mb-0.5"
                   )}
                   style={{
-                    fontFamily: index === 2 ? "Be Vietnam Pro" : "",
+                    fontFamily: index === 2 ? "system-ui" : "",
                   }}
                 >
                   {count}
