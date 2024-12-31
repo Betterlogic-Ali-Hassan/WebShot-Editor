@@ -22,7 +22,7 @@ export function SidebarItem({ icon: Icon, label, href }: SidebarItemProps) {
         isActive && "font-bold bg-secondary"
       )}
     >
-      <Icon className='w-6 h-6 !fill-none text-white' aria-hidden='true' />
+      <Icon className='w-6 h-6 !fill-none text-dark' aria-hidden='true' />
       <span className='text-base'>{label}</span>
     </Link>
   );
