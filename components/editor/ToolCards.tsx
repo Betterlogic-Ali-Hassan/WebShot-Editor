@@ -60,7 +60,7 @@ const ToolCards = ({ imageData, onResize }: Props) => {
         document.body.style.cursor = "default"; // Set default cursor
       } else if (
         toolRect &&
-        e.clientX >= toolRect.left - 28 &&
+        e.clientX >= toolRect.left &&
         e.clientX <= toolRect.right &&
         e.clientY >= toolRect.top + 100 &&
         e.clientY <= toolRect.bottom + 15
