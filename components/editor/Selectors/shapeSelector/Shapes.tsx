@@ -48,8 +48,8 @@ const Shapes = ({ onClick, selectedIcon }: Props) => {
         selectedColor={selectedColor}
         selectedIcon={selectedIcon}
         ref={containerRef}
-        positionX={22}
-        positionY={18}
+        positionX={42}
+        positionY={20}
         className='[&_svg]:h-[20px] [&_svg]:w-[20px] '
       />
     </div>

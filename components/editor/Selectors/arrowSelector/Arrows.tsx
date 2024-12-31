@@ -47,8 +47,8 @@ const Arrows = ({ onClick, selectedIcon }: Props) => {
         selectedColor={selectedColor}
         selectedIcon={selectedIcon}
         ref={containerRef}
-        positionX={28}
-        positionY={16}
+        positionX={44}
+        positionY={18}
         className='[&_svg]:h-[18px] [&_svg]:w-[18px] '
       />
     </div>

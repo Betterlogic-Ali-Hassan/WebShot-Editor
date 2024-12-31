@@ -68,10 +68,15 @@ const ToolCards = ({ imageData, onResize }: Props) => {
         document.body.style.cursor = "default"; // Set default cursor when near tool
       } else {
         // Otherwise, change cursor based on selected card
-        if (selectedCard === 4 || selectedCard === 11) {
-          document.body.style.cursor = "url(/ResizerCursor.svg), auto"; // Custom cursor for Resizer
-        } else if (selectedCard === 8) {
+        if (selectedCard === 8) {
           document.body.style.cursor = "url(/Cursor.svg), auto"; // Custom cursor for Cursor
+        } else if (
+          selectedCard === 6 ||
+          selectedCard === 7 ||
+          selectedCard === 4 ||
+          selectedCard === 11
+        ) {
+          document.body.style.cursor = "url(/ResizerCursor.svg), auto"; // Custom cursor for Resizer
         } else {
           document.body.style.cursor = "default"; // Fallback to default cursor
         }

@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils"; // Ensure this utility is implemented or replace with clsx/classnames.
+import { cn } from "@/lib/utils";
 import React, { forwardRef, useEffect, useState } from "react";
 
 interface CursorProps {
