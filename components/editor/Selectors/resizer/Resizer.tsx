@@ -19,8 +19,8 @@ interface Props {
 }
 
 const Resizer = ({ imageData, onResize }: Props) => {
-  const [width, setWidth] = useState(imageData?.width || 0);
-  const [height, setHeight] = useState(imageData?.height || 0);
+  const [width, setWidth] = useState(imageData?.width || 800);
+  const [height, setHeight] = useState(imageData?.height || 800);
   const [originalWidth, setOriginalWidth] = useState<number | null>(null);
   const [originalHeight, setOriginalHeight] = useState<number | null>(null);
   const [aspectRatio, setAspectRatio] = useState(16 / 9);

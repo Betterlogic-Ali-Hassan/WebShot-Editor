@@ -53,7 +53,7 @@ const ToolCards = ({ imageData, onResize }: Props) => {
       // Check if mouse is near the header or tool and set cursor to default
       if (
         headerRect &&
-        e.clientY <= headerRect.bottom + 15 &&
+        e.clientY <= headerRect.bottom + 5 &&
         e.clientX >= headerRect.left - 28 &&
         e.clientX <= headerRect.right
       ) {
@@ -62,7 +62,7 @@ const ToolCards = ({ imageData, onResize }: Props) => {
         toolRect &&
         e.clientX >= toolRect.left - 28 &&
         e.clientX <= toolRect.right &&
-        e.clientY >= toolRect.top - 20 &&
+        e.clientY >= toolRect.top + 100 &&
         e.clientY <= toolRect.bottom + 15
       ) {
         document.body.style.cursor = "default"; // Set default cursor when near tool
