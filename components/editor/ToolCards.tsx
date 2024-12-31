@@ -65,7 +65,7 @@ const ToolCards = ({ imageData, onResize }: Props) => {
         e.clientY >= toolRect.top + 100 &&
         e.clientY <= toolRect.bottom + 15
       ) {
-        document.body.style.cursor = "default"; // Set default cursor when near tool
+        document.body.style.cursor = "default";
       } else {
         // Otherwise, change cursor based on selected card
         if (selectedCard === 8) {
