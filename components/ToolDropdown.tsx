@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import {
   Popover,
   PopoverContent,
@@ -9,35 +9,39 @@ import {
 import { usePopover } from "@/context/PopOverContext";
 import { X } from "lucide-react";
 
-interface Props {
+interface ToolDropdownProps {
   trigger: React.ReactNode;
   content?: React.ReactNode;
   id: string;
   isEmpty?: boolean;
 }
 
-const ToolDropdown = ({ trigger, content, id, isEmpty = false }: Props) => {
+const AUTO_CLOSE_IDS = ["num27", "num14", "num7", "num6", "num13", "num2"];
+const FORCE_CLOSE_IDS = ["num27", "num43"];
+
+const ToolDropdown = ({
+  trigger,
+  content,
+  id,
+  isEmpty = false,
+}: ToolDropdownProps) => {
   const { openPopoverId, setOpenPopoverId } = usePopover();
 
   const isOpen = openPopoverId === id;
+  const shouldAutoClose = AUTO_CLOSE_IDS.includes(id);
+  const shouldForceClose = FORCE_CLOSE_IDS.includes(id);
+  const shouldShowCrossIcon = !shouldAutoClose;
 
   const handleOpenChange = (open: boolean) => {
     if (open) {
       setOpenPopoverId(id);
-    } else if (
-      id === "num27" ||
-      id === "num14" ||
-      id === "num7" ||
-      id === "num6" ||
-      id === "num13" ||
-      id === "num2"
-    ) {
+    } else if (shouldAutoClose) {
       setOpenPopoverId(null);
     }
   };
 
   const handleContentClick = () => {
-    if (id === "num27" || id === "num43") {
+    if (shouldForceClose) {
       setOpenPopoverId(null);
     }
   };
@@ -48,7 +52,7 @@ const ToolDropdown = ({ trigger, content, id, isEmpty = false }: Props) => {
     }
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (id === "num42") {
       setOpenPopoverId(null);
     }
@@ -57,27 +61,19 @@ const ToolDropdown = ({ trigger, content, id, isEmpty = false }: Props) => {
   if (isEmpty) {
     return <div onClick={handleEmptyTriggerClick}>{trigger}</div>;
   }
-  const shouldShowCrossIcon = !(
-    id === "num27" ||
-    id === "num14" ||
-    id === "num7" ||
-    id === "num6" ||
-    id === "num13" ||
-    id === "num2"
-  );
 
   return (
     <Popover open={isOpen} onOpenChange={handleOpenChange}>
       <PopoverTrigger className='focus:outline-none'>{trigger}</PopoverTrigger>
       {content && (
         <PopoverContent
-          className='bg-card max-h-[350px] overflow-y-auto overflow-x-hidden scrollbar focus:outline-none border-border '
+          className='bg-card max-h-[350px] overflow-y-auto overflow-x-hidden scrollbar focus:outline-none border-border'
           onClick={handleContentClick}
         >
           {content}
           {shouldShowCrossIcon && (
             <button
-              className='absolute top-0   p-[5px] rounded-full border mt-4 bg-secondary shadow-md  right-[4px] hover:bg-light  focus:outline-none'
+              className='absolute top-0 right-[4px] p-[5px] mt-4 rounded-full border bg-secondary shadow-md hover:bg-light focus:outline-none'
               onClick={() => setOpenPopoverId(null)}
             >
               <X size={16} />
@@ -88,5 +84,4 @@ const ToolDropdown = ({ trigger, content, id, isEmpty = false }: Props) => {
     </Popover>
   );
 };
-
 export default ToolDropdown;
