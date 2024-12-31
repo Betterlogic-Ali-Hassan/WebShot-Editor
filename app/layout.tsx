@@ -3,8 +3,7 @@ import "./globals.css";
 import { Roboto } from "next/font/google";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { PopoverProvider } from "@/context/PopOverContext";
-import Editor from "@/components/editor/Editor";
+
 const roboto = Roboto({
   weight: ["400", "700"],
   style: ["normal", "italic"],
@@ -30,9 +29,6 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <PopoverProvider>
-            <Editor />
-          </PopoverProvider>
           <main>{children}</main>
           <Toaster />
         </ThemeProvider>

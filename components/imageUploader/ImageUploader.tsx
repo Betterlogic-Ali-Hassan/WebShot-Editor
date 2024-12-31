@@ -1,37 +1,81 @@
 "use client";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
-import DummyImage from "../DummyImage";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+interface ImageData {
+  src: string;
+  width: number;
+  height: number;
+}
 
-const ImageUploader = () => {
-  const [image, setImage] = useState<string>("");
+interface ImageUploaderProps {
+  imageData: ImageData | null;
+  onImageUpload: (imageData: ImageData | null) => void;
+}
+const ImageUploader = ({ imageData, onImageUpload }: ImageUploaderProps) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [btnLoading, setBtnLoading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setLoading(true);
-      setTimeout(() => {
-        setLoading(false);
-        setImage(imageUrl);
-      }, 2000);
-    }
-  };
-  // URL validation regex
+  const handlePaste = useCallback(
+    (event: React.ClipboardEvent) => {
+      const items = event.clipboardData?.items;
+      if (items) {
+        for (let i = 0; i < items.length; i++) {
+          if (items[i].type.indexOf("image") !== -1) {
+            const blob = items[i].getAsFile();
+            if (blob) {
+              const reader = new FileReader();
+              reader.onload = (e) => {
+                const src = e.target?.result as string;
+                const img = new Image();
+                img.onload = () => {
+                  onImageUpload({ src, width: img.width, height: img.height });
+                };
+                setLoading(true);
+                setTimeout(() => {
+                  setLoading(false);
+                  img.src = src;
+                }, 1000);
+              };
+              reader.readAsDataURL(blob);
+            }
+          }
+        }
+      }
+    },
+    [onImageUpload]
+  );
+  const handleImageError = useCallback(() => {
+    onImageUpload(null);
+  }, [onImageUpload]);
+
+  const handleFileUpload = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const src = e.target?.result as string;
+          const img = new Image();
+          img.onload = () => {
+            onImageUpload({ src, width: img.width, height: img.height });
+          };
+          setLoading(true);
+          setTimeout(() => {
+            setLoading(false);
+            img.src = src;
+          }, 2000);
+        };
+        reader.readAsDataURL(file);
+      }
+    },
+    [onImageUpload]
+  );
   const urlRegex = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^\s]*)?$/;
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,34 +88,14 @@ const ImageUploader = () => {
       setError("Invalid URL");
     }
   }, []);
-  const handlePaste = (event: React.ClipboardEvent<HTMLDivElement>) => {
-    const items = event.clipboardData.items;
-    const imageItem = Array.from(items).find((item) =>
-      item.type.startsWith("image/")
-    );
 
-    if (imageItem) {
-      const file = imageItem.getAsFile();
-      if (file) {
-        setLoading(true); // Start loading
-        const reader = new FileReader();
-        reader.onload = () => {
-          setTimeout(() => {
-            setImage(reader.result as string);
-            setLoading(false);
-          }, 1000);
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-  };
   const handleBtn = () => {
     setBtnLoading(true); // Start button loading
 
     setTimeout(() => {
       setBtnLoading(false); // Stop button loading
       setLoading(true); // Start image loading
-    }, 1000);
+    }, 2000);
 
     setTimeout(() => {
       setLoading(false); // Stop image loading after 2 seconds
@@ -80,8 +104,15 @@ const ImageUploader = () => {
 
   return (
     <>
-      {image ? (
-        <DummyImage img={image} />
+      {imageData ? (
+        <div className=' img  px-4 sm:px-[70px] flex items-center justify-center'>
+          <img
+            src={imageData.src}
+            alt='img'
+            className=' rounded-[22px]'
+            onError={handleImageError}
+          />
+        </div>
       ) : (
         <div className='min-h-screen   flex items-center'>
           <div className='pt-[80px] max-w-[900px] mx-auto w-full px-4'>
@@ -130,16 +161,18 @@ const ImageUploader = () => {
                   <Button
                     className=' px-10 h-12 rounded-full font-semibold hover:bg-black hover:text-white  '
                     variant='outline'
-                    onClick={handleClick}
+                    onClick={() =>
+                      document.getElementById("imageUpload")?.click()
+                    }
                   >
                     Upload Image
                   </Button>
-                  <input
+                  <Input
                     type='file'
-                    ref={fileInputRef}
-                    onChange={handleFileChange}
-                    accept='image/*'
+                    id='imageUpload'
                     className='hidden'
+                    accept='image/*'
+                    onChange={handleFileUpload}
                   />
                   <p className='text-[13px] mt-2 text-[#888] '>
                     Or press Ctrl + V to paste an image directly.

@@ -5,7 +5,7 @@ import ToolDropdown from "@/components/ToolDropdown";
 import Numbers from "./Numbers";
 import { Number } from "@/components/svgs";
 
-const PenSelector = () => {
+const NumberSelector = () => {
   return (
     <ToolDropdown
       trigger={<ToolCard text='Number' icon={<Number />} id={6} />}
@@ -15,4 +15,4 @@ const PenSelector = () => {
   );
 };
 
-export default PenSelector;
+export default NumberSelector;

@@ -6,19 +6,40 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import InputWithBtn from "../../InputWithBtn";
 
+interface ImageData {
+  src: string;
+  width: number;
+  height: number;
+}
+
 interface Props {
+  imageData?: ImageData | null;
+  onResize?: (width: number, height: number) => void;
   handleId: () => void;
 }
 
-const Resizer = ({ handleId }: Props) => {
-  const [width, setWidth] = useState(1920);
-  const [height, setHeight] = useState(1080);
+const Resizer = ({ imageData, onResize }: Props) => {
+  const [width, setWidth] = useState(imageData?.width || 0);
+  const [height, setHeight] = useState(imageData?.height || 0);
+  const [originalWidth, setOriginalWidth] = useState<number | null>(null);
+  const [originalHeight, setOriginalHeight] = useState<number | null>(null);
   const [aspectRatio, setAspectRatio] = useState(16 / 9);
   const [isLocked, setIsLocked] = useState(true);
 
   useEffect(() => {
-    setAspectRatio(width / height);
-  }, []);
+    if (imageData) {
+      setWidth(imageData.width);
+      setHeight(imageData.height);
+
+      // Store original dimensions once when the image is loaded
+      if (originalWidth === null && originalHeight === null) {
+        setOriginalWidth(imageData.width);
+        setOriginalHeight(imageData.height);
+      }
+
+      setAspectRatio(imageData.width / imageData.height);
+    }
+  }, [imageData, originalWidth, originalHeight]);
 
   const adjustDimension = (
     dimension: "width" | "height",
@@ -55,10 +76,15 @@ const Resizer = ({ handleId }: Props) => {
   };
 
   const toggleLock = () => {
-    if (!isLocked) {
-      setAspectRatio(width / height);
-    }
     setIsLocked(!isLocked);
+    if (!isLocked && originalWidth !== null && originalHeight !== null) {
+      setWidth(originalWidth);
+      setHeight(originalHeight);
+    }
+  };
+
+  const handleResize = () => {
+    if (onResize) onResize(width, height);
   };
 
   return (
@@ -94,7 +120,7 @@ const Resizer = ({ handleId }: Props) => {
           </Label>
         </div>
         <Button
-          onClick={handleId}
+          onClick={handleResize}
           className='bg-dark text-bg hover:bg-dark/80 mt-4 sm:mt-7 max-sm:w-full'
         >
           Change
