@@ -94,9 +94,9 @@ export default function Numbers() {
             selectedColor={selectedColor}
             selectedIcon={counters[selected]}
             className={cn(
-              "flex items-center text-base justify-center border border-dark font-bold h-[22px] p-[9px] w-[22px]",
-              selected === 0 && `rounded-full border-2  `,
-              selected === 1 && `rounded-[4px] border-2 `,
+              "flex items-center text-base justify-center border-current border-2  font-bold h-[22px] p-[9px] w-[22px]",
+              selected === 0 && `rounded-full  `,
+              selected === 1 && `rounded-[4px]  `,
               selected === 2 && `rounded-[4px] border-none `,
               isColorPickerOpen && isCursorOverPicker && "!opacity-0"
             )}
