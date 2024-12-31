@@ -114,7 +114,7 @@ const ImageUploader = ({ imageData, onImageUpload }: ImageUploaderProps) => {
           />
         </div>
       ) : (
-        <div className='min-h-screen   flex items-center'>
+        <div className='min-h-screen flex items-center'>
           <div className='pt-[80px] max-w-[900px] mx-auto w-full px-4'>
             <div
               className=' p-4 rounded-[16px] border-dashed flex items-center  border-2 justify-center flex-col min-h-[420px] w-full '
@@ -135,7 +135,7 @@ const ImageUploader = ({ imageData, onImageUpload }: ImageUploaderProps) => {
                       onChange={handleChange}
                     />
                     <Button
-                      className='bg-dark hover:bg-black/90 text-white dark:text-black h-full rounded-l-none font-medium '
+                      className='bg-dark hover:bg-black/90 text-white dark:text-black h-full rounded-l-none font-medium dark:hover:bg-white/90  '
                       onClick={handleBtn}
                     >
                       {btnLoading && (
