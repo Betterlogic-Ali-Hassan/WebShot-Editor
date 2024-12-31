@@ -18,6 +18,15 @@ export const settings = [
     defaultValue: "10s",
   },
   {
+    title: "Download screenshot As",
+    options: [
+      { value: "capture", label: "Capture" },
+      { value: "record", label: "Record" },
+      { value: "last-used", label: "Last used" },
+    ],
+    defaultValue: "last-used",
+  },
+  {
     title: "Skip Annotating",
     options: [
       { value: "always", label: "Always" },
