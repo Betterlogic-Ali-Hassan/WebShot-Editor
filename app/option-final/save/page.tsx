@@ -10,10 +10,12 @@ const page = () => {
       <Sidebar />
       <div className='w-full flex items-center justify-center'>
         <OptionPageCard tabs logo>
-          <h1 className='font-semibold text-lg'>Saving Preferences</h1>
-          <p className='text-sm text-[#777]'>
-            Choose where and how your captures are saved.
-          </p>
+          <div className='border-b pb-3'>
+            <h1 className='font-semibold text-lg'>Saving Preferences</h1>
+            <p className='text-sm text-[#777]'>
+              Choose where and how your captures are saved.
+            </p>
+          </div>
           <Saving />
         </OptionPageCard>
       </div>
