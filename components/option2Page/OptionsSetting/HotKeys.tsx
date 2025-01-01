@@ -6,10 +6,7 @@ import { EditPage } from "@/components/svgs";
 import { Label } from "@/components/ui/label";
 const HotKeys = () => {
   return (
-    <div className='pt-6'>
-      <h4 className='text-base font-semibold uppercase border-b pb-3'>
-        Hot Keys
-      </h4>
+    <>
       <div className='pt-3'>
         {optionsKey.map((item) => (
           <div key={item.id} className=' flex items-center justify-between '>
@@ -29,7 +26,7 @@ const HotKeys = () => {
           </div>
         ))}
       </div>
-    </div>
+    </>
   );
 };
 

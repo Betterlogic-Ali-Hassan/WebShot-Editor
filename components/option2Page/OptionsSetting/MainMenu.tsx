@@ -6,10 +6,7 @@ import React from "react";
 
 const MainMenu = () => {
   return (
-    <div className='pt-6'>
-      <h4 className='text-base font-semibold uppercase border-b pb-3'>
-        Main menu settings
-      </h4>
+    <>
       <div className='grid grid-cols-2 pt-3'>
         {options.map((item, i) => (
           <div key={i} className='flex items-center gap-2 py-3'>
@@ -26,7 +23,7 @@ const MainMenu = () => {
           </div>
         ))}
       </div>
-    </div>
+    </>
   );
 };
 

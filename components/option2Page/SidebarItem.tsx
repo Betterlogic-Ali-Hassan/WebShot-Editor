@@ -1,11 +1,10 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 interface SidebarItemProps {
-  icon: LucideIcon;
+  icon: React.ReactNode;
   label: string;
   href: string;
 }
@@ -22,7 +21,7 @@ export function SidebarItem({ icon: Icon, label, href }: SidebarItemProps) {
         isActive && "font-bold bg-secondary"
       )}
     >
-      <Icon className='w-6 h-6 !fill-none text-dark' aria-hidden='true' />
+      {Icon}
       <span className='text-base'>{label}</span>
     </Link>
   );
