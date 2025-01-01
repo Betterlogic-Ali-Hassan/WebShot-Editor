@@ -8,6 +8,7 @@ import { smallCard } from "@/constant/smallCardData";
 import Rating from "@/components/Rating/Rating";
 import UploadingBox from "@/components/UploadingBox";
 import { OptionsMenu } from "./OptionMenu";
+import RecordVideo from "./recordVideo/RecordVideo";
 interface CardProps {
   setRatingOpen: (ratingOpen: boolean) => void;
   ratingOpen: boolean;
@@ -15,7 +16,7 @@ interface CardProps {
 export function CardContent({ ratingOpen, setRatingOpen }: CardProps) {
   const [alert, setAlert] = useState(true);
   const [screenshot, setScreenshot] = useState(false);
-
+  const [recordVideo, setRecordVideo] = useState(false);
   if (ratingOpen) {
     return <Rating setRatingOpen={setRatingOpen} />;
   }
@@ -42,10 +43,16 @@ export function CardContent({ ratingOpen, setRatingOpen }: CardProps) {
           />
         ))}
       </div>
-      <OptionsMenu />
-      <div className='pt-6'>
-        <Select />
-      </div>
+      {recordVideo ? (
+        <RecordVideo setRecord={setRecordVideo} />
+      ) : (
+        <>
+          <OptionsMenu setRecordVideo={setRecordVideo} />
+          <div className='pt-6'>
+            <Select />
+          </div>
+        </>
+      )}
     </div>
   );
 }

@@ -3,11 +3,24 @@ interface MenuItemProps {
   name: string;
   time?: boolean;
   shortcut: string;
+  setRecordVideo: (recordVideo: boolean) => void;
 }
 
-export function MenuItem({ icon, name, time, shortcut }: MenuItemProps) {
+export function MenuItem({
+  icon,
+  name,
+  time,
+  shortcut,
+  setRecordVideo,
+}: MenuItemProps) {
+  const handleRecordVideo = () => {
+    if (name === "Record Video") setRecordVideo(true);
+  };
   return (
-    <div className='flex items-center justify-between py-[10px] px-3.5 group hover:bg-light cursor-pointer text-sm'>
+    <div
+      className='flex items-center justify-between py-[10px] px-3.5 group hover:bg-light cursor-pointer text-sm'
+      onClick={handleRecordVideo}
+    >
       <div className='flex items-center gap-2'>
         <span>{icon}</span>
         <h4>{name}</h4>

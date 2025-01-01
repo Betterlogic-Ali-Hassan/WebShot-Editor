@@ -5,8 +5,10 @@ import { BsThreeDots } from "react-icons/bs";
 import Tooltip from "@/components/Tooltip";
 import { options } from "@/constant/option";
 import { MenuItem } from "./MenuItem";
-
-export function OptionsMenu() {
+interface Props {
+  setRecordVideo: (recordVideo: boolean) => void;
+}
+export function OptionsMenu({ setRecordVideo }: Props) {
   const [showAll, setShowAll] = useState(false);
 
   const visibleOptions = showAll ? options : options.slice(0, 3);
@@ -15,6 +17,7 @@ export function OptionsMenu() {
     <div>
       {visibleOptions.map((item, index) => (
         <MenuItem
+          setRecordVideo={setRecordVideo}
           key={index}
           icon={item.icon}
           name={item.name}

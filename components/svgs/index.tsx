@@ -66,3 +66,4 @@ export { default as SaveTool } from "./SaveTool.svg";
 export { default as ActionMenu } from "./ActionMenu.svg";
 export { default as ShortKey } from "./ShortKey.svg";
 export { default as AdvSetting } from "./AdvSetting.svg";
+export { default as Webcam } from "./Webcam.svg";
