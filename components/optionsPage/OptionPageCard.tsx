@@ -20,7 +20,7 @@ const OptionPageCard = ({
   custom?: boolean;
 }) => {
   return (
-    <div className=' pt-[110px] px-[6rem] mb-2 '>
+    <div className=' pt-[48px] px-[6rem] mb-2 '>
       <div className='mb-8'>
         <h1 className='font-bold text-[28px] '>{title}</h1>
         <p className='text-base text-[#777]'>{para}</p>

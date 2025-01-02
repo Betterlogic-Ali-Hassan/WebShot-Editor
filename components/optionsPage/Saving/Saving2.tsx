@@ -4,10 +4,12 @@ import React from "react";
 import SavingRadio from "./SavingRadio";
 import SavingInput from "./SavingInput";
 import SwitchToggle from "@/components/SwitchToogle";
+import SavingScreenShot from "./SavingScreenShot";
 
 const Saving2 = () => {
   return (
     <div className='pt-3'>
+      <SavingScreenShot />
       <SavingRadio />
       <SwitchToggle
         title='Always get shareable links for screenshots uploaded to
