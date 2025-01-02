@@ -33,11 +33,19 @@ const resolutions = [
     value: "Ultra High Definition (4K)",
   },
 ];
+const option = [
+  { value: "mp4", label: "MP4" },
+  { value: "lv", label: "FLV" },
+  { value: "ov", label: "MOV" },
+  { value: "bm", label: "WEBM" },
+  { value: "gp", label: "3GP" },
+  { value: "og", label: "OGG" },
+];
 
 const VideoQuality = ({ setVideoQualityPage, setRecord }: Props) => {
   return (
     <div>
-      <h2 className='font-semibold py-1 flex items-center gap-2'>
+      <h2 className='font-semibold py-1 pt-6 flex items-center gap-2'>
         <span
           onClick={() => {
             setVideoQualityPage(false);
@@ -53,6 +61,12 @@ const VideoQuality = ({ setVideoQualityPage, setRecord }: Props) => {
         options={resolutions}
         title='Video and Audio Quality'
         defaultValue='Auto'
+        custom
+      />
+      <CaptureSelect
+        options={option}
+        title='Video Format'
+        defaultValue='MP4'
         custom
       />
       <div className='flex items-center justify-between '>

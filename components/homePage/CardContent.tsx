@@ -97,6 +97,8 @@ export function CardContent({ ratingOpen, setRatingOpen }: CardProps) {
             />
           </Swiper>
         </div>
+      ) : videoQualityPage ? (
+        ""
       ) : (
         <div className='py-6 grid grid-cols-3 gap-3'>
           {smallCardData.map((item, i) => (
@@ -114,6 +116,7 @@ export function CardContent({ ratingOpen, setRatingOpen }: CardProps) {
           ))}
         </div>
       )}
+
       {!recordVideo && !videoQualityPage && (
         <>
           <OptionsMenu setRecordVideo={setRecordVideo} />
