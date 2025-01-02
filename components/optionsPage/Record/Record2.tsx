@@ -10,7 +10,7 @@ const Record2 = () => {
         title='Allow reminder when Microphone is turned off.'
         para=' Enable this option to receive reminders if the microphone is turned off during recording. Helps avoid missing audio input unintentionally.'
       />
-      <div className='border border-[#dadada] dark:border-[#4a4a4a] px-4 py-[12px] rounded-[12px] dark:bg-[#272727]'>
+      <div className='border border-[#dadada] dark:border-[#4a4a4a] px-4 py-[12px] rounded-[12px] dark:bg-[#272727] mb-8'>
         <div className='flex items-center justify-between  '>
           <h3 className=' flex flex-col'>
             Countdown Timer
@@ -27,22 +27,22 @@ const Record2 = () => {
             InputWidth='max-w-[22px]'
           />
         </div>
-        <div className='flex items-center justify-between pt-4'>
-          <div>
-            <h3>Recording shortcuts </h3>
-            <p className='text-[#9AA0A6] mt-1 text-[13px]'>
-              Manage and configure keyboard shortcuts for starting, pausing, and
-              stopping recordings for efficient operation. (Recording
-              Shortcuts) button
-            </p>
-          </div>
-          <Link
-            href='#'
-            className='underline text-[15px] ml-4 hover:text-[#1890ff] transition duration-200'
-          >
-            Manage
-          </Link>
+      </div>
+      <div className='flex items-center justify-between  border border-[#dadada] dark:border-[#4a4a4a] px-4 py-[12px] rounded-[12px] dark:bg-[#272727]'>
+        <div>
+          <h3>Recording shortcuts </h3>
+          <p className='text-[#9AA0A6] mt-1 text-[13px]'>
+            Manage and configure keyboard shortcuts for starting, pausing, and
+            stopping recordings for efficient operation. (Recording
+            Shortcuts) button
+          </p>
         </div>
+        <Link
+          href='#'
+          className='underline text-[15px] ml-4 hover:text-[#1890ff] transition duration-200'
+        >
+          Manage
+        </Link>
       </div>
     </>
   );
