@@ -36,7 +36,7 @@ const CaptureSelect = ({
       <div className='ml-4'>
         <Select>
           <SelectTrigger
-            defaultValue={defaultValue}
+            defaultValue={options[0].label}
             className='w-auto h-10 flex gap-3 whitespace-nowrap '
           >
             <SelectValue placeholder={defaultValue} />

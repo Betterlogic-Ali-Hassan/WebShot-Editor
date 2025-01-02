@@ -16,7 +16,7 @@ export const settings = [
       { value: "5s", label: "5s" },
       { value: "10s", label: "10s" },
     ],
-    defaultValue: "10s",
+    defaultValue: "Never",
     des: "Specify a delay before capturing the entire screen or application window. This helps ensure all elements are fully rendered.",
   },
   {
@@ -26,7 +26,7 @@ export const settings = [
       { value: "record", label: "Record" },
       { value: "last-used", label: "Last used" },
     ],
-    defaultValue: "Record",
+    defaultValue: "Capture",
     des: 'Choose the default format for saving screenshots, such as "Capture" or other formats (e.g., PNG, JPEG).',
   },
   {
@@ -36,7 +36,7 @@ export const settings = [
       { value: "never", label: "Never" },
       { value: "only-full", label: "Only When Capturing Full Page" },
     ],
-    defaultValue: "Never",
+    defaultValue: "Always",
     des: 'Determine when annotation tools should be skipped, e.g., "Only When Capturing Full Page." Useful for quick captures without edits.',
   },
 ];

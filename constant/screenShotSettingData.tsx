@@ -30,24 +30,24 @@ export const settings = [
     id: 7,
     name: "Show in context menu",
     enabled: true,
-    des: "Save the Position of the Selected Area. Description: Remember the last selected area for screenshots, enabling faster re-selection in future captures.",
+    des: "Remember the last selected area for screenshots, enabling faster re-selection in future captures.",
   },
   {
     id: 8,
     name: "Show 'New' after app update",
     enabled: true,
-    des: "Show 'New' After App Update. Description: Display a 'New' badge to highlight updated features after an app update.",
+    des: " Display a 'New' badge to highlight updated features after an app update.",
   },
   {
     id: 9,
     name: "Auto-short URL after upload",
     enabled: true,
-    des: "Auto-Short URL After Upload. Description: Automatically generate a shortened URL for uploaded screenshots, making sharing easier.",
+    des: "Automatically generate a shortened URL for uploaded screenshots, making sharing easier.",
   },
   {
     id: 10,
     name: "Enable quick screenshot (without opening the menu)",
     enabled: true,
-    des: "Enable Quick Screenshot (Without Opening the Menu). Description: Allow taking a screenshot with a single click, bypassing the menu options for faster operation.",
+    des: " Allow taking a screenshot with a single click, bypassing the menu options for faster operation.",
   },
 ];

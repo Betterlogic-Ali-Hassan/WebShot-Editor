@@ -21,9 +21,8 @@ const Capture2 = () => {
           des={setting.des}
         />
       ))}
-      <div className='border border-[#dadada] dark:border-[#4a4a4a] px-4 py-[12px] rounded-[12px] dark:bg-[#272727] mb-8'>
-        <OptionSelect />
-      </div>
+
+      <OptionSelect />
     </>
   );
 };
