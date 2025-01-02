@@ -1,5 +1,5 @@
 import OptionPageSwitch from "@/components/optionsPage/OptionPageSwitch";
-import { AdvSetting, RecordingBtn, StarRecording } from "@/components/svgs";
+import { RecordingBtn, StarRecording } from "@/components/svgs";
 import { Button } from "@/components/ui/button";
 import { setting } from "@/constant/RecordSetting";
 import React from "react";
@@ -33,23 +33,19 @@ const RecordVideo = ({ setRecord, webCam, setVideoQualityPage }: Props) => {
             <OptionPageSwitch key={i} label={item.feature} icon={item.icon} />
           ))
         )}
-        <div
-          className='flex items-center gap-3 text-[15px] border-b border-t py-3 mt-1.5 cursor-pointer'
-          onClick={() => {
-            setVideoQualityPage(true);
-            setRecord(false);
-          }}
-        >
-          <RecordingBtn />
-          Video Setting
-        </div>
         <div className='flex items-center  gap-2 mt-4'>
           <Button className='bg-dark text-card flex-1 hover:bg-black/90 h-[42px] text-[15px]'>
             <StarRecording />
             Start Recording
           </Button>
-          <Button className='bg-dark text-card hover:bg-black/90 h-[42px] text-[15px] '>
-            <AdvSetting />
+          <Button
+            className='bg-dark text-card hover:bg-black/90 h-[42px] text-[15px] '
+            onClick={() => {
+              setVideoQualityPage(true);
+              setRecord(false);
+            }}
+          >
+            <RecordingBtn />
             Setting
           </Button>
         </div>
