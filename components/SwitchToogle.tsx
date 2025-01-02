@@ -6,7 +6,7 @@ interface Props {
   checked?: boolean;
   icon?: boolean;
   marginZero?: boolean;
-  custom: boolean;
+  custom?: boolean;
 }
 
 const SwitchToggle = ({ title, para, checked, custom }: Props) => {
