@@ -39,7 +39,7 @@ const SmallCard = ({
     <Tooltip content={content}>
       <div
         className={cn(
-          "h-[90px] transition duration-300 w-[100px] rounded-xl flex items-center justify-center flex-col font-medium cursor-pointer text-[11px] gap-2 bg-secondary hover:bg-light ",
+          "h-[90px] transition duration-300 w-[100px] rounded-xl flex items-center justify-center flex-col font-medium cursor-pointer text-[11px] gap-2 bg-secondary hover:bg-light active:border-2 active:border-dotted ",
           recordVideo && isSelected && "border-dotted border-2 border-border"
         )}
         onClick={handleClick}

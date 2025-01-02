@@ -26,7 +26,7 @@ export function MenuItem({
         <h4>{name}</h4>
         {time && (
           <span className='ml-2 p-1 px-2 text-xs font-medium rounded-full bg-secondary opacity-0 group-hover:opacity-100 transition duration-300'>
-            3Second
+            3 Second
           </span>
         )}
       </div>
