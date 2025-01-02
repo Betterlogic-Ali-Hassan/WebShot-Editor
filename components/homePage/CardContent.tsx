@@ -30,8 +30,8 @@ export function CardContent({ ratingOpen, setRatingOpen }: CardProps) {
   const [selectedCard, setSelectedCard] = useState<string | null>(null);
 
   const smallCardData = recordVideo
-    ? smallCard.slice(2, 6) // Show 4 cards when recordVideo is true
-    : smallCard.slice(0, 3); // Show 3 cards otherwise
+    ? smallCard.slice(2, 6)
+    : smallCard.slice(0, 3);
 
   const handleCardSelect = (text: string) => {
     setSelectedCard(text);
