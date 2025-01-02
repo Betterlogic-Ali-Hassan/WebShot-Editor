@@ -3,7 +3,7 @@ import ProgressBar from "./ProgressBar";
 
 const UploadingBox = () => {
   return (
-    <div>
+    <div className='px-6'>
       <h2 className='text-sm font-semibold text-left mt-1'>Image Uploading</h2>
       <ProgressBar />
       <p className='text-left text-xs font-medium'>

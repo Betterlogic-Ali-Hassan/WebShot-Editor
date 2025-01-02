@@ -1,4 +1,11 @@
-import { Area, Computer, Visible } from "@/components/svgs";
+import {
+  Area,
+  Computer,
+  Visible,
+  Desktop,
+  Webcam,
+  Tab,
+} from "@/components/svgs";
 
 export const smallCard = [
   {
@@ -17,6 +24,24 @@ export const smallCard = [
     id: 3,
     icon: <Area />,
     name: "Selected Area",
-    key: "Ctrl + Shift+ S",
+    key: "Ctrl + Shift + S",
+  },
+  {
+    id: 4,
+    icon: <Desktop />,
+    name: "Desktop",
+    key: "Ctrl + Shift + L",
+  },
+  {
+    id: 5,
+    icon: <Tab />,
+    name: "This Tab",
+    key: "Ctrl + Shift + T",
+  },
+  {
+    id: 6,
+    icon: <Webcam />,
+    name: "Webcam",
+    key: "Ctrl + Shift + W",
   },
 ];
