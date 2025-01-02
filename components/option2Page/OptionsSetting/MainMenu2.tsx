@@ -6,9 +6,10 @@ import React, { useState } from "react";
 import ScreenSelect from "./screenshot/ScreenSelect";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
-
+const opt2 = ["Edit", "Open uploading window", "Download"];
 const MainMenu2 = () => {
   const [open, setOpen] = useState(false);
+
   return (
     <>
       <div className='flex items-center justify-between border border-[#dadada] dark:border-[#4a4a4a] px-4 py-[12px] rounded-[12px] dark:bg-[#272727] mb-8'>
@@ -51,7 +52,7 @@ const MainMenu2 = () => {
             </span>
             <span className='flex items-center gap-2'>
               and then
-              <ScreenSelect trigger='Visible part of page ' items={option} />
+              <ScreenSelect trigger='Edit ' items={opt2} />
             </span>
           </div>
         </div>

@@ -16,7 +16,7 @@ const ScreenSelect = ({
 }) => {
   return (
     <Select>
-      <SelectTrigger className='w-[180px] min-h-[50px] font-medium text-[15px]'>
+      <SelectTrigger className='w-auto flex gap-2 min-h-[50px] font-medium text-[15px]'>
         <SelectValue placeholder={trigger} />
       </SelectTrigger>
       <SelectContent className='font-medium'>
