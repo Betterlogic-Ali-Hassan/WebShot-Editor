@@ -6,6 +6,7 @@ export const settings = [
       { value: "5s", label: "5s" },
     ],
     defaultValue: "3s",
+    des: "Set a delay before capturing only the visible portion of the page. Ideal for dynamic content requiring extra load time.",
   },
   {
     title: "Entire Screen & App Window after Delay",
@@ -16,6 +17,7 @@ export const settings = [
       { value: "10s", label: "10s" },
     ],
     defaultValue: "10s",
+    des: "Specify a delay before capturing the entire screen or application window. This helps ensure all elements are fully rendered.",
   },
   {
     title: "Download screenshot As",
@@ -24,7 +26,8 @@ export const settings = [
       { value: "record", label: "Record" },
       { value: "last-used", label: "Last used" },
     ],
-    defaultValue: "last-used",
+    defaultValue: "Record",
+    des: 'Choose the default format for saving screenshots, such as "Capture" or other formats (e.g., PNG, JPEG).',
   },
   {
     title: "Skip Annotating",
@@ -33,6 +36,7 @@ export const settings = [
       { value: "never", label: "Never" },
       { value: "only-full", label: "Only When Capturing Full Page" },
     ],
-    defaultValue: "only-full",
+    defaultValue: "Never",
+    des: 'Determine when annotation tools should be skipped, e.g., "Only When Capturing Full Page." Useful for quick captures without edits.',
   },
 ];

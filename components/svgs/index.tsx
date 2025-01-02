@@ -68,3 +68,5 @@ export { default as ShortKey } from "./ShortKey.svg";
 export { default as AdvSetting } from "./AdvSetting.svg";
 export { default as Webcam } from "./Webcam.svg";
 export { default as Tab } from "./Tab.svg";
+export { default as RecordingBtn } from "./RecordingBtn.svg";
+export { default as StarRecording } from "./StartRecording.svg";

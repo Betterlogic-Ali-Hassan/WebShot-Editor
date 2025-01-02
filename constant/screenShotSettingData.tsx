@@ -1,16 +1,53 @@
 export const settings = [
-  { id: 1, name: "Visible Part", enabled: true },
-  { id: 2, name: "Selected Area", enabled: true },
-  { id: 3, name: "Full Page", enabled: true },
-  { id: 4, name: "Hide the fixed elements", enabled: true },
-  { id: 5, name: "Display URL/date in Printing", enabled: true },
-  { id: 6, name: "Save the position of the selected area", enabled: true },
-  { id: 7, name: "Show in context menu", enabled: true },
-  { id: 8, name: "Show 'New' after app update", enabled: true },
-  { id: 9, name: "Auto-short url after upload", enabled: true },
+  {
+    id: 1,
+    name: "Visible Part",
+    enabled: true,
+    des: "",
+  },
+  { id: 2, name: "Selected Area", enabled: true, des: "" },
+  { id: 3, name: "Full Page", enabled: true, des: "" },
+  {
+    id: 4,
+    name: "Hide the fixed elements",
+    enabled: true,
+    des: "Automatically exclude fixed elements (e.g., headers or sticky ads) from the screenshot for a cleaner output.",
+  },
+  {
+    id: 5,
+    name: "Display URL/date in Printing",
+    enabled: true,
+    des: "Include the URL and date on printed screenshots for documentation purposes.",
+  },
+  {
+    id: 6,
+    name: "Save the position of the selected area",
+    enabled: true,
+    des: " Remember the last selected area for screenshots, enabling faster re-selection in future captures.",
+  },
+
+  {
+    id: 7,
+    name: "Show in context menu",
+    enabled: true,
+    des: "Save the Position of the Selected Area. Description: Remember the last selected area for screenshots, enabling faster re-selection in future captures.",
+  },
+  {
+    id: 8,
+    name: "Show 'New' after app update",
+    enabled: true,
+    des: "Show 'New' After App Update. Description: Display a 'New' badge to highlight updated features after an app update.",
+  },
+  {
+    id: 9,
+    name: "Auto-short URL after upload",
+    enabled: true,
+    des: "Auto-Short URL After Upload. Description: Automatically generate a shortened URL for uploaded screenshots, making sharing easier.",
+  },
   {
     id: 10,
     name: "Enable quick screenshot (without opening the menu)",
     enabled: true,
+    des: "Enable Quick Screenshot (Without Opening the Menu). Description: Allow taking a screenshot with a single click, bypassing the menu options for faster operation.",
   },
 ];

@@ -3,6 +3,7 @@ import { Radio } from "../Radio";
 const settings = [
   {
     title: "Download Screenshot As",
+    para: " Select the default file format for saving screenshots, either JPG or PNG, based on your quality and file size preferences.",
     options: [
       { value: "JPG", label: "JPG" },
       { value: "PNG", label: "PNG" },
@@ -19,6 +20,7 @@ const SavingRadio = () => {
           title={setting.title}
           options={setting.options}
           defaultValue={setting.defaultValue}
+          para={setting.para}
         />
       ))}
     </div>

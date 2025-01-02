@@ -14,13 +14,14 @@ const Saving2 = () => {
       <SwitchToggle
         title='Always get shareable links for screenshots uploaded to
       Google Drive'
+        para='Automatically generate shareable links for screenshots uploaded to Google Drive, enabling quick and easy sharing with others.
+'
         checked
       />
       <SavingInput />
       <SwitchToggle
         title='Add Date and URL'
-        para='Note: When you enable Add Date & URL, the date and URL will appear at
-          the top of your screenshots. This feature is available in Local mode.'
+        para='Include the date and URL at the top of your screenshots for reference. This feature is available in Local mode and is useful for providing additional context to your captures.'
       />
     </div>
   );

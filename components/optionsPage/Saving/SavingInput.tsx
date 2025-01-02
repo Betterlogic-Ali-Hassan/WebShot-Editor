@@ -12,11 +12,9 @@ const SavingInput = () => {
         <div className='py-2'>
           <h4>Ask where to save each file before downloading</h4>
           <p className='text-[#9A9A9A] mt-1 text-[13px] font-normal'>
-            Note: to use this feature, you need to Allow the extension to manage
-            Downloads when permission request window pops up. And only when this
-            option is turned on, can you specify default subfolder to save
-            screenshots to your local disk. Defaults to the Downloads folder if
-            you don’t specify a subfolder.
+            Enable this option to choose a specific location for saving
+            screenshots before downloading. Requires download management
+            permissions and allows setting a default folder if not specified.
           </p>
         </div>
         <div className='ml-4'>

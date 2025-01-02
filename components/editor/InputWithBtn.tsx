@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 interface InputWithBtnProps {
   val: number;
-  unit: string;
+  unit?: string;
   className?: string;
   InputWidth?: string;
   onChange?: (value: number) => void;

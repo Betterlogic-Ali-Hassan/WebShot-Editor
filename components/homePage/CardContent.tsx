@@ -16,6 +16,7 @@ import "swiper/css/navigation";
 import { Navigation } from "swiper/modules";
 import SliderBtn from "../editor/SliderBtn";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import VideoQuality from "./videoQuality/VideoQuality";
 
 interface CardProps {
   setRatingOpen: (ratingOpen: boolean) => void;
@@ -26,6 +27,7 @@ export function CardContent({ ratingOpen, setRatingOpen }: CardProps) {
   const [alert, setAlert] = useState(true);
   const [screenshot, setScreenshot] = useState(false);
   const [recordVideo, setRecordVideo] = useState(false);
+  const [videoQualityPage, setVideoQualityPage] = useState(false);
   const [webCam, setWebCam] = useState(false);
   const [selectedCard, setSelectedCard] = useState<string | null>(null);
 
@@ -112,16 +114,26 @@ export function CardContent({ ratingOpen, setRatingOpen }: CardProps) {
           ))}
         </div>
       )}
-
-      {recordVideo ? (
-        <RecordVideo setRecord={setRecordVideo} webCam={webCam} />
-      ) : (
+      {!recordVideo && !videoQualityPage && (
         <>
           <OptionsMenu setRecordVideo={setRecordVideo} />
           <div className='pt-6'>
             <Select />
           </div>
         </>
+      )}
+      {recordVideo && (
+        <RecordVideo
+          setRecord={setRecordVideo}
+          webCam={webCam}
+          setVideoQualityPage={setVideoQualityPage}
+        />
+      )}
+      {videoQualityPage && (
+        <VideoQuality
+          setVideoQualityPage={setVideoQualityPage}
+          setRecord={setRecordVideo}
+        />
       )}
     </div>
   );

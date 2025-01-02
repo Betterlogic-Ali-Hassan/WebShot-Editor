@@ -33,7 +33,11 @@ const MainMenu2 = () => {
       <div className='border border-[#dadada] dark:border-[#4a4a4a] px-4 py-[12px] rounded-[12px] dark:bg-[#272727]'>
         <div className='flex items-center justify-between font-medium'>
           <div className='py-2'>
-            <h4>Enable Dropdown Action Menu</h4>
+            <h4>Enable Quick Screenshot (Without Opening the Menu)</h4>
+            <p className='text-[#9A9A9A] mt-1 text-[13px] font-normal'>
+              Turn on this option to take a screenshot instantly by clicking the
+              extension icon, bypassing the settings menu for faster operation.
+            </p>
           </div>
           <div className='ml-4'>
             <Switch checked={open} onClick={() => setOpen(!open)} />

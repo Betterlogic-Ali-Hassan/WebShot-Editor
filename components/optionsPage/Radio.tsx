@@ -10,13 +10,17 @@ interface Props {
   options: Option[];
   defaultValue: string;
   onChange?: (value: string) => void;
+  para?: string;
 }
 
-export function Radio({ title, options, defaultValue }: Props) {
+export function Radio({ title, options, defaultValue, para }: Props) {
   return (
     <div className='py-3 flex items-center justify-between'>
-      <legend className='font-medium py-2'>{title}</legend>
-      <RadioGroup className='flex flex-wrap gap-4' defaultValue={defaultValue}>
+      <div>
+        <legend className='font-medium'>{title}</legend>
+        <p className='text-[#9AA0A6] text-[13px] mt-1'>{para}</p>
+      </div>
+      <RadioGroup className='flex  ml-4 gap-4' defaultValue={defaultValue}>
         {options.map((item, id) => (
           <div
             key={id}

@@ -1,4 +1,6 @@
 import OptionPageSwitch from "@/components/optionsPage/OptionPageSwitch";
+import { AdvSetting, RecordingBtn, StarRecording } from "@/components/svgs";
+import { Button } from "@/components/ui/button";
 import { setting } from "@/constant/RecordSetting";
 import React from "react";
 import { AiOutlineAudio } from "react-icons/ai";
@@ -6,8 +8,9 @@ import { GoArrowLeft } from "react-icons/go";
 interface Props {
   setRecord: (record: boolean) => void;
   webCam: boolean;
+  setVideoQualityPage: (isOpen: boolean) => void;
 }
-const RecordVideo = ({ setRecord, webCam }: Props) => {
+const RecordVideo = ({ setRecord, webCam, setVideoQualityPage }: Props) => {
   return (
     <div>
       <div className='border-t pt-2'>
@@ -30,6 +33,26 @@ const RecordVideo = ({ setRecord, webCam }: Props) => {
             <OptionPageSwitch key={i} label={item.feature} icon={item.icon} />
           ))
         )}
+        <div
+          className='flex items-center gap-3 text-[15px] border-b border-t py-3 mt-1.5 cursor-pointer'
+          onClick={() => {
+            setVideoQualityPage(true);
+            setRecord(false);
+          }}
+        >
+          <RecordingBtn />
+          Video Setting
+        </div>
+        <div className='flex items-center  gap-2 mt-4'>
+          <Button className='bg-dark text-card flex-1 hover:bg-black/90 h-[42px] text-[15px]'>
+            <StarRecording />
+            Start Recording
+          </Button>
+          <Button className='bg-dark text-card hover:bg-black/90 h-[42px] text-[15px] '>
+            <AdvSetting />
+            Setting
+          </Button>
+        </div>
       </div>
     </div>
   );
