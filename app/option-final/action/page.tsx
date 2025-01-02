@@ -10,6 +10,7 @@ const page = () => {
       <Sidebar />
       <div>
         <OptionPageCard
+          custom
           tabs
           logo
           title='Action Menu Settings'

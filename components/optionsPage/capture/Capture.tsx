@@ -1,8 +1,8 @@
 import React from "react";
-import { Radio } from "../Radio";
 import { settings } from "@/constant/settings";
 // import OptionSelect from "../OptionSelect";
 import SwitchToggle from "@/components/SwitchToogle";
+import CaptureSelect from "./CaptureSelect";
 // import ScreenSelect from "@/components/option2Page/OptionsSetting/screenshot/ScreenSelect";
 // import { options } from "@/constant/ScreenShotOptions";
 const Capture = () => {
@@ -24,16 +24,14 @@ const Capture = () => {
       <SwitchToggle title='Show in context menu' />
       <SwitchToggle title='Show in context menu' checked />
 
-      <div className=' border border-[#dadada] dark:border-[#4a4a4a] px-4 py-[12px] rounded-[12px] dark:bg-[#272727] '>
-        {settings.map((setting) => (
-          <Radio
-            key={setting.title}
-            title={setting.title}
-            options={setting.options}
-            defaultValue={setting.defaultValue}
-          />
-        ))}
-      </div>
+      {settings.map((setting) => (
+        <CaptureSelect
+          key={setting.title}
+          title={setting.title}
+          options={setting.options}
+          defaultValue={setting.defaultValue}
+        />
+      ))}
     </>
   );
 };
