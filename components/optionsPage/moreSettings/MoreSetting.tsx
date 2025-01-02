@@ -6,7 +6,7 @@ const MoreSetting = () => {
   return (
     <>
       <SwitchToggle title="Turn on dark mode for the extension's popup menu" />
-      <SwitchToggle title='Show the extension icon in the compose window of Gmail in order to add a screenshot' />
+      {/* <SwitchToggle title='Show the extension icon in the compose window of Gmail in order to add a screenshot' /> */}
       {/* <Play /> */}
     </>
   );
