@@ -1,6 +1,6 @@
 "use client";
 import { Sidebar } from "@/components/option2Page/Sidebar";
-import Capture from "@/components/optionsPage/capture/Capture";
+import Capture2 from "@/components/optionsPage/capture/Capture2";
 import OptionPageCard from "@/components/optionsPage/OptionPageCard";
 import React from "react";
 
@@ -16,7 +16,7 @@ const page = () => {
           title='Capture Tools'
           para=' Customize and manage screenshot options for your captures.'
         >
-          <Capture />
+          <Capture2 />
         </OptionPageCard>
       </div>
     </div>

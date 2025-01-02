@@ -1,7 +1,7 @@
 "use client";
 import { Sidebar } from "@/components/option2Page/Sidebar";
 import OptionPageCard from "@/components/optionsPage/OptionPageCard";
-import Record from "@/components/optionsPage/Record/Record";
+import Record2 from "@/components/optionsPage/Record/Record2";
 import React from "react";
 
 const page = () => {
@@ -16,7 +16,7 @@ const page = () => {
           title='Recording Settings'
           para='Set preferences for screen recording and video capture.'
         >
-          <Record />
+          <Record2 />
         </OptionPageCard>
       </div>
     </div>

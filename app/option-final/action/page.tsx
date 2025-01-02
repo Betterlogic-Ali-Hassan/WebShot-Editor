@@ -1,5 +1,5 @@
 "use client";
-import MainMenu from "@/components/option2Page/OptionsSetting/MainMenu";
+import MainMenu2 from "@/components/option2Page/OptionsSetting/MainMenu2";
 import { Sidebar } from "@/components/option2Page/Sidebar";
 import OptionPageCard from "@/components/optionsPage/OptionPageCard";
 import React from "react";
@@ -17,7 +17,7 @@ const page = () => {
           para='Enable or disable tools such as screen capture, video recording,
               and more.'
         >
-          <MainMenu />
+          <MainMenu2 />
         </OptionPageCard>
       </div>
     </div>

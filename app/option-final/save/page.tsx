@@ -1,7 +1,7 @@
 "use client";
 import { Sidebar } from "@/components/option2Page/Sidebar";
 import OptionPageCard from "@/components/optionsPage/OptionPageCard";
-import Saving from "@/components/optionsPage/Saving/Saving";
+import Saving2 from "@/components/optionsPage/Saving/Saving2";
 import React from "react";
 
 const page = () => {
@@ -16,7 +16,7 @@ const page = () => {
           title='Saving Preferences'
           para='Choose where and how your captures are saved.'
         >
-          <Saving />
+          <Saving2 />
         </OptionPageCard>
       </div>
     </div>
