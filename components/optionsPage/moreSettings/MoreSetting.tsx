@@ -1,15 +1,13 @@
 import React from "react";
-import OptionPageSwitch from "../OptionPageSwitch";
 import Play from "./Play";
+import SwitchToggle from "@/components/SwitchToogle";
 
 const MoreSetting = () => {
   return (
     <>
-      <div className='pt-2'>
-        <OptionPageSwitch label="Turn on dark mode for the extension's popup menu" />
-        <OptionPageSwitch label='Show the extension icon in the compose window of Gmail in order to add a screenshot' />
-        <Play />
-      </div>
+      <SwitchToggle title="Turn on dark mode for the extension's popup menu" />
+      <SwitchToggle title='Show the extension icon in the compose window of Gmail in order to add a screenshot' />
+      <Play />
     </>
   );
 };

@@ -8,14 +8,14 @@ const page = () => {
   return (
     <div className='flex'>
       <Sidebar />
-      <div className='w-full flex items-center justify-center'>
-        <OptionPageCard tabs logo>
-          <div className='border-b pb-3'>
-            <h1 className='font-semibold text-lg'>Shortcut Keys</h1>
-            <p className='text-sm text-[#777]'>
-              Set up and manage keyboard shortcuts for faster access.
-            </p>
-          </div>
+      <div>
+        <OptionPageCard
+          tabs
+          logo
+          title='Shortcut Keys'
+          para='Set up and manage keyboard shortcuts for faster access.
+'
+        >
           <HotKeys />
         </OptionPageCard>
       </div>

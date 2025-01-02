@@ -7,7 +7,7 @@ import React from "react";
 const MainMenu = () => {
   return (
     <>
-      <div className='grid grid-cols-2 pt-3'>
+      <div className='grid grid-cols-2 '>
         {options.map((item, i) => (
           <div key={i} className='flex items-center gap-2 py-3'>
             <Checkbox

@@ -12,7 +12,7 @@ const settings = [
 ];
 const SavingRadio = () => {
   return (
-    <>
+    <div className='border border-[#dadada] dark:border-[#4a4a4a] px-4 py-[12px] rounded-[12px] dark:bg-[#272727] mb-8'>
       {settings.map((setting) => (
         <Radio
           key={setting.title}
@@ -21,7 +21,7 @@ const SavingRadio = () => {
           defaultValue={setting.defaultValue}
         />
       ))}
-    </>
+    </div>
   );
 };
 
