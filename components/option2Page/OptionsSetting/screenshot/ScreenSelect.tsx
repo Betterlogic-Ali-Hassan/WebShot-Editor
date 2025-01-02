@@ -16,10 +16,10 @@ const ScreenSelect = ({
 }) => {
   return (
     <Select>
-      <SelectTrigger className='w-[180px]'>
+      <SelectTrigger className='w-[180px] min-h-[50px] font-medium text-[15px]'>
         <SelectValue placeholder={trigger} />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className='font-medium'>
         {items.map((item) => (
           <SelectItem key={item} value={item}>
             {item}
