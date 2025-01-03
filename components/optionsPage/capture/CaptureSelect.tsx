@@ -25,7 +25,7 @@ const CaptureSelect = ({
     <div
       className={cn(
         "flex items-center justify-between border border-[#dadada] dark:border-[#4a4a4a] px-4 py-[12px] rounded-[12px] dark:bg-[#272727] mb-8",
-        custom && "border-0 p-0 mt-4 mb-4 "
+        custom && "border-0 p-0 mt-4 mb-4 bg-transparent dark:bg-transparent "
       )}
     >
       <div>
@@ -41,7 +41,7 @@ const CaptureSelect = ({
           >
             <SelectValue placeholder={defaultValue} />
           </SelectTrigger>
-          <SelectContent className='max-h-[300px]'>
+          <SelectContent className={cn("max-h-[300px]", custom && "w-[10px]")}>
             {options.map((option, i) => (
               <SelectItem key={i} value={option.value}>
                 {option.label}

@@ -34,15 +34,14 @@ const RecordVideo = ({ setRecord, webCam, setVideoQualityPage }: Props) => {
           ))
         )}
         <div className='flex items-center  gap-2 mt-4'>
-          <Button className='bg-dark text-card flex-1 hover:bg-black/90 h-[42px] text-[15px]'>
+          <Button className='bg-dark text-card flex-1 hover:bg-black/90 h-[42px] text-[15px] dark:hover:bg-white/90'>
             <StarRecording />
             Start Recording
           </Button>
           <Button
-            className='bg-dark text-card hover:bg-black/90 h-[42px] text-[15px] '
+            className='bg-dark text-card hover:bg-black/90 dark:hover:bg-white/90 h-[42px] text-[15px] '
             onClick={() => {
               setVideoQualityPage(true);
-              setRecord(false);
             }}
           >
             <RecordingBtn />

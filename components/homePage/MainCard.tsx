@@ -9,7 +9,7 @@ export default function MainCard() {
   const [ratingOpen, setRatingOpen] = useState(false);
 
   return (
-    <Card className='overflow-hidden w-[388px] relative high-shadow border-none max-h-[600px] overflow-y-auto scrollbar'>
+    <Card className='overflow-hidden w-[388px] relative high-shadow border-none max-h-[610px] overflow-y-auto scrollbar'>
       <CardHeader
         onRatingToggle={() => setRatingOpen(!ratingOpen)}
         ratingOpen={ratingOpen}
