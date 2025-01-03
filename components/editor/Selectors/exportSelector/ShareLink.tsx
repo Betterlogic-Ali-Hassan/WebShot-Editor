@@ -52,11 +52,7 @@ const ShareLink = () => {
             ) : (
               <>
                 {" "}
-                <Copy
-                  size={16}
-                  className={cn("!fill-none text-black", copy && "text-white")}
-                />{" "}
-                Copy
+                <Copy size={16} className='!fill-none ' /> Copy
               </>
             )}
           </button>
