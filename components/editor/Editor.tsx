@@ -1,22 +1,20 @@
-import React from "react";
-import ToolCards from "./ToolCards";
-interface ImageData {
-  src: string;
-  width: number;
-  height: number;
-}
+import React, { forwardRef, type ReactNode } from 'react';
+import ToolCards from './ToolCards';
+import { observer } from 'mobx-react-lite';
 
 interface Props {
-  imageData: ImageData | null;
-  onResize: (width: number, height: number) => void;
+	children?: ReactNode;
 }
 
-const Editor = ({ imageData, onResize }: Props) => {
-  return (
-    <header className='fixed header w-full top-0 z-50'>
-      <ToolCards imageData={imageData} onResize={onResize} />
-    </header>
-  );
-};
+const Editor = observer(
+	forwardRef<HTMLDivElement, Props>(function Editor(props, ref) {
+		return (
+			<header ref={ref} className="fixed header w-full top-0 z-50">
+				<ToolCards />
+				{props.children}
+			</header>
+		);
+	})
+);
 
 export default Editor;

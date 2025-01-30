@@ -1,60 +1,64 @@
-"use client";
-import Editor from "@/components/editor/Editor";
-import ImageUploader from "@/components/imageUploader/ImageUploader";
-import RevisionCard from "@/components/RevisionCard";
+'use client';
+import Editor from '@/components/editor/Editor';
+import ImageUploader from '@/components/imageUploader/ImageUploader';
+import RevisionCard from '@/components/RevisionCard';
+import { PopoverProvider } from '@/context/PopOverContext';
+import { useStore } from '@/stores/storeProvider';
+import { observer } from 'mobx-react-lite';
+import { useState } from 'react';
 
-import { PopoverProvider } from "@/context/PopOverContext";
-import React, { useState } from "react";
+const Page = observer(() => {
+	const { canvasStore } = useStore();
+	const [isLoading, setIsLoading] = useState(false);
 
-interface ImageData {
-  src: string;
-  width: number;
-  height: number;
-}
+	const handleImageUpload = async (
+		src: string,
+		width: number,
+		height: number
+	) => {
+		setIsLoading(true);
 
-const Page = () => {
-  const [imageData, setImageData] = useState<ImageData | null>(null);
-  const [originalImage, setOriginalImage] = useState<ImageData | null>(null);
+		try {
+			const newLayer = {
+				id: crypto.randomUUID(),
+				type: 'image' as const,
+				name: 'Uploaded Image',
+				visible: true,
+				locked: false,
+				opacity: 1,
+				src,
+				originalSize: { width, height },
+				filters: [],
+				transform: {
+					x: width / 2,
+					y: height / 2,
+					width,
+					height,
+					rotation: 0,
+					scale: { x: 1, y: 1 },
+				},
+			};
 
-  const handleResize = (newWidth: number, newHeight: number) => {
-    if (originalImage) {
-      const canvas = document.createElement("canvas");
-      canvas.width = newWidth;
-      canvas.height = newHeight;
-      const ctx = canvas.getContext("2d");
-      const img = new Image();
-      img.onload = () => {
-        ctx?.drawImage(img, 0, 0, newWidth, newHeight);
-        const resizedDataUrl = canvas.toDataURL("image/jpeg", 0.9); // Maintain quality
-        setImageData({
-          src: resizedDataUrl,
-          width: newWidth,
-          height: newHeight,
-        });
-      };
-      img.src = originalImage.src; // Always use original image for resizing
-    }
-  };
+			await new Promise((resolve) => setTimeout(resolve, 2000));
 
-  const handleImageUpload = (uploadedImage: ImageData | null) => {
-    if (uploadedImage) {
-      setImageData(uploadedImage);
-      setOriginalImage(uploadedImage); // Store original image
-    } else {
-      setImageData(null);
-      setOriginalImage(null);
-    }
-  };
+			canvasStore.addLayer(newLayer);
+		} finally {
+			setIsLoading(false);
+		}
+	};
 
-  return (
-    <>
-      <PopoverProvider>
-        <Editor imageData={imageData} onResize={handleResize} />
-      </PopoverProvider>
-      <ImageUploader imageData={imageData} onImageUpload={handleImageUpload} />
-      <RevisionCard />
-    </>
-  );
-};
+	return (
+		<>
+			<PopoverProvider>
+				<Editor />
+			</PopoverProvider>
+			<ImageUploader
+				isLoading={isLoading}
+				onImageUpload={handleImageUpload}
+			/>
+			<RevisionCard />
+		</>
+	);
+});
 
 export default Page;

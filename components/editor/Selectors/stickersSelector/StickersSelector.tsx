@@ -1,31 +1,39 @@
-import { Stickers } from "@/components/svgs";
-import React, { useState } from "react";
-import ToolCard from "../../ToolCard";
-import Sticker from "./Sticker";
-import ToolDropdown from "@/components/ToolDropdown";
+import { Stickers } from '@/components/svgs';
+import React, { useState, ReactElement, SVGProps } from 'react';
+import ToolCard from '../../ToolCard';
+import Sticker from './Sticker';
+import ToolDropdown from '@/components/ToolDropdown';
+
+interface StickerItem {
+	type: 'image';
+	src: ReactElement<SVGProps<SVGSVGElement>>;
+}
 
 const StickersSelector = () => {
-  const [selectedIcon, setSelectedIcon] = useState<React.ReactNode>(null); // No selection initially
+	const [selectedSticker, setSelectedSticker] = useState<StickerItem>();
 
-  const handleSelection = (icon: React.ReactNode) => {
-    setSelectedIcon(icon); // Update icon when a selection is made
-  };
+	const handleSelection = (sticker: StickerItem) => {
+		setSelectedSticker(sticker);
+	};
 
-  return (
-    <ToolDropdown
-      trigger={
-        <ToolCard
-          text='Stickers'
-          icon={selectedIcon || <Stickers />} // Use default icon if none is selected
-          id={11}
-        />
-      }
-      content={
-        <Sticker onClick={handleSelection} selectedIcon={selectedIcon} />
-      }
-      id='num10'
-    />
-  );
+	return (
+		<ToolDropdown
+			trigger={
+				<ToolCard
+					text="Stickers"
+					icon={selectedSticker?.src || <Stickers />}
+					id={11}
+				/>
+			}
+			content={
+				<Sticker
+					onClick={handleSelection}
+					selectedSticker={selectedSticker}
+				/>
+			}
+			id="num10"
+		/>
+	);
 };
 
 export default StickersSelector;
