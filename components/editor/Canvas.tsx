@@ -23,6 +23,22 @@ const Canvas = observer(() => {
 	const imageCache = useRef<Map<string, HTMLImageElement>>(new Map());
 	const hoveredHandleRef = useRef<TransformHandleType | null>(null);
 	const selectedHandleRef = useRef<TransformHandleType | null>(null);
+	const tempCanvasRef = useRef<HTMLCanvasElement | null>(null);
+
+	useEffect(() => {
+		const mainCanvas = mainCanvasRef.current;
+		const tempCanvas = document.createElement('canvas');
+
+		if (mainCanvas) {
+			tempCanvas.width = mainCanvas.width;
+			tempCanvas.height = mainCanvas.height;
+			tempCanvasRef.current = tempCanvas;
+		}
+
+		return () => {
+			tempCanvasRef.current = null;
+		};
+	}, []);
 	const drawPencilLine = useCallback(
 		(
 			ctx: CanvasRenderingContext2D,
@@ -209,6 +225,74 @@ const Canvas = observer(() => {
 			canvasStore.canvasState.layers,
 		]
 	);
+
+	const checkLayerTransparency = useCallback(
+		async (
+			x: number,
+			y: number,
+			layer: Layer,
+			tempCanvas: HTMLCanvasElement,
+			tempCtx: CanvasRenderingContext2D
+		): Promise<boolean> => {
+			tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+			await drawLayer(tempCtx, layer);
+
+			for (let radius = 1; radius <= 8; radius++) {
+				const checkPoints: Array<[number, number]> = [];
+
+				let px = radius;
+				let py = 0;
+				let err = 0;
+
+				while (px >= py) {
+					checkPoints.push(
+						[x + px, y + py],
+						[x + py, y + px],
+						[x - py, y + px],
+						[x - px, y + py],
+						[x - px, y - py],
+						[x - py, y - px],
+						[x + py, y - px],
+						[x + px, y - py]
+					);
+
+					if (err <= 0) {
+						py += 1;
+						err += 2 * py + 1;
+					}
+					if (err > 0) {
+						px -= 1;
+						err -= 2 * px + 1;
+					}
+				}
+
+				for (const [pointX, pointY] of checkPoints) {
+					if (
+						pointX < 0 ||
+						pointX >= tempCanvas.width ||
+						pointY < 0 ||
+						pointY >= tempCanvas.height
+					) {
+						continue;
+					}
+
+					const pixelData = tempCtx.getImageData(
+						pointX,
+						pointY,
+						1,
+						1
+					).data;
+					if (pixelData[3] > 0) {
+						return true;
+					}
+				}
+			}
+
+			return false;
+		},
+		[drawLayer]
+	);
 	const renderLayers = useCallback(async () => {
 		const mainCanvas = mainCanvasRef.current;
 		const ctx = mainCanvas?.getContext('2d');
@@ -312,10 +396,11 @@ const Canvas = observer(() => {
 	});
 
 	const handleMouseDown = useCallback(
-		(e: React.MouseEvent) => {
+		async (e: React.MouseEvent) => {
 			const coords = getCanvasCoordinates(e);
 			if (!coords) return;
 
+			// Handle drawing tools
 			if (canvasStore.currentTool === 'draw') {
 				canvasStore.startDrawing(coords.x, coords.y);
 				return;
@@ -326,10 +411,10 @@ const Canvas = observer(() => {
 				return;
 			}
 
+			// Handle transform handles
 			const clickedHandle = (() => {
 				const selectedLayer = canvasStore.getSelectedLayer();
 				if (!selectedLayer) return null;
-
 				if (canvasStore.canvasState.layers.indexOf(selectedLayer) === 0)
 					return null;
 
@@ -360,26 +445,58 @@ const Canvas = observer(() => {
 			} else {
 				selectedHandleRef.current = null;
 
-				const clickedLayer = [...canvasStore.canvasState.layers]
-					.reverse()
-					.find((layer) => {
-						const originalIndex =
-							canvasStore.canvasState.layers.indexOf(layer);
-						return (
-							originalIndex > 0 &&
-							isPointInLayer(coords.x, coords.y, layer)
-						);
-					});
+				const tempCanvas = tempCanvasRef.current;
+				const tempCtx = tempCanvas?.getContext('2d');
 
-				if (clickedLayer) {
-					canvasStore.selectLayer(clickedLayer.id);
-					canvasStore.startDragging(coords.x, coords.y);
-				} else {
-					canvasStore.clearSelection();
+				if (!tempCanvas || !tempCtx) return;
+
+				// Check layers from top to bottom, excluding the first layer
+				const layers = [...canvasStore.canvasState.layers].reverse();
+
+				for (let i = 0; i < layers.length; i++) {
+					const layer = layers[i];
+
+					// Skip background layer (first layer in original order)
+					if (i === layers.length - 1) continue;
+
+					// Quick bounds check first
+					if (isPointInLayer(coords.x, coords.y, layer)) {
+						try {
+							// Detailed transparency check
+							const isNotTransparent =
+								await checkLayerTransparency(
+									coords.x,
+									coords.y,
+									layer,
+									tempCanvas,
+									tempCtx
+								);
+
+							if (isNotTransparent) {
+								canvasStore.selectLayer(layer.id);
+								canvasStore.startDragging(coords.x, coords.y);
+								return;
+							}
+						} catch (error) {
+							console.error(
+								'Error checking layer transparency:',
+								error
+							);
+						}
+					}
 				}
+
+				// If we get here, no layer was found at click point
+				canvasStore.clearSelection();
+				canvasStore.stopDragging();
 			}
 		},
-		[canvasStore, getCanvasCoordinates, isPointInLayer]
+		[
+			canvasStore,
+			getCanvasCoordinates,
+			isPointInLayer,
+			checkLayerTransparency,
+		]
 	);
 	const handleMouseMove = useCallback(
 		(e: React.MouseEvent) => {
@@ -603,6 +720,11 @@ const Canvas = observer(() => {
 				bufferCanvasRef.current.width = width;
 				bufferCanvasRef.current.height = height;
 			}
+
+			if (tempCanvasRef.current) {
+				tempCanvasRef.current.width = width;
+				tempCanvasRef.current.height = height;
+			}
 		};
 
 		updateCanvasSize();
@@ -658,7 +780,7 @@ const Canvas = observer(() => {
 				const isFirstImage =
 					canvasStore.canvasState.layers.length === 0;
 				handleImageDrop(
-					e,
+					e.nativeEvent,
 					(result) => {
 						if (isFirstImage) {
 							if (result.initialZoom) {
@@ -680,7 +802,7 @@ const Canvas = observer(() => {
 				const isFirstImage =
 					canvasStore.canvasState.layers.length === 0;
 				handleImagePaste(
-					e,
+					e.nativeEvent,
 					(result) => {
 						if (isFirstImage) {
 							if (result.initialZoom) {
@@ -702,7 +824,10 @@ const Canvas = observer(() => {
 			<canvas
 				ref={mainCanvasRef}
 				style={canvasStyle}
-				onMouseDown={handleMouseDown}
+				onMouseDown={(e) => {
+					e.preventDefault();
+					handleMouseDown(e).catch(console.error);
+				}}
 				onMouseMove={handleMouseMove}
 				onMouseUp={handleMouseUp}
 				onMouseLeave={handleMouseUp}
