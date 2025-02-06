@@ -177,6 +177,18 @@ export interface DrawingState {
 	lineWidth: number;
 	points: { x: number; y: number }[];
 	lastDrawTime: number;
+	bounds?: {
+		minX: number;
+		maxX: number;
+		minY: number;
+		maxY: number;
+	};
+	previewBounds?: {
+		x: number;
+		y: number;
+		width: number;
+		height: number;
+	};
 }
 
 export interface DrawingToolParams {

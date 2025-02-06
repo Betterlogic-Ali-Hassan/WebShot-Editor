@@ -61,18 +61,50 @@ export class CanvasStore {
 	startDrawing(x: number, y: number) {
 		if (this.drawingState.isDrawing) return;
 
-		this.drawingState.isDrawing = true;
-		this.drawingState.points = [{ x, y }];
-		this.drawingState.lastDrawTime = Date.now();
+		this.drawingState = {
+			...this.drawingState,
+			isDrawing: true,
+			points: [{ x, y }],
+			lastDrawTime: Date.now(),
+			bounds: {
+				minX: x,
+				maxX: x,
+				minY: y,
+				maxY: y,
+			},
+			previewBounds: {
+				x: x,
+				y: y,
+				width: 0,
+				height: 0,
+			},
+		};
 	}
 
 	updateDrawing(x: number, y: number) {
-		if (!this.drawingState.isDrawing) return;
+		if (!this.drawingState.isDrawing || !this.drawingState.bounds) return;
 
 		const currentTime = Date.now();
 		if (currentTime - this.drawingState.lastDrawTime >= 16) {
-			this.drawingState.points.push({ x, y });
+			const bounds = this.drawingState.bounds;
+			bounds.minX = Math.min(bounds.minX, x);
+			bounds.maxX = Math.max(bounds.maxX, x);
+			bounds.minY = Math.min(bounds.minY, y);
+			bounds.maxY = Math.max(bounds.maxY, y);
+
+			this.drawingState.points.push({
+				x: x,
+				y: y,
+			});
+
 			this.drawingState.lastDrawTime = currentTime;
+
+			this.drawingState.previewBounds = {
+				x: bounds.minX,
+				y: bounds.minY,
+				width: bounds.maxX - bounds.minX,
+				height: bounds.maxY - bounds.minY,
+			};
 		}
 	}
 
@@ -94,6 +126,10 @@ export class CanvasStore {
 				height: this.canvasState.dimensions.height,
 				rotation: 0,
 				scale: { x: 1, y: 1 },
+				center: {
+					x: this.canvasState.dimensions.width / 2,
+					y: this.canvasState.dimensions.height / 2,
+				},
 			},
 			toolType: this.drawingState.currentTool || 'pencil',
 			points: [...this.drawingState.points],

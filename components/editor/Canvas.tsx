@@ -86,34 +86,40 @@ const Canvas = observer(() => {
 
 	const drawPreview = useCallback(
 		(ctx: CanvasRenderingContext2D, state: DrawingState) => {
-			if (state.points.length < 2) return;
+			if (state.points.length < 2 || !state.previewBounds) return;
 
 			ctx.save();
 			ctx.beginPath();
 			ctx.strokeStyle = state.color;
 			ctx.lineWidth =
 				state.lineWidth * (canvasStore.canvasState.zoom / 100);
+			ctx.globalAlpha = state.currentTool === 'highlighter' ? 0.3 : 1;
 
 			switch (state.currentTool) {
 				case 'pencil':
-					drawPencilLine(ctx, state.points);
+					ctx.lineJoin = 'round';
+					ctx.lineCap = 'round';
 					break;
 				case 'brush':
-					drawBrushLine(ctx, state.points);
+					ctx.lineJoin = 'round';
+					ctx.lineCap = 'round';
+					ctx.shadowBlur = state.lineWidth / 2;
+					ctx.shadowColor = state.color;
 					break;
 				case 'highlighter':
-					drawHighlighterLine(ctx, state.points);
+					ctx.lineJoin = 'round';
+					ctx.lineCap = 'square';
 					break;
 			}
 
+			ctx.moveTo(state.points[0].x, state.points[0].y);
+			for (let i = 1; i < state.points.length; i++) {
+				ctx.lineTo(state.points[i].x, state.points[i].y);
+			}
+			ctx.stroke();
 			ctx.restore();
 		},
-		[
-			canvasStore.canvasState.zoom,
-			drawPencilLine,
-			drawBrushLine,
-			drawHighlighterLine,
-		]
+		[canvasStore.canvasState.zoom]
 	);
 	const loadImage = useCallback((src: string): Promise<HTMLImageElement> => {
 		return new Promise((resolve, reject) => {
@@ -137,6 +143,48 @@ const Canvas = observer(() => {
 			if (!layer.visible) return;
 
 			switch (layer.type) {
+				case 'drawing': {
+					ctx.save();
+					if ('params' in layer && layer.params) {
+						const { x, y, width, height, rotation, scale } =
+							layer.transform;
+						const centerX = x + width / 2;
+						const centerY = y + height / 2;
+
+						ctx.translate(centerX, centerY);
+						ctx.rotate((rotation * Math.PI) / 180);
+						ctx.scale(scale.x, scale.y);
+						ctx.translate(-centerX, -centerY);
+
+						ctx.strokeStyle = layer.params.color;
+						ctx.lineWidth =
+							layer.params.lineWidth *
+							(canvasStore.canvasState.zoom / 100);
+						ctx.globalAlpha = layer.params.opacity;
+
+						switch (layer.toolType) {
+							case 'pencil':
+								ctx.lineJoin = 'round';
+								ctx.lineCap = 'round';
+								drawPencilLine(ctx, layer.points);
+								break;
+							case 'brush':
+								ctx.lineJoin = 'round';
+								ctx.lineCap = 'round';
+								ctx.shadowBlur = layer.params.lineWidth / 2;
+								ctx.shadowColor = layer.params.color;
+								drawBrushLine(ctx, layer.points);
+								break;
+							case 'highlighter':
+								ctx.lineJoin = 'round';
+								ctx.lineCap = 'square';
+								drawHighlighterLine(ctx, layer.points);
+								break;
+						}
+					}
+					ctx.restore();
+					break;
+				}
 				case 'image': {
 					try {
 						const img = await loadImage(layer.src);
@@ -321,6 +369,15 @@ const Canvas = observer(() => {
 		const { transform } = layer;
 		const { x: layerX, y: layerY, width, height } = transform;
 
+		if (layer.type === 'drawing') {
+			return (
+				x >= layerX &&
+				x <= layerX + width &&
+				y >= layerY &&
+				y <= layerY + height
+			);
+		}
+
 		return (
 			x >= layerX &&
 			x <= layerX + width &&
@@ -450,19 +507,15 @@ const Canvas = observer(() => {
 
 				if (!tempCanvas || !tempCtx) return;
 
-				// Check layers from top to bottom, excluding the first layer
 				const layers = [...canvasStore.canvasState.layers].reverse();
 
 				for (let i = 0; i < layers.length; i++) {
 					const layer = layers[i];
 
-					// Skip background layer (first layer in original order)
 					if (i === layers.length - 1) continue;
 
-					// Quick bounds check first
 					if (isPointInLayer(coords.x, coords.y, layer)) {
 						try {
-							// Detailed transparency check
 							const isNotTransparent =
 								await checkLayerTransparency(
 									coords.x,
@@ -486,7 +539,6 @@ const Canvas = observer(() => {
 					}
 				}
 
-				// If we get here, no layer was found at click point
 				canvasStore.clearSelection();
 				canvasStore.stopDragging();
 			}
@@ -498,6 +550,7 @@ const Canvas = observer(() => {
 			checkLayerTransparency,
 		]
 	);
+
 	const handleMouseMove = useCallback(
 		(e: React.MouseEvent) => {
 			const coords = getCanvasCoordinates(e);
@@ -509,12 +562,20 @@ const Canvas = observer(() => {
 				const overlayCanvas = overlayCanvasRef.current;
 				const ctx = overlayCanvas?.getContext('2d');
 				if (overlayCanvas && ctx) {
-					ctx.clearRect(
-						0,
-						0,
-						overlayCanvas.width,
-						overlayCanvas.height
-					);
+					if (canvasStore.drawingState.previewBounds) {
+						const bounds = canvasStore.drawingState.previewBounds;
+						const padding =
+							canvasStore.drawingState.currentTool ===
+							'highlighter'
+								? 10
+								: 5;
+						ctx.clearRect(
+							bounds.x - padding,
+							bounds.y - padding,
+							bounds.width + padding * 2,
+							bounds.height + padding * 2
+						);
+					}
 					drawPreview(ctx, canvasStore.drawingState);
 				}
 				return;
@@ -566,6 +627,7 @@ const Canvas = observer(() => {
 				}
 				return;
 			}
+
 			if (
 				canvasStore.dragState.isDragging &&
 				!selectedHandleRef.current
@@ -644,8 +706,6 @@ const Canvas = observer(() => {
 						selectedLayer.transform.height = Math.abs(coords.y - y);
 						break;
 					}
-					default:
-						return;
 				}
 
 				const overlayCanvas = overlayCanvasRef.current;
@@ -654,8 +714,8 @@ const Canvas = observer(() => {
 					ctx.clearRect(
 						0,
 						0,
-						overlayCanvas?.width ? overlayCanvas.width : 0,
-						overlayCanvas?.height ? overlayCanvas.height : 0
+						overlayCanvas?.width || 0,
+						overlayCanvas?.height || 0
 					);
 					drawSelection(ctx, selectedLayer);
 				}
@@ -676,8 +736,22 @@ const Canvas = observer(() => {
 
 			const overlayCanvas = overlayCanvasRef.current;
 			const ctx = overlayCanvas?.getContext('2d');
-			if (overlayCanvas && ctx) {
-				ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+			if (
+				overlayCanvas &&
+				ctx &&
+				canvasStore.drawingState.previewBounds
+			) {
+				const bounds = canvasStore.drawingState.previewBounds;
+				const padding =
+					canvasStore.drawingState.currentTool === 'highlighter'
+						? 10
+						: 5;
+				ctx.clearRect(
+					bounds.x - padding,
+					bounds.y - padding,
+					bounds.width + padding * 2,
+					bounds.height + padding * 2
+				);
 			}
 			return;
 		}
