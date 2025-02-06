@@ -14,6 +14,9 @@ import {
 	DrawingState,
 	DrawingLayerData,
 	DrawingToolType,
+	NumberState,
+	NumberStyle,
+	NumberLayerData,
 } from '@/types/types';
 
 export class CanvasStore {
@@ -52,6 +55,20 @@ export class CanvasStore {
 		lineWidth: 2,
 		points: [],
 		lastDrawTime: 0,
+	};
+	numberState: NumberState = {
+		isActive: false,
+		currentStyle: 'circle',
+		counters: {
+			circle: 1,
+			square: 1,
+			plain: 1,
+		},
+		colors: {
+			circle: '#ff0000',
+			square: '#ff0000',
+			plain: '#ff0000',
+		},
 	};
 	currentTool: ToolType = 'select';
 
@@ -447,5 +464,59 @@ export class CanvasStore {
 		this.shapeDrawingState.currentPoint = null;
 
 		this.logCanvasState();
+	}
+	setNumberStyle(style: NumberStyle) {
+		this.numberState.currentStyle = style;
+		this.logCanvasState();
+	}
+
+	setNumberColor(color: string) {
+		this.numberState.colors[this.numberState.currentStyle] = color;
+		this.logCanvasState();
+	}
+
+	incrementNumberCounter() {
+		this.numberState.counters[this.numberState.currentStyle]++;
+		this.logCanvasState();
+	}
+
+	getCurrentNumberValue(): number {
+		return this.numberState.counters[this.numberState.currentStyle];
+	}
+
+	getCurrentNumberColor(): string {
+		return this.numberState.colors[this.numberState.currentStyle];
+	}
+
+	createNumberLayer(x: number, y: number): NumberLayerData {
+		const currentStyle = this.numberState.currentStyle;
+		const currentValue = this.getCurrentNumberValue();
+		const currentColor = this.getCurrentNumberColor();
+
+		const numberLayer: NumberLayerData = {
+			id: crypto.randomUUID(),
+			type: 'number',
+			name: `Number ${currentValue}`,
+			visible: true,
+			locked: false,
+			opacity: 1,
+			value: currentValue,
+			style: currentStyle,
+			color: currentColor,
+			fontSize: 24,
+			transform: {
+				x,
+				y,
+				width: 40,
+				height: 40,
+				rotation: 0,
+				scale: { x: 1, y: 1 },
+			},
+		};
+
+		this.addLayer(numberLayer);
+		this.incrementNumberCounter();
+
+		return numberLayer;
 	}
 }

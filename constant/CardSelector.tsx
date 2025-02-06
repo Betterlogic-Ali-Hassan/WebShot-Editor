@@ -33,7 +33,7 @@ export const selectors: SelectorItem[] = [
 	{ component: ArrowSelector, id: 7, selection: true, toolType: 'shape' },
 	{ component: TextArrowSelector, id: 16, selection: true, toolType: 'text' },
 	{ component: TextSelector, id: 8, selection: true, toolType: 'text' },
-	{ component: NumberSelector, id: 9, selection: true, toolType: 'text' },
+	{ component: NumberSelector, id: 9, selection: true, toolType: 'number' },
 	{ component: StickersSelector, id: 10, selection: true },
 	{ component: BlurSelector, id: 11, selection: true },
 	{ component: BorderSelector, id: 12, selection: false },

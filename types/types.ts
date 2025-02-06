@@ -14,7 +14,9 @@ export interface Transform {
 	};
 }
 
-export type LayerType = 'image' | 'text' | 'shape' | 'drawing';
+export type LayerType = 'image' | 'text' | 'shape' | 'drawing' | 'number';
+
+export type NumberStyle = 'circle' | 'square' | 'plain';
 
 export interface BaseLayerData {
 	id: string;
@@ -46,12 +48,19 @@ export interface TextLayerData extends BaseLayerData {
 	bold: boolean;
 	italic: boolean;
 }
-
+export interface NumberLayerData extends BaseLayerData {
+	type: 'number';
+	value: number;
+	style: NumberStyle;
+	color: string;
+	fontSize: number;
+}
 export type Layer =
 	| ImageLayerData
 	| TextLayerData
 	| ShapeLayerData
-	| DrawingLayerData;
+	| DrawingLayerData
+	| NumberLayerData;
 export interface Filter {
 	type: 'brightness' | 'contrast' | 'saturation' | 'blur' | 'grayscale';
 	value: number;
@@ -203,4 +212,18 @@ export interface DrawingLayerData extends BaseLayerData {
 	toolType: DrawingToolType | null;
 	points: { x: number; y: number }[];
 	params: DrawingToolParams;
+}
+export interface NumberState {
+	isActive: boolean;
+	currentStyle: NumberStyle;
+	counters: {
+		circle: number;
+		square: number;
+		plain: number;
+	};
+	colors: {
+		circle: string;
+		square: string;
+		plain: string;
+	};
 }

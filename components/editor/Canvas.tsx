@@ -262,6 +262,50 @@ const Canvas = observer(() => {
 					ctx.restore();
 					break;
 				}
+				case 'number': {
+					ctx.save();
+					const { x, y, width, height, scale } = layer.transform;
+					const centerX = x + width / 2;
+					const centerY = y + height / 2;
+
+					ctx.translate(centerX, centerY);
+					ctx.scale(scale.x, scale.y);
+					ctx.translate(-centerX, -centerY);
+
+					ctx.fillStyle = layer.color;
+					ctx.strokeStyle = layer.color;
+					ctx.lineWidth = 2;
+					ctx.textAlign = 'center';
+					ctx.textBaseline = 'middle';
+					ctx.font = `${layer.fontSize}px Arial`;
+
+					switch (layer.style) {
+						case 'circle': {
+							ctx.beginPath();
+							ctx.arc(
+								centerX,
+								centerY,
+								width / 2 - 2,
+								0,
+								Math.PI * 2
+							);
+							ctx.stroke();
+							break;
+						}
+						case 'square': {
+							ctx.strokeRect(x + 2, y + 2, width - 4, height - 4);
+							break;
+						}
+						case 'plain': {
+							break;
+						}
+					}
+
+					ctx.fillText(layer.value.toString(), centerX, centerY);
+
+					ctx.restore();
+					break;
+				}
 			}
 		},
 		[
@@ -270,7 +314,6 @@ const Canvas = observer(() => {
 			drawPencilLine,
 			drawBrushLine,
 			drawHighlighterLine,
-			canvasStore.canvasState.layers,
 		]
 	);
 
@@ -457,7 +500,6 @@ const Canvas = observer(() => {
 			const coords = getCanvasCoordinates(e);
 			if (!coords) return;
 
-			// Handle drawing tools
 			if (canvasStore.currentTool === 'draw') {
 				canvasStore.startDrawing(coords.x, coords.y);
 				return;
@@ -467,8 +509,15 @@ const Canvas = observer(() => {
 				canvasStore.startShapeDrawing(coords.x, coords.y);
 				return;
 			}
+			if (canvasStore.currentTool === 'number') {
+				const numberLayer = canvasStore.createNumberLayer(
+					coords.x - 20,
+					coords.y - 20
+				);
+				canvasStore.selectLayer(numberLayer.id);
+				return;
+			}
 
-			// Handle transform handles
 			const clickedHandle = (() => {
 				const selectedLayer = canvasStore.getSelectedLayer();
 				if (!selectedLayer) return null;

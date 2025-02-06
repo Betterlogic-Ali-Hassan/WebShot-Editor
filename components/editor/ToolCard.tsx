@@ -7,9 +7,15 @@ interface ToolCardProps {
 	text: string;
 	id: number;
 	isActive?: boolean;
+	onClick?: () => void;
 }
 
-const ToolCard: React.FC<ToolCardProps> = ({ icon, text, isActive }) => {
+const ToolCard: React.FC<ToolCardProps> = ({
+	icon,
+	text,
+	isActive,
+	onClick,
+}) => {
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const { canvasStore } = useStore();
 
@@ -17,6 +23,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ icon, text, isActive }) => {
 		if (text.toLowerCase() === 'image' && fileInputRef.current) {
 			fileInputRef.current.click();
 		}
+		onClick?.();
 	};
 
 	const handleFileChange = async (
