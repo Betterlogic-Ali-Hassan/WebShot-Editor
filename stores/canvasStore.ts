@@ -17,6 +17,8 @@ import {
 	NumberState,
 	NumberStyle,
 	NumberLayerData,
+	TextState,
+	TextLayerData,
 } from '@/types/types';
 
 export class CanvasStore {
@@ -69,6 +71,19 @@ export class CanvasStore {
 			square: '#ff0000',
 			plain: '#ff0000',
 		},
+	};
+	textState: TextState = {
+		isEditing: false,
+		currentText: '',
+		fontSize: 16,
+		fontFamily: 'Arial',
+		color: '#000000',
+		backgroundColor: null,
+		alignment: 'left',
+		bold: false,
+		italic: false,
+		editingLayerId: null,
+		position: null,
 	};
 	currentTool: ToolType = 'select';
 
@@ -518,5 +533,133 @@ export class CanvasStore {
 		this.incrementNumberCounter();
 
 		return numberLayer;
+	}
+
+	startTextEditing(x: number, y: number) {
+		if (this.textState.isEditing) return;
+
+		this.textState.isEditing = true;
+		this.textState.currentText = '';
+		this.textState.editingLayerId = null;
+		this.textState.position = { x, y };
+
+		// Создаем временные размеры для поля ввода
+		const tempWidth = this.textState.fontSize * 2;
+		const tempHeight = this.textState.fontSize * 1.2;
+
+		// Позиционируем поле ввода
+		const transform = {
+			x,
+			y,
+			width: tempWidth,
+			height: tempHeight,
+			rotation: 0,
+			scale: { x: 1, y: 1 },
+		};
+
+		return transform;
+	}
+
+	finishTextEditing() {
+		if (!this.textState.isEditing) return;
+
+		if (this.textState.currentText.trim()) {
+			if (this.textState.editingLayerId) {
+				this.updateTextLayer(this.textState.editingLayerId);
+			} else if (this.textState.position) {
+				this.createTextLayer(this.textState.position);
+			}
+		} else if (this.textState.editingLayerId) {
+			this.removeLayer(this.textState.editingLayerId);
+		}
+
+		this.resetTextState();
+		this.currentTool = 'select';
+	}
+
+	private createTextLayer(transform: { x: number; y: number }) {
+		console.log('Creating text layer with state:', this.textState);
+
+		const textLayer: TextLayerData = {
+			id: crypto.randomUUID(),
+			type: 'text',
+			name: 'Text Layer',
+			visible: true,
+			locked: false,
+			opacity: 1,
+			transform: {
+				x: transform.x,
+				y: transform.y,
+				width: this.textState.fontSize * 2,
+				height: this.textState.fontSize * 1.2,
+				rotation: 0,
+				scale: { x: 1, y: 1 },
+			},
+			content: this.textState.currentText,
+			fontSize: this.textState.fontSize,
+			fontFamily: this.textState.fontFamily,
+			color: this.textState.color,
+			backgroundColor: this.textState.backgroundColor,
+			alignment: this.textState.alignment,
+			bold: this.textState.bold,
+			italic: this.textState.italic,
+		};
+
+		console.log('Created layer:', textLayer);
+		this.addLayer(textLayer);
+	}
+
+	private updateTextLayer(layerId: string) {
+		const layerIndex = this.canvasState.layers.findIndex(
+			(layer) => layer.id === layerId
+		);
+
+		if (layerIndex !== -1) {
+			const layer = this.canvasState.layers[layerIndex];
+			if (layer.type === 'text') {
+				layer.content = this.textState.currentText;
+				layer.fontSize = this.textState.fontSize;
+				layer.fontFamily = this.textState.fontFamily;
+				layer.color = this.textState.color;
+				layer.alignment = this.textState.alignment;
+				layer.bold = this.textState.bold;
+				layer.italic = this.textState.italic;
+			}
+		}
+	}
+
+	private resetTextState() {
+		this.textState.isEditing = false;
+		this.textState.currentText = '';
+		this.textState.editingLayerId = null;
+		this.textState.position = null;
+	}
+
+	startEditingExistingText(layerId: string) {
+		const layer = this.canvasState.layers.find(
+			(layer) => layer.id === layerId
+		);
+
+		if (layer?.type === 'text') {
+			this.textState.isEditing = true;
+			this.textState.editingLayerId = layer.id;
+			this.textState.currentText = layer.content;
+			this.textState.fontSize = layer.fontSize;
+			this.textState.fontFamily = layer.fontFamily;
+			this.textState.color = layer.color;
+			this.textState.alignment = layer.alignment;
+			this.textState.bold = layer.bold;
+			this.textState.italic = layer.italic;
+		}
+	}
+
+	updateTextContent(text: string) {
+		if (this.textState.isEditing) {
+			this.textState.currentText = text;
+		}
+	}
+
+	setTextStyle(updates: Partial<TextState>) {
+		Object.assign(this.textState, updates);
 	}
 }

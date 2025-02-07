@@ -227,3 +227,31 @@ export interface NumberState {
 		plain: string;
 	};
 }
+
+export type TextAlignment = 'left' | 'center' | 'right';
+
+export interface TextState {
+	isEditing: boolean;
+	currentText: string;
+	fontSize: number;
+	fontFamily: string;
+	color: string;
+	backgroundColor: string | null;
+	alignment: TextAlignment;
+	bold: boolean;
+	italic: boolean;
+	editingLayerId: string | null;
+	position: { x: number; y: number } | null;
+}
+
+export interface TextLayerData extends BaseLayerData {
+	type: 'text';
+	content: string;
+	fontSize: number;
+	fontFamily: string;
+	color: string;
+	backgroundColor: string | null;
+	alignment: TextAlignment;
+	bold: boolean;
+	italic: boolean;
+}

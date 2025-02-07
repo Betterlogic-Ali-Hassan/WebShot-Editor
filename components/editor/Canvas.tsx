@@ -2,7 +2,7 @@
 
 import { useStore } from '@/stores/storeProvider';
 import { observer } from 'mobx-react-lite';
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import {
 	Layer,
 	TransformHandleType,
@@ -14,7 +14,7 @@ import {
 import { handleImagePaste, handleImageDrop } from '@/utils/imageUtils';
 import { drawShape } from '@/utils/shapeUtils';
 import { useOutsideClick } from '@/hooks/useOutsideClick';
-
+import TextInput from '@/components/editor/TextInput/TextInput';
 const Canvas = observer(() => {
 	const { canvasStore } = useStore();
 	const mainCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -24,7 +24,10 @@ const Canvas = observer(() => {
 	const hoveredHandleRef = useRef<TransformHandleType | null>(null);
 	const selectedHandleRef = useRef<TransformHandleType | null>(null);
 	const tempCanvasRef = useRef<HTMLCanvasElement | null>(null);
-
+	const [textInputPosition, setTextInputPosition] = useState<{
+		x: number;
+		y: number;
+	} | null>(null);
 	useEffect(() => {
 		const mainCanvas = mainCanvasRef.current;
 		const tempCanvas = document.createElement('canvas');
@@ -306,6 +309,56 @@ const Canvas = observer(() => {
 					ctx.restore();
 					break;
 				}
+				case 'text': {
+					console.log('Drawing text layer:', layer); // debug
+
+					ctx.save();
+					const { x, y, width, height, rotation, scale } =
+						layer.transform;
+					const centerX = x + width / 2;
+					const centerY = y + height / 2;
+
+					// Устанавливаем трансформации
+					ctx.translate(centerX, centerY);
+					ctx.rotate((rotation * Math.PI) / 180);
+					ctx.scale(scale.x, scale.y);
+					ctx.translate(-centerX, -centerY);
+
+					// Отрисовка фона
+					if (layer.backgroundColor) {
+						console.log(
+							'Drawing background with color:',
+							layer.backgroundColor
+						); // debug
+						ctx.fillStyle = layer.backgroundColor;
+						ctx.fillRect(x, y, width, height);
+					}
+
+					// Установка стилей текста
+					ctx.font = `${layer.bold ? 'bold ' : ''}${
+						layer.italic ? 'italic ' : ''
+					}${layer.fontSize}px ${layer.fontFamily}`;
+					ctx.fillStyle = layer.color;
+					ctx.textAlign = layer.alignment;
+					ctx.textBaseline = 'top';
+
+					const metrics = ctx.measureText(layer.content);
+					const textWidth = metrics.width;
+					const textHeight = layer.fontSize * 1.2;
+
+					if (width < textWidth) {
+						layer.transform.width = textWidth;
+					}
+					if (height < textHeight) {
+						layer.transform.height = textHeight;
+					}
+
+					ctx.fillStyle = layer.color;
+					ctx.fillText(layer.content, x, y);
+
+					ctx.restore();
+					break;
+				}
 			}
 		},
 		[
@@ -316,7 +369,10 @@ const Canvas = observer(() => {
 			drawHighlighterLine,
 		]
 	);
-
+	const handleTextFinish = useCallback(() => {
+		canvasStore.finishTextEditing();
+		setTextInputPosition(null);
+	}, [canvasStore]);
 	const checkLayerTransparency = useCallback(
 		async (
 			x: number,
@@ -499,6 +555,24 @@ const Canvas = observer(() => {
 		async (e: React.MouseEvent) => {
 			const coords = getCanvasCoordinates(e);
 			if (!coords) return;
+
+			if (canvasStore.currentTool === 'text') {
+				const transform = canvasStore.startTextEditing(
+					coords.x,
+					coords.y
+				);
+				if (transform) {
+					const scale = canvasStore.canvasState.zoom / 100;
+					const rect = (
+						e.target as HTMLElement
+					).getBoundingClientRect();
+					setTextInputPosition({
+						x: (e.clientX - rect.left) / scale,
+						y: (e.clientY - rect.top) / scale,
+					});
+				}
+				return;
+			}
 
 			if (canvasStore.currentTool === 'draw') {
 				canvasStore.startDrawing(coords.x, coords.y);
@@ -893,7 +967,38 @@ const Canvas = observer(() => {
 		willChange: 'transform',
 		imageRendering: 'pixelated' as const,
 	};
+	const handleDoubleClick = useCallback(
+		async (e: React.MouseEvent) => {
+			const coords = getCanvasCoordinates(e);
+			if (!coords) return;
 
+			const reversedLayers = [
+				...canvasStore.canvasState.layers,
+			].reverse();
+
+			for (const layer of reversedLayers) {
+				if (
+					layer.type === 'text' &&
+					isPointInLayer(coords.x, coords.y, layer)
+				) {
+					const rect = (
+						e.target as HTMLElement
+					).getBoundingClientRect();
+					const scale = canvasStore.canvasState.zoom / 100;
+
+					canvasStore.startEditingExistingText(layer.id);
+
+					setTextInputPosition({
+						x: layer.transform.x * scale + rect.left,
+						y: layer.transform.y * scale + rect.top,
+					});
+
+					break;
+				}
+			}
+		},
+		[canvasStore, getCanvasCoordinates, isPointInLayer]
+	);
 	return (
 		<div
 			style={containerStyle}
@@ -954,6 +1059,7 @@ const Canvas = observer(() => {
 				onMouseMove={handleMouseMove}
 				onMouseUp={handleMouseUp}
 				onMouseLeave={handleMouseUp}
+				onDoubleClick={handleDoubleClick}
 			/>
 			<canvas
 				ref={overlayCanvasRef}
@@ -962,6 +1068,12 @@ const Canvas = observer(() => {
 					pointerEvents: 'none',
 				}}
 			/>
+			{textInputPosition && canvasStore.textState.isEditing && (
+				<TextInput
+					position={textInputPosition}
+					onFinish={handleTextFinish}
+				/>
+			)}
 		</div>
 	);
 });
