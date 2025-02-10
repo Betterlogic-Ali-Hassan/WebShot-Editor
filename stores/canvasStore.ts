@@ -86,9 +86,19 @@ export class CanvasStore {
 		position: null,
 	};
 	currentTool: ToolType = 'select';
+	private history: CanvasState[] = [];
+	private currentHistoryIndex: number = -1;
 
 	constructor() {
-		makeAutoObservable(this, {}, { autoBind: true });
+		makeAutoObservable(
+			this,
+			{
+				logCanvasState: false,
+				dragState: false,
+				selectionState: false,
+			},
+			{ autoBind: true }
+		);
 	}
 	startDrawing(x: number, y: number) {
 		if (this.drawingState.isDrawing) return;
@@ -177,6 +187,8 @@ export class CanvasStore {
 
 		this.drawingState.isDrawing = false;
 		this.drawingState.points = [];
+
+		this.saveToHistory();
 	}
 
 	setDrawingTool(tool: DrawingToolType) {
@@ -207,12 +219,21 @@ export class CanvasStore {
 	private shouldSmooth(): boolean {
 		return this.drawingState.currentTool !== 'pencil';
 	}
+
 	addLayer(layer: Layer) {
 		layer.transform.center = {
 			x: layer.transform.x + layer.transform.width / 2,
 			y: layer.transform.y + layer.transform.height / 2,
 		};
+
 		this.canvasState.layers = [...this.canvasState.layers, layer];
+
+		if (this.canvasState.layers.length === 1) {
+			this.initHistory();
+		} else {
+			this.saveToHistory();
+		}
+
 		this.logCanvasState();
 	}
 
@@ -220,9 +241,13 @@ export class CanvasStore {
 		this.canvasState.layers = this.canvasState.layers.filter(
 			(layer) => layer.id !== layerId
 		);
+
 		if (this.canvasState.selectedLayerIds.includes(layerId)) {
 			this.clearSelection();
 		}
+
+		this.saveToHistory();
+
 		this.logCanvasState();
 	}
 
@@ -276,6 +301,8 @@ export class CanvasStore {
 		this.selectionState.isTransforming = false;
 		this.selectionState.activeHandle = null;
 		this.selectionState.transformOrigin = null;
+		this.saveToHistory();
+
 		this.logCanvasState();
 	}
 
@@ -283,6 +310,7 @@ export class CanvasStore {
 		const layerIndex = this.canvasState.layers.findIndex(
 			(layer) => layer.id === layerId
 		);
+
 		if (layerIndex !== -1) {
 			const currentLayer = this.canvasState.layers[layerIndex];
 			const updatedTransform = {
@@ -302,6 +330,11 @@ export class CanvasStore {
 				...currentLayer,
 				transform: updatedTransform,
 			} as Layer;
+
+			if (!this.dragState.isDragging) {
+				this.saveToHistory();
+			}
+
 			this.logCanvasState();
 		}
 	}
@@ -337,6 +370,8 @@ export class CanvasStore {
 
 	setCanvasDimensions(width: number, height: number) {
 		this.canvasState.dimensions = { width, height };
+		this.saveToHistory();
+
 		this.logCanvasState();
 	}
 
@@ -381,6 +416,7 @@ export class CanvasStore {
 
 	endDragging() {
 		this.dragState.isDragging = false;
+		this.saveToHistory();
 	}
 	startShapeDrawing(x: number, y: number) {
 		this.shapeDrawingState.isDrawing = true;
@@ -436,10 +472,12 @@ export class CanvasStore {
 		};
 
 		this.addLayer(shapeLayer);
+
 		this.shapeDrawingState.isDrawing = false;
 		this.shapeDrawingState.startPoint = null;
 		this.shapeDrawingState.currentPoint = null;
-		this.logCanvasState();
+
+		this.saveToHistory();
 	}
 
 	setShapeType(shapeType: ShapeType) {
@@ -453,6 +491,7 @@ export class CanvasStore {
 		const selectedLayer = this.getSelectedLayer();
 		if (selectedLayer && selectedLayer.type === 'shape') {
 			selectedLayer.strokeColor = color;
+			this.saveToHistory();
 		}
 		this.logCanvasState();
 	}
@@ -463,6 +502,7 @@ export class CanvasStore {
 		const selectedLayer = this.getSelectedLayer();
 		if (selectedLayer && selectedLayer.type === 'shape') {
 			selectedLayer.strokeWidth = width;
+			this.saveToHistory();
 		}
 		this.logCanvasState();
 	}
@@ -531,7 +571,7 @@ export class CanvasStore {
 
 		this.addLayer(numberLayer);
 		this.incrementNumberCounter();
-
+		this.saveToHistory();
 		return numberLayer;
 	}
 
@@ -543,11 +583,9 @@ export class CanvasStore {
 		this.textState.editingLayerId = null;
 		this.textState.position = { x, y };
 
-		// Создаем временные размеры для поля ввода
 		const tempWidth = this.textState.fontSize * 2;
 		const tempHeight = this.textState.fontSize * 1.2;
 
-		// Позиционируем поле ввода
 		const transform = {
 			x,
 			y,
@@ -569,8 +607,10 @@ export class CanvasStore {
 			} else if (this.textState.position) {
 				this.createTextLayer(this.textState.position);
 			}
+			this.saveToHistory();
 		} else if (this.textState.editingLayerId) {
 			this.removeLayer(this.textState.editingLayerId);
+			this.saveToHistory();
 		}
 
 		this.resetTextState();
@@ -661,5 +701,60 @@ export class CanvasStore {
 
 	setTextStyle(updates: Partial<TextState>) {
 		Object.assign(this.textState, updates);
+		if (!this.textState.isEditing) {
+			this.saveToHistory();
+		}
+	}
+	initHistory() {
+		this.history = [{ ...this.canvasState }];
+		this.currentHistoryIndex = 0;
+	}
+
+	saveToHistory() {
+		this.history = this.history.slice(0, this.currentHistoryIndex + 1);
+
+		this.history.push({ ...this.canvasState });
+		this.currentHistoryIndex++;
+	}
+
+	canUndo(): boolean {
+		return this.currentHistoryIndex > 0;
+	}
+
+	canRedo(): boolean {
+		return this.currentHistoryIndex < this.history.length - 1;
+	}
+
+	undo() {
+		if (!this.canUndo()) return;
+
+		this.currentHistoryIndex--;
+		const previousState = this.history[this.currentHistoryIndex];
+
+		this.canvasState = { ...previousState };
+
+		this.clearSelection();
+	}
+
+	redo() {
+		if (!this.canRedo()) return;
+
+		this.currentHistoryIndex++;
+		const nextState = this.history[this.currentHistoryIndex];
+
+		this.canvasState = { ...nextState };
+
+		this.clearSelection();
+	}
+
+	undoAll() {
+		if (!this.canUndo()) return;
+
+		this.currentHistoryIndex = 0;
+		const initialState = this.history[0];
+
+		this.canvasState = { ...initialState };
+
+		this.clearSelection();
 	}
 }
