@@ -14,7 +14,13 @@ export interface Transform {
 	};
 }
 
-export type LayerType = 'image' | 'text' | 'shape' | 'drawing' | 'number';
+export type LayerType =
+	| 'image'
+	| 'text'
+	| 'shape'
+	| 'drawing'
+	| 'number'
+	| 'arrow';
 
 export type NumberStyle = 'circle' | 'square' | 'plain';
 
@@ -57,10 +63,11 @@ export interface NumberLayerData extends BaseLayerData {
 }
 export type Layer =
 	| ImageLayerData
-	| TextLayerData
 	| ShapeLayerData
 	| DrawingLayerData
-	| NumberLayerData;
+	| NumberLayerData
+	| TextLayerData
+	| ArrowLayerData;
 export interface Filter {
 	type: 'brightness' | 'contrast' | 'saturation' | 'blur' | 'grayscale';
 	value: number;
@@ -100,7 +107,9 @@ export type ToolType =
 	| 'sticker'
 	| 'textArrow'
 	| 'number'
-	| 'draw';
+	| 'draw'
+	| 'arrow';
+
 export interface EditorState {
 	currentTool: ToolType;
 	isDrawing: boolean;
@@ -118,7 +127,11 @@ export type TransformHandleType =
 	| 'middleRight'
 	| 'bottomLeft'
 	| 'bottomCenter'
-	| 'bottomRight';
+	| 'bottomRight'
+	| 'start'
+	| 'end'
+	| 'control1'
+	| 'control2';
 
 export interface TransformHandle {
 	type: TransformHandleType;
@@ -255,3 +268,43 @@ export interface TextLayerData extends BaseLayerData {
 	bold: boolean;
 	italic: boolean;
 }
+export type ArrowType =
+	| 'straight'
+	| 'curved'
+	| 'double'
+	| 'line'
+	| 'curvedLine'
+	| 'dashed';
+
+export interface Point {
+	x: number;
+	y: number;
+}
+
+export interface ArrowDrawingState {
+	isDrawing: boolean;
+	startPoint: Point | null;
+	endPoint: Point | null;
+	controlPoints: Point[];
+	arrowType: ArrowType;
+	strokeColor: string;
+	strokeWidth: number;
+	previewBounds?: {
+		x: number;
+		y: number;
+		width: number;
+		height: number;
+	};
+}
+
+export interface ArrowLayerData extends BaseLayerData {
+	type: 'arrow';
+	arrowType: ArrowType;
+	startPoint: Point;
+	endPoint: Point;
+	controlPoints: Point[];
+	strokeColor: string;
+	strokeWidth: number;
+}
+
+export const ARROW_HEAD_SIZE = 15;

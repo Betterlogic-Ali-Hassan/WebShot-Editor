@@ -19,6 +19,9 @@ import {
 	NumberLayerData,
 	TextState,
 	TextLayerData,
+	ArrowDrawingState,
+	ArrowType,
+	ArrowLayerData,
 } from '@/types/types';
 
 export class CanvasStore {
@@ -84,6 +87,16 @@ export class CanvasStore {
 		italic: false,
 		editingLayerId: null,
 		position: null,
+	};
+	arrowState: ArrowDrawingState = {
+		isDrawing: false,
+		startPoint: null,
+		endPoint: null,
+		controlPoints: [],
+		arrowType: 'straight',
+		strokeColor: '#000000',
+		strokeWidth: 2,
+		previewBounds: undefined,
 	};
 	currentTool: ToolType = 'select';
 	private history: CanvasState[] = [];
@@ -394,7 +407,6 @@ export class CanvasStore {
 		this.dragState.startPosition = { x, y };
 		this.dragState.currentPosition = { x, y };
 	}
-
 	updateDragPosition(x: number, y: number) {
 		if (!this.dragState.isDragging) return;
 
@@ -404,13 +416,28 @@ export class CanvasStore {
 		const dx = x - this.dragState.currentPosition.x;
 		const dy = y - this.dragState.currentPosition.y;
 
-		this.updateLayer(selectedLayer.id, {
-			x: selectedLayer.transform.x + dx,
-			y: selectedLayer.transform.y + dy,
-		});
+		if (selectedLayer.type === 'arrow') {
+			// Перемещаем только transform слоя
+			selectedLayer.transform = {
+				...selectedLayer.transform,
+				x: selectedLayer.transform.x + dx,
+				y: selectedLayer.transform.y + dy,
+			};
 
+			// Относительные координаты точек НЕ меняются, так как они относительны к transform
+		} else {
+			// Для других типов слоев обновляем только transform
+			selectedLayer.transform = {
+				...selectedLayer.transform,
+				x: selectedLayer.transform.x + dx,
+				y: selectedLayer.transform.y + dy,
+			};
+		}
+
+		// Обновляем позицию перетаскивания
 		this.dragState.currentPosition = { x, y };
 
+		// Уведомляем об изменении состояния
 		this.canvasState.layers = [...this.canvasState.layers];
 	}
 
@@ -756,5 +783,142 @@ export class CanvasStore {
 		this.canvasState = { ...initialState };
 
 		this.clearSelection();
+	}
+	startArrowDrawing(x: number, y: number) {
+		if (this.arrowState.isDrawing) return;
+
+		this.arrowState = {
+			...this.arrowState,
+			isDrawing: true,
+			startPoint: { x, y },
+			endPoint: { x, y },
+			controlPoints: [],
+			previewBounds: {
+				x,
+				y,
+				width: 0,
+				height: 0,
+			},
+		};
+	}
+
+	updateArrowDrawing(x: number, y: number) {
+		if (!this.arrowState.isDrawing || !this.arrowState.startPoint) return;
+
+		this.arrowState.endPoint = { x, y };
+
+		const startX = Math.min(this.arrowState.startPoint.x, x);
+		const startY = Math.min(this.arrowState.startPoint.y, y);
+		const width = Math.abs(x - this.arrowState.startPoint.x);
+		const height = Math.abs(y - this.arrowState.startPoint.y);
+
+		this.arrowState.previewBounds = {
+			x: startX,
+			y: startY,
+			width,
+			height,
+		};
+
+		if (
+			this.arrowState.arrowType === 'curved' ||
+			this.arrowState.arrowType === 'curvedLine'
+		) {
+			const startPoint = this.arrowState.startPoint;
+
+			this.arrowState.controlPoints = [
+				{
+					x: startPoint.x + (x - startPoint.x) * 0.25,
+					y: startPoint.y + (y - startPoint.y) * 0.25,
+				},
+				{
+					x: startPoint.x + (x - startPoint.x) * 0.75,
+					y: startPoint.y + (y - startPoint.y) * 0.75,
+				},
+			];
+		}
+	}
+
+	finishArrowDrawing() {
+		if (
+			!this.arrowState.isDrawing ||
+			!this.arrowState.startPoint ||
+			!this.arrowState.endPoint ||
+			!this.arrowState.previewBounds
+		)
+			return;
+
+		// Вычисляем границы слоя
+		const bounds = this.arrowState.previewBounds;
+
+		// Создаем точки относительно границ слоя
+		const relativeStartPoint = {
+			x: this.arrowState.startPoint.x - bounds.x,
+			y: this.arrowState.startPoint.y - bounds.y,
+		};
+
+		const relativeEndPoint = {
+			x: this.arrowState.endPoint.x - bounds.x,
+			y: this.arrowState.endPoint.y - bounds.y,
+		};
+
+		const relativeControlPoints = this.arrowState.controlPoints.map(
+			(point) => ({
+				x: point.x - bounds.x,
+				y: point.y - bounds.y,
+			})
+		);
+
+		const arrowLayer: ArrowLayerData = {
+			id: crypto.randomUUID(),
+			type: 'arrow',
+			name: `Arrow ${this.canvasState.layers.length + 1}`,
+			visible: true,
+			locked: false,
+			opacity: 1,
+			transform: {
+				x: bounds.x,
+				y: bounds.y,
+				width: bounds.width,
+				height: bounds.height,
+				rotation: 0,
+				scale: { x: 1, y: 1 },
+			},
+			arrowType: this.arrowState.arrowType,
+			startPoint: relativeStartPoint,
+			endPoint: relativeEndPoint,
+			controlPoints: relativeControlPoints,
+			strokeColor: this.arrowState.strokeColor,
+			strokeWidth: this.arrowState.strokeWidth,
+		};
+
+		this.addLayer(arrowLayer);
+
+		this.resetArrowState();
+
+		this.currentTool = 'select';
+
+		this.selectLayer(arrowLayer.id);
+
+		this.saveToHistory();
+	}
+
+	setArrowType(arrowType: ArrowType) {
+		this.arrowState.arrowType = arrowType;
+	}
+
+	setArrowStyle(color: string, width: number) {
+		this.arrowState.strokeColor = color;
+		this.arrowState.strokeWidth = width;
+	}
+
+	private resetArrowState() {
+		this.arrowState = {
+			...this.arrowState,
+			isDrawing: false,
+			startPoint: null,
+			endPoint: null,
+			controlPoints: [],
+			previewBounds: undefined,
+		};
 	}
 }

@@ -10,11 +10,15 @@ import {
 	SELECTION_BORDER_WIDTH,
 	TRANSFORM_HANDLE_HOVER_SIZE,
 	DrawingState,
+	ArrowDrawingState,
+	ARROW_HEAD_SIZE,
+	Point,
 } from '@/types/types';
 import { handleImagePaste, handleImageDrop } from '@/utils/imageUtils';
 import { drawShape } from '@/utils/shapeUtils';
 import { useOutsideClick } from '@/hooks/useOutsideClick';
 import TextInput from '@/components/editor/TextInput/TextInput';
+import { drawArrow } from '@/utils/arrowUtils';
 const Canvas = observer(() => {
 	const { canvasStore } = useStore();
 	const mainCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -88,39 +92,77 @@ const Canvas = observer(() => {
 	);
 
 	const drawPreview = useCallback(
-		(ctx: CanvasRenderingContext2D, state: DrawingState) => {
-			if (state.points.length < 2 || !state.previewBounds) return;
+		(
+			ctx: CanvasRenderingContext2D,
+			state: DrawingState | ArrowDrawingState
+		) => {
+			if ('points' in state) {
+				if (state.points.length < 2 || !state.previewBounds) return;
 
-			ctx.save();
-			ctx.beginPath();
-			ctx.strokeStyle = state.color;
-			ctx.lineWidth =
-				state.lineWidth * (canvasStore.canvasState.zoom / 100);
-			ctx.globalAlpha = state.currentTool === 'highlighter' ? 0.3 : 1;
+				ctx.save();
+				ctx.beginPath();
+				ctx.strokeStyle = state.color;
+				ctx.lineWidth =
+					state.lineWidth * (canvasStore.canvasState.zoom / 100);
+				ctx.globalAlpha = state.currentTool === 'highlighter' ? 0.3 : 1;
 
-			switch (state.currentTool) {
-				case 'pencil':
-					ctx.lineJoin = 'round';
-					ctx.lineCap = 'round';
-					break;
-				case 'brush':
-					ctx.lineJoin = 'round';
-					ctx.lineCap = 'round';
-					ctx.shadowBlur = state.lineWidth / 2;
-					ctx.shadowColor = state.color;
-					break;
-				case 'highlighter':
-					ctx.lineJoin = 'round';
-					ctx.lineCap = 'square';
-					break;
+				switch (state.currentTool) {
+					case 'pencil':
+						ctx.lineJoin = 'round';
+						ctx.lineCap = 'round';
+						break;
+					case 'brush':
+						ctx.lineJoin = 'round';
+						ctx.lineCap = 'round';
+						ctx.shadowBlur = state.lineWidth / 2;
+						ctx.shadowColor = state.color;
+						break;
+					case 'highlighter':
+						ctx.lineJoin = 'round';
+						ctx.lineCap = 'square';
+						break;
+				}
+
+				ctx.moveTo(state.points[0].x, state.points[0].y);
+				for (let i = 1; i < state.points.length; i++) {
+					ctx.lineTo(state.points[i].x, state.points[i].y);
+				}
+				ctx.stroke();
+				ctx.restore();
+			} else {
+				const arrowState = state as ArrowDrawingState;
+				if (
+					!arrowState.startPoint ||
+					!arrowState.endPoint ||
+					!arrowState.previewBounds
+				)
+					return;
+
+				const bounds = arrowState.previewBounds;
+				const padding =
+					Math.max(arrowState.strokeWidth, ARROW_HEAD_SIZE) + 2;
+				ctx.clearRect(
+					bounds.x - padding,
+					bounds.y - padding,
+					bounds.width + padding * 2,
+					bounds.height + padding * 2
+				);
+
+				ctx.save();
+				const zoom = canvasStore.canvasState.zoom / 100;
+				const scaledStrokeWidth = arrowState.strokeWidth * zoom;
+
+				drawArrow(
+					ctx,
+					arrowState.startPoint,
+					arrowState.endPoint,
+					arrowState.controlPoints,
+					arrowState.arrowType,
+					arrowState.strokeColor,
+					scaledStrokeWidth
+				);
+				ctx.restore();
 			}
-
-			ctx.moveTo(state.points[0].x, state.points[0].y);
-			for (let i = 1; i < state.points.length; i++) {
-				ctx.lineTo(state.points[i].x, state.points[i].y);
-			}
-			ctx.stroke();
-			ctx.restore();
 		},
 		[canvasStore.canvasState.zoom]
 	);
@@ -310,8 +352,6 @@ const Canvas = observer(() => {
 					break;
 				}
 				case 'text': {
-					console.log('Drawing text layer:', layer); // debug
-
 					ctx.save();
 					const { x, y, width, height, rotation, scale } =
 						layer.transform;
@@ -355,6 +395,59 @@ const Canvas = observer(() => {
 
 					ctx.fillStyle = layer.color;
 					ctx.fillText(layer.content, x, y);
+
+					ctx.restore();
+					break;
+				}
+				case 'arrow': {
+					ctx.save();
+					const zoom = canvasStore.canvasState.zoom / 100;
+
+					const { x: layerX, y: layerY } = layer.transform;
+
+					const startPoint = {
+						x: layerX + layer.startPoint.x,
+						y: layerY + layer.startPoint.y,
+					};
+
+					const endPoint = {
+						x: layerX + layer.endPoint.x,
+						y: layerY + layer.endPoint.y,
+					};
+
+					const controlPoints = layer.controlPoints.map((point) => ({
+						x: layerX + point.x,
+						y: layerY + point.y,
+					}));
+
+					if (
+						layer.transform.rotation !== 0 ||
+						layer.transform.scale.x !== 1 ||
+						layer.transform.scale.y !== 1
+					) {
+						const centerX = layerX + layer.transform.width / 2;
+						const centerY = layerY + layer.transform.height / 2;
+
+						ctx.translate(centerX, centerY);
+						ctx.rotate((layer.transform.rotation * Math.PI) / 180);
+						ctx.scale(
+							layer.transform.scale.x,
+							layer.transform.scale.y
+						);
+						ctx.translate(-centerX, -centerY);
+					}
+
+					const scaledStrokeWidth = layer.strokeWidth * zoom;
+
+					drawArrow(
+						ctx,
+						startPoint,
+						endPoint,
+						controlPoints,
+						layer.arrowType,
+						layer.strokeColor,
+						scaledStrokeWidth
+					);
 
 					ctx.restore();
 					break;
@@ -489,59 +582,148 @@ const Canvas = observer(() => {
 		(ctx: CanvasRenderingContext2D, layer: Layer) => {
 			if (canvasStore.canvasState.layers.indexOf(layer) === 0) return;
 
-			const { x, y, width, height } = layer.transform;
 			const scale = canvasStore.canvasState.zoom / 100;
+			const handleSize = TRANSFORM_HANDLE_SIZE * scale;
 
 			ctx.save();
-
 			ctx.strokeStyle = '#0088ff';
 			ctx.lineWidth = SELECTION_BORDER_WIDTH;
-			ctx.strokeRect(x, y, width, height);
 
-			const handlePositions = [
-				{ type: 'topLeft', x, y },
-				{ type: 'topCenter', x: x + width / 2, y },
-				{ type: 'topRight', x: x + width, y },
-				{ type: 'middleLeft', x, y: y + height / 2 },
-				{ type: 'middleRight', x: x + width, y: y + height / 2 },
-				{ type: 'bottomLeft', x, y: y + height },
-				{ type: 'bottomCenter', x: x + width / 2, y: y + height },
-				{ type: 'bottomRight', x: x + width, y: y + height },
-			];
+			if (layer.type === 'arrow') {
+				const bounds = layer.transform;
+				ctx.strokeRect(bounds.x, bounds.y, bounds.width, bounds.height);
 
-			handlePositions.forEach((handle) => {
-				const isHovered = hoveredHandleRef.current === handle.type;
-				const isSelected = selectedHandleRef.current === handle.type;
-				const handleSize =
-					(isHovered
-						? TRANSFORM_HANDLE_HOVER_SIZE
-						: TRANSFORM_HANDLE_SIZE) * scale;
+				const transformHandlePoints: Array<{
+					type: TransformHandleType;
+					point: Point;
+				}> = [
+					{
+						type: 'start',
+						point: {
+							x: layer.transform.x + layer.startPoint.x,
+							y: layer.transform.y + layer.startPoint.y,
+						},
+					},
+					{
+						type: 'end',
+						point: {
+							x: layer.transform.x + layer.endPoint.x,
+							y: layer.transform.y + layer.endPoint.y,
+						},
+					},
+				];
 
-				ctx.beginPath();
-				ctx.fillStyle = isSelected ? '#ff0000' : '#fff';
-				ctx.strokeStyle = '#0088ff';
-				ctx.lineWidth = 1;
-
-				const isCorner = [
-					'topLeft',
-					'topRight',
-					'bottomLeft',
-					'bottomRight',
-				].includes(handle.type);
-				if (isCorner) {
-					ctx.arc(handle.x, handle.y, handleSize / 2, 0, Math.PI * 2);
-				} else {
-					ctx.rect(
-						handle.x - handleSize / 2,
-						handle.y - handleSize / 2,
-						handleSize,
-						handleSize
-					);
+				if (
+					layer.arrowType === 'curved' ||
+					layer.arrowType === 'curvedLine'
+				) {
+					layer.controlPoints.forEach((point, index) => {
+						transformHandlePoints.push({
+							type:
+								index === 0
+									? 'control1'
+									: ('control2' as TransformHandleType),
+							point: {
+								x: layer.transform.x + point.x,
+								y: layer.transform.y + point.y,
+							},
+						});
+					});
 				}
 
-				ctx.fill();
-				ctx.stroke();
-			});
+				transformHandlePoints.forEach(({ type, point }) => {
+					const isHovered = hoveredHandleRef.current === type;
+					const isSelected = selectedHandleRef.current === type;
+					const handleSizeWithHover = isHovered
+						? TRANSFORM_HANDLE_HOVER_SIZE * scale
+						: handleSize;
+
+					ctx.beginPath();
+					ctx.fillStyle = isSelected ? '#ff0000' : '#fff';
+					ctx.strokeStyle = '#0088ff';
+					ctx.lineWidth = 1;
+
+					if (type === 'start' || type === 'end') {
+						ctx.arc(
+							point.x,
+							point.y,
+							handleSizeWithHover / 2,
+							0,
+							Math.PI * 2
+						);
+					} else {
+						const halfSize = handleSizeWithHover / 2;
+						ctx.rect(
+							point.x - halfSize,
+							point.y - halfSize,
+							handleSizeWithHover,
+							handleSizeWithHover
+						);
+					}
+
+					ctx.fill();
+					ctx.stroke();
+				});
+			} else {
+				const { x, y, width, height } = layer.transform;
+				ctx.strokeRect(x, y, width, height);
+
+				const handlePositions: Array<{
+					type: TransformHandleType;
+					x: number;
+					y: number;
+				}> = [
+					{ type: 'topLeft', x, y },
+					{ type: 'topCenter', x: x + width / 2, y },
+					{ type: 'topRight', x: x + width, y },
+					{ type: 'middleLeft', x, y: y + height / 2 },
+					{ type: 'middleRight', x: x + width, y: y + height / 2 },
+					{ type: 'bottomLeft', x, y: y + height },
+					{ type: 'bottomCenter', x: x + width / 2, y: y + height },
+					{ type: 'bottomRight', x: x + width, y: y + height },
+				];
+
+				handlePositions.forEach((handle) => {
+					const isHovered = hoveredHandleRef.current === handle.type;
+					const isSelected =
+						selectedHandleRef.current === handle.type;
+					const handleSizeWithHover = isHovered
+						? TRANSFORM_HANDLE_HOVER_SIZE * scale
+						: handleSize;
+
+					ctx.beginPath();
+					ctx.fillStyle = isSelected ? '#ff0000' : '#fff';
+					ctx.strokeStyle = '#0088ff';
+					ctx.lineWidth = 1;
+
+					const isCorner = [
+						'topLeft',
+						'topRight',
+						'bottomLeft',
+						'bottomRight',
+					].includes(handle.type);
+
+					if (isCorner) {
+						ctx.arc(
+							handle.x,
+							handle.y,
+							handleSizeWithHover / 2,
+							0,
+							Math.PI * 2
+						);
+					} else {
+						ctx.rect(
+							handle.x - handleSizeWithHover / 2,
+							handle.y - handleSizeWithHover / 2,
+							handleSizeWithHover,
+							handleSizeWithHover
+						);
+					}
+
+					ctx.fill();
+					ctx.stroke();
+				});
+			}
 
 			ctx.restore();
 		},
@@ -555,6 +737,11 @@ const Canvas = observer(() => {
 		async (e: React.MouseEvent) => {
 			const coords = getCanvasCoordinates(e);
 			if (!coords) return;
+
+			if (canvasStore.currentTool === 'arrow') {
+				canvasStore.startArrowDrawing(coords.x, coords.y);
+				return;
+			}
 
 			if (canvasStore.currentTool === 'text') {
 				const transform = canvasStore.startTextEditing(
@@ -583,6 +770,7 @@ const Canvas = observer(() => {
 				canvasStore.startShapeDrawing(coords.x, coords.y);
 				return;
 			}
+
 			if (canvasStore.currentTool === 'number') {
 				const numberLayer = canvasStore.createNumberLayer(
 					coords.x - 20,
@@ -598,8 +786,76 @@ const Canvas = observer(() => {
 				if (canvasStore.canvasState.layers.indexOf(selectedLayer) === 0)
 					return null;
 
+				const scale = canvasStore.canvasState.zoom / 100;
+				const handleSize = TRANSFORM_HANDLE_SIZE * scale;
+
+				if (selectedLayer.type === 'arrow') {
+					const startPoint = {
+						x:
+							selectedLayer.transform.x +
+							selectedLayer.startPoint.x,
+						y:
+							selectedLayer.transform.y +
+							selectedLayer.startPoint.y,
+					};
+					const endPoint = {
+						x: selectedLayer.transform.x + selectedLayer.endPoint.x,
+						y: selectedLayer.transform.y + selectedLayer.endPoint.y,
+					};
+
+					if (
+						Math.abs(coords.x - startPoint.x) <= handleSize / 2 &&
+						Math.abs(coords.y - startPoint.y) <= handleSize / 2
+					) {
+						return { type: 'start' } as {
+							type: TransformHandleType;
+						};
+					}
+
+					if (
+						Math.abs(coords.x - endPoint.x) <= handleSize / 2 &&
+						Math.abs(coords.y - endPoint.y) <= handleSize / 2
+					) {
+						return { type: 'end' } as { type: TransformHandleType };
+					}
+
+					if (
+						selectedLayer.arrowType === 'curved' ||
+						selectedLayer.arrowType === 'curvedLine'
+					) {
+						for (
+							let i = 0;
+							i < selectedLayer.controlPoints.length;
+							i++
+						) {
+							const point = {
+								x:
+									selectedLayer.transform.x +
+									selectedLayer.controlPoints[i].x,
+								y:
+									selectedLayer.transform.y +
+									selectedLayer.controlPoints[i].y,
+							};
+							if (
+								Math.abs(coords.x - point.x) <=
+									handleSize / 2 &&
+								Math.abs(coords.y - point.y) <= handleSize / 2
+							) {
+								return {
+									type: i === 0 ? 'control1' : 'control2',
+								} as { type: TransformHandleType };
+							}
+						}
+					}
+					return null;
+				}
+
 				const { x, y, width, height } = selectedLayer.transform;
-				const handlePositions = [
+				const handlePositions: Array<{
+					type: TransformHandleType;
+					x: number;
+					y: number;
+				}> = [
 					{ type: 'topLeft', x, y },
 					{ type: 'topCenter', x: x + width / 2, y },
 					{ type: 'topRight', x: x + width, y },
@@ -620,8 +876,8 @@ const Canvas = observer(() => {
 			})();
 
 			if (clickedHandle) {
-				selectedHandleRef.current =
-					clickedHandle.type as TransformHandleType;
+				selectedHandleRef.current = clickedHandle.type;
+				canvasStore.startTransforming(clickedHandle.type);
 			} else {
 				selectedHandleRef.current = null;
 
@@ -671,13 +927,46 @@ const Canvas = observer(() => {
 			getCanvasCoordinates,
 			isPointInLayer,
 			checkLayerTransparency,
+			setTextInputPosition,
 		]
 	);
-
 	const handleMouseMove = useCallback(
 		(e: React.MouseEvent) => {
 			const coords = getCanvasCoordinates(e);
 			if (!coords) return;
+
+			if (
+				canvasStore.currentTool === 'arrow' &&
+				canvasStore.arrowState.isDrawing
+			) {
+				const overlayCanvas = overlayCanvasRef.current;
+				const ctx = overlayCanvas?.getContext('2d');
+				if (!overlayCanvas || !ctx) return;
+
+				ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+
+				canvasStore.updateArrowDrawing(coords.x, coords.y);
+
+				const zoom = canvasStore.canvasState.zoom / 100;
+				const scaledStrokeWidth =
+					canvasStore.arrowState.strokeWidth * zoom;
+
+				if (
+					canvasStore.arrowState.startPoint &&
+					canvasStore.arrowState.endPoint
+				) {
+					drawArrow(
+						ctx,
+						canvasStore.arrowState.startPoint,
+						canvasStore.arrowState.endPoint,
+						canvasStore.arrowState.controlPoints,
+						canvasStore.arrowState.arrowType,
+						canvasStore.arrowState.strokeColor,
+						scaledStrokeWidth
+					);
+				}
+				return;
+			}
 
 			if (canvasStore.drawingState.isDrawing) {
 				canvasStore.updateDrawing(coords.x, coords.y);
@@ -747,8 +1036,8 @@ const Canvas = observer(() => {
 							shapeType: canvasStore.shapeDrawingState.shapeType,
 						});
 					}
+					return;
 				}
-				return;
 			}
 
 			if (
@@ -774,60 +1063,181 @@ const Canvas = observer(() => {
 				const selectedLayer = canvasStore.getSelectedLayer();
 				if (!selectedLayer) return;
 
-				const { x, y, width, height } = selectedLayer.transform;
+				if (selectedLayer.type === 'arrow') {
+					const updatedLayer = { ...selectedLayer };
 
-				switch (selectedHandleRef.current) {
-					case 'topLeft':
-					case 'topRight':
-					case 'bottomLeft':
-					case 'bottomRight': {
-						let newWidth = width;
-						let newHeight = height;
-						const aspectRatio = width / height;
+					switch (selectedHandleRef.current) {
+						case 'start': {
+							const newX = coords.x - selectedLayer.transform.x;
+							const newY = coords.y - selectedLayer.transform.y;
+							updatedLayer.startPoint = { x: newX, y: newY };
 
-						if (selectedHandleRef.current === 'topLeft') {
-							newWidth = Math.abs(coords.x - (x + width));
-							newHeight = newWidth / aspectRatio;
-							selectedLayer.transform.x = x + width - newWidth;
-							selectedLayer.transform.y = y + height - newHeight;
-						} else if (selectedHandleRef.current === 'topRight') {
-							newWidth = Math.abs(coords.x - x);
-							newHeight = newWidth / aspectRatio;
-							selectedLayer.transform.y = y + height - newHeight;
-						} else if (selectedHandleRef.current === 'bottomLeft') {
-							newWidth = Math.abs(coords.x - (x + width));
-							newHeight = newWidth / aspectRatio;
-							selectedLayer.transform.x = x + width - newWidth;
-						} else if (
-							selectedHandleRef.current === 'bottomRight'
-						) {
-							newWidth = Math.abs(coords.x - x);
-							newHeight = newWidth / aspectRatio;
+							if (
+								updatedLayer.arrowType === 'curved' ||
+								updatedLayer.arrowType === 'curvedLine'
+							) {
+								const firstControl =
+									updatedLayer.controlPoints[0];
+								const deltaX =
+									newX - selectedLayer.startPoint.x;
+								const deltaY =
+									newY - selectedLayer.startPoint.y;
+								updatedLayer.controlPoints[0] = {
+									x: firstControl.x + deltaX * 0.5,
+									y: firstControl.y + deltaY * 0.5,
+								};
+							}
+							break;
 						}
+						case 'end': {
+							const newX = coords.x - selectedLayer.transform.x;
+							const newY = coords.y - selectedLayer.transform.y;
+							updatedLayer.endPoint = { x: newX, y: newY };
 
-						selectedLayer.transform.width = newWidth;
-						selectedLayer.transform.height = newHeight;
-						break;
+							if (
+								updatedLayer.arrowType === 'curved' ||
+								updatedLayer.arrowType === 'curvedLine'
+							) {
+								const lastControl =
+									updatedLayer.controlPoints[1];
+								const deltaX = newX - selectedLayer.endPoint.x;
+								const deltaY = newY - selectedLayer.endPoint.y;
+								updatedLayer.controlPoints[1] = {
+									x: lastControl.x + deltaX * 0.5,
+									y: lastControl.y + deltaY * 0.5,
+								};
+							}
+							break;
+						}
+						case 'control1': {
+							if (updatedLayer.controlPoints.length > 0) {
+								updatedLayer.controlPoints[0] = {
+									x: coords.x - selectedLayer.transform.x,
+									y: coords.y - selectedLayer.transform.y,
+								};
+							}
+							break;
+						}
+						case 'control2': {
+							if (updatedLayer.controlPoints.length > 1) {
+								updatedLayer.controlPoints[1] = {
+									x: coords.x - selectedLayer.transform.x,
+									y: coords.y - selectedLayer.transform.y,
+								};
+							}
+							break;
+						}
 					}
-					case 'middleLeft': {
-						const newWidth = Math.abs(coords.x - (x + width));
-						selectedLayer.transform.x = x + width - newWidth;
-						selectedLayer.transform.width = newWidth;
-						break;
-					}
-					case 'middleRight': {
-						selectedLayer.transform.width = Math.abs(coords.x - x);
-						break;
-					}
-					case 'topCenter': {
-						const newHeight = Math.abs(coords.y - (y + height));
-						selectedLayer.transform.y = y + height - newHeight;
-						selectedLayer.transform.height = newHeight;
-						break;
-					}
-					case 'bottomCenter': {
-						selectedLayer.transform.height = Math.abs(coords.y - y);
-						break;
+
+					const points = [
+						updatedLayer.startPoint,
+						updatedLayer.endPoint,
+						...updatedLayer.controlPoints,
+					];
+
+					const minX = Math.min(...points.map((p) => p.x));
+					const minY = Math.min(...points.map((p) => p.y));
+					const maxX = Math.max(...points.map((p) => p.x));
+					const maxY = Math.max(...points.map((p) => p.y));
+
+					updatedLayer.transform = {
+						...updatedLayer.transform,
+						width: maxX - minX,
+						height: maxY - minY,
+					};
+
+					const offsetX = minX;
+					const offsetY = minY;
+
+					updatedLayer.startPoint = {
+						x: updatedLayer.startPoint.x - offsetX,
+						y: updatedLayer.startPoint.y - offsetY,
+					};
+
+					updatedLayer.endPoint = {
+						x: updatedLayer.endPoint.x - offsetX,
+						y: updatedLayer.endPoint.y - offsetY,
+					};
+
+					updatedLayer.controlPoints = updatedLayer.controlPoints.map(
+						(point) => ({
+							x: point.x - offsetX,
+							y: point.y - offsetY,
+						})
+					);
+
+					updatedLayer.transform.x += offsetX;
+					updatedLayer.transform.y += offsetY;
+
+					Object.assign(selectedLayer, updatedLayer);
+				} else {
+					const { x, y, width, height } = selectedLayer.transform;
+
+					switch (selectedHandleRef.current) {
+						case 'topLeft':
+						case 'topRight':
+						case 'bottomLeft':
+						case 'bottomRight': {
+							let newWidth = width;
+							let newHeight = height;
+							const aspectRatio = width / height;
+
+							if (selectedHandleRef.current === 'topLeft') {
+								newWidth = Math.abs(coords.x - (x + width));
+								newHeight = newWidth / aspectRatio;
+								selectedLayer.transform.x =
+									x + width - newWidth;
+								selectedLayer.transform.y =
+									y + height - newHeight;
+							} else if (
+								selectedHandleRef.current === 'topRight'
+							) {
+								newWidth = Math.abs(coords.x - x);
+								newHeight = newWidth / aspectRatio;
+								selectedLayer.transform.y =
+									y + height - newHeight;
+							} else if (
+								selectedHandleRef.current === 'bottomLeft'
+							) {
+								newWidth = Math.abs(coords.x - (x + width));
+								newHeight = newWidth / aspectRatio;
+								selectedLayer.transform.x =
+									x + width - newWidth;
+							} else if (
+								selectedHandleRef.current === 'bottomRight'
+							) {
+								newWidth = Math.abs(coords.x - x);
+								newHeight = newWidth / aspectRatio;
+							}
+
+							selectedLayer.transform.width = newWidth;
+							selectedLayer.transform.height = newHeight;
+							break;
+						}
+						case 'middleLeft': {
+							const newWidth = Math.abs(coords.x - (x + width));
+							selectedLayer.transform.x = x + width - newWidth;
+							selectedLayer.transform.width = newWidth;
+							break;
+						}
+						case 'middleRight': {
+							selectedLayer.transform.width = Math.abs(
+								coords.x - x
+							);
+							break;
+						}
+						case 'topCenter': {
+							const newHeight = Math.abs(coords.y - (y + height));
+							selectedLayer.transform.y = y + height - newHeight;
+							selectedLayer.transform.height = newHeight;
+							break;
+						}
+						case 'bottomCenter': {
+							selectedLayer.transform.height = Math.abs(
+								coords.y - y
+							);
+							break;
+						}
 					}
 				}
 
@@ -847,13 +1257,35 @@ const Canvas = observer(() => {
 		},
 		[
 			canvasStore,
-			getCanvasCoordinates,
 			drawPreview,
 			drawSelection,
+			getCanvasCoordinates,
 			renderLayers,
 		]
 	);
 	const handleMouseUp = useCallback(() => {
+		if (canvasStore.arrowState.isDrawing) {
+			canvasStore.finishArrowDrawing();
+
+			const overlayCanvas = overlayCanvasRef.current;
+			const ctx = overlayCanvas?.getContext('2d');
+			if (overlayCanvas && ctx && canvasStore.arrowState.previewBounds) {
+				const bounds = canvasStore.arrowState.previewBounds;
+				const padding =
+					Math.max(
+						canvasStore.arrowState.strokeWidth,
+						ARROW_HEAD_SIZE
+					) + 2;
+				ctx.clearRect(
+					bounds.x - padding,
+					bounds.y - padding,
+					bounds.width + padding * 2,
+					bounds.height + padding * 2
+				);
+			}
+			return;
+		}
+
 		if (canvasStore.drawingState.isDrawing) {
 			canvasStore.finishDrawing();
 
