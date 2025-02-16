@@ -20,7 +20,8 @@ export type LayerType =
 	| 'shape'
 	| 'drawing'
 	| 'number'
-	| 'arrow';
+	| 'arrow'
+	| 'blur';
 
 export type NumberStyle = 'circle' | 'square' | 'plain';
 
@@ -67,7 +68,8 @@ export type Layer =
 	| DrawingLayerData
 	| NumberLayerData
 	| TextLayerData
-	| ArrowLayerData;
+	| ArrowLayerData
+	| BlurLayerData;
 export interface Filter {
 	type: 'brightness' | 'contrast' | 'saturation' | 'blur' | 'grayscale';
 	value: number;
@@ -308,3 +310,20 @@ export interface ArrowLayerData extends BaseLayerData {
 }
 
 export const ARROW_HEAD_SIZE = 15;
+
+export interface BlurDrawingState {
+	isDrawing: boolean;
+	startPoint: Point | null;
+	currentPoint: Point | null;
+	previewBounds?: {
+		x: number;
+		y: number;
+		width: number;
+		height: number;
+	};
+}
+
+export interface BlurLayerData extends BaseLayerData {
+	type: 'blur';
+	blurRadius: number;
+}

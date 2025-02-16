@@ -452,6 +452,54 @@ const Canvas = observer(() => {
 					ctx.restore();
 					break;
 				}
+				case 'blur': {
+					ctx.save();
+					const { x, y, width, height } = layer.transform;
+
+					if (width <= 0 || height <= 0) {
+						ctx.restore();
+						break;
+					}
+
+					const tempCanvas = document.createElement('canvas');
+					tempCanvas.width = width;
+					tempCanvas.height = height;
+					const tempCtx = tempCanvas.getContext('2d');
+
+					if (tempCtx) {
+						tempCtx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+						tempCtx.fillRect(0, 0, width, height);
+
+						tempCtx.drawImage(
+							ctx.canvas,
+							x,
+							y,
+							width,
+							height,
+							0,
+							0,
+							width,
+							height
+						);
+
+						const blurCanvas = document.createElement('canvas');
+						blurCanvas.width = width;
+						blurCanvas.height = height;
+						const blurCtx = blurCanvas.getContext('2d');
+
+						if (blurCtx) {
+							blurCtx.drawImage(tempCanvas, 0, 0);
+
+							blurCtx.filter = `blur(${layer.blurRadius}px)`;
+							blurCtx.drawImage(blurCanvas, 0, 0);
+
+							ctx.drawImage(blurCanvas, x, y);
+						}
+					}
+
+					ctx.restore();
+					break;
+				}
 			}
 		},
 		[
@@ -779,7 +827,10 @@ const Canvas = observer(() => {
 				canvasStore.selectLayer(numberLayer.id);
 				return;
 			}
-
+			if (canvasStore.currentTool === 'blur') {
+				canvasStore.startBlurDrawing(coords.x, coords.y);
+				return;
+			}
 			const clickedHandle = (() => {
 				const selectedLayer = canvasStore.getSelectedLayer();
 				if (!selectedLayer) return null;
@@ -1059,6 +1110,78 @@ const Canvas = observer(() => {
 						drawSelection(ctx, selectedLayer);
 					}
 				}
+			}
+			if (
+				canvasStore.currentTool === 'blur' &&
+				canvasStore.blurState.isDrawing
+			) {
+				canvasStore.updateBlurDrawing(coords.x, coords.y);
+
+				const overlayCanvas = overlayCanvasRef.current;
+				const ctx = overlayCanvas?.getContext('2d');
+				if (
+					overlayCanvas &&
+					ctx &&
+					canvasStore.blurState.previewBounds
+				) {
+					const bounds = canvasStore.blurState.previewBounds;
+
+					if (bounds.width <= 0 || bounds.height <= 0) return;
+
+					ctx.clearRect(
+						0,
+						0,
+						overlayCanvas.width,
+						overlayCanvas.height
+					);
+
+					const tempCanvas = document.createElement('canvas');
+					tempCanvas.width = bounds.width;
+					tempCanvas.height = bounds.height;
+					const tempCtx = tempCanvas.getContext('2d');
+
+					if (tempCtx) {
+						tempCtx.drawImage(
+							mainCanvasRef.current!,
+							bounds.x,
+							bounds.y,
+							bounds.width,
+							bounds.height,
+							0,
+							0,
+							bounds.width,
+							bounds.height
+						);
+
+						const blurCanvas = document.createElement('canvas');
+						blurCanvas.width = bounds.width;
+						blurCanvas.height = bounds.height;
+						const blurCtx = blurCanvas.getContext('2d');
+
+						if (blurCtx) {
+							blurCtx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+							blurCtx.fillRect(0, 0, bounds.width, bounds.height);
+
+							blurCtx.drawImage(tempCanvas, 0, 0);
+
+							blurCtx.filter = 'blur(5px)';
+							blurCtx.drawImage(blurCanvas, 0, 0);
+
+							ctx.drawImage(blurCanvas, bounds.x, bounds.y);
+						}
+
+						ctx.strokeStyle = '#000000';
+						ctx.lineWidth = 1;
+						ctx.setLineDash([5, 5]);
+						ctx.strokeRect(
+							bounds.x,
+							bounds.y,
+							bounds.width,
+							bounds.height
+						);
+					}
+				}
+				return;
 			} else if (selectedHandleRef.current) {
 				const selectedLayer = canvasStore.getSelectedLayer();
 				if (!selectedLayer) return;
@@ -1329,6 +1452,22 @@ const Canvas = observer(() => {
 			canvasStore.endDragging();
 		}
 
+		if (canvasStore.blurState.isDrawing) {
+			canvasStore.finishBlurDrawing();
+
+			const overlayCanvas = overlayCanvasRef.current;
+			const ctx = overlayCanvas?.getContext('2d');
+			if (overlayCanvas && ctx && canvasStore.blurState.previewBounds) {
+				const bounds = canvasStore.blurState.previewBounds;
+				ctx.clearRect(
+					bounds.x - 1,
+					bounds.y - 1,
+					bounds.width + 2,
+					bounds.height + 2
+				);
+			}
+			return;
+		}
 		selectedHandleRef.current = null;
 	}, [canvasStore]);
 

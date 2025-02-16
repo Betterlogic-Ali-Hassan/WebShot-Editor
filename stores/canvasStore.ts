@@ -22,6 +22,8 @@ import {
 	ArrowDrawingState,
 	ArrowType,
 	ArrowLayerData,
+	BlurDrawingState,
+	BlurLayerData,
 } from '@/types/types';
 
 export class CanvasStore {
@@ -96,6 +98,12 @@ export class CanvasStore {
 		arrowType: 'straight',
 		strokeColor: '#000000',
 		strokeWidth: 2,
+		previewBounds: undefined,
+	};
+	blurState: BlurDrawingState = {
+		isDrawing: false,
+		startPoint: null,
+		currentPoint: null,
 		previewBounds: undefined,
 	};
 	currentTool: ToolType = 'select';
@@ -920,5 +928,81 @@ export class CanvasStore {
 			controlPoints: [],
 			previewBounds: undefined,
 		};
+	}
+	startBlurDrawing(x: number, y: number) {
+		this.blurState.isDrawing = true;
+		this.blurState.startPoint = { x, y };
+		this.blurState.currentPoint = { x, y };
+		this.blurState.previewBounds = {
+			x,
+			y,
+			width: 0,
+			height: 0,
+		};
+	}
+	updateBlurDrawing(x: number, y: number) {
+		if (!this.blurState.isDrawing || !this.blurState.startPoint) return;
+
+		const boundedX = Math.max(
+			0,
+			Math.min(x, this.canvasState.dimensions.width)
+		);
+		const boundedY = Math.max(
+			0,
+			Math.min(y, this.canvasState.dimensions.height)
+		);
+
+		this.blurState.currentPoint = { x: boundedX, y: boundedY };
+
+		const startX = Math.min(this.blurState.startPoint.x, boundedX);
+		const startY = Math.min(this.blurState.startPoint.y, boundedY);
+		const width = Math.abs(boundedX - this.blurState.startPoint.x);
+		const height = Math.abs(boundedY - this.blurState.startPoint.y);
+
+		this.blurState.previewBounds = {
+			x: startX,
+			y: startY,
+			width,
+			height,
+		};
+	}
+	finishBlurDrawing() {
+		if (
+			!this.blurState.isDrawing ||
+			!this.blurState.startPoint ||
+			!this.blurState.currentPoint ||
+			!this.blurState.previewBounds
+		)
+			return;
+
+		const blurLayer: BlurLayerData = {
+			id: crypto.randomUUID(),
+			type: 'blur',
+			name: `Blur ${this.canvasState.layers.length + 1}`,
+			visible: true,
+			locked: false,
+			opacity: 1,
+			blurRadius: 5,
+			transform: {
+				x: this.blurState.previewBounds.x,
+				y: this.blurState.previewBounds.y,
+				width: this.blurState.previewBounds.width,
+				height: this.blurState.previewBounds.height,
+				rotation: 0,
+				scale: { x: 1, y: 1 },
+			},
+		};
+
+		this.addLayer(blurLayer);
+		this.selectLayer(blurLayer.id);
+
+		this.blurState = {
+			isDrawing: false,
+			startPoint: null,
+			currentPoint: null,
+			previewBounds: undefined,
+		};
+
+		this.currentTool = 'select';
 	}
 }
