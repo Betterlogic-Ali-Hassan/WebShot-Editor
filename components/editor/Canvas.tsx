@@ -591,7 +591,9 @@ const Canvas = observer(() => {
 		for (const layer of canvasStore.canvasState.layers) {
 			await drawLayer(ctx, layer);
 		}
-	}, [canvasStore.canvasState.layers, drawLayer]);
+
+		await canvasStore.renderWatermark(ctx);
+	}, [drawLayer, canvasStore]);
 
 	const getCanvasCoordinates = useCallback((e: React.MouseEvent) => {
 		const canvas = e.currentTarget as HTMLCanvasElement;

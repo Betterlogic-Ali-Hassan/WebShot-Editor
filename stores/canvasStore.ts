@@ -24,6 +24,7 @@ import {
 	ArrowLayerData,
 	BlurDrawingState,
 	BlurLayerData,
+	WatermarkState,
 } from '@/types/types';
 
 export class CanvasStore {
@@ -105,6 +106,13 @@ export class CanvasStore {
 		startPoint: null,
 		currentPoint: null,
 		previewBounds: undefined,
+	};
+	watermarkState: WatermarkState = {
+		isEnabled: false,
+		imageSrc: null,
+		position: 'top-left',
+		size: 50,
+		opacity: 50,
 	};
 	currentTool: ToolType = 'select';
 	private history: CanvasState[] = [];
@@ -653,8 +661,6 @@ export class CanvasStore {
 	}
 
 	private createTextLayer(transform: { x: number; y: number }) {
-		console.log('Creating text layer with state:', this.textState);
-
 		const textLayer: TextLayerData = {
 			id: crypto.randomUUID(),
 			type: 'text',
@@ -680,7 +686,6 @@ export class CanvasStore {
 			italic: this.textState.italic,
 		};
 
-		console.log('Created layer:', textLayer);
 		this.addLayer(textLayer);
 	}
 
@@ -1004,5 +1009,97 @@ export class CanvasStore {
 		};
 
 		this.currentTool = 'select';
+	}
+	setWatermarkImage(file: File): void {
+		if (this.watermarkState.imageSrc) {
+			URL.revokeObjectURL(this.watermarkState.imageSrc);
+		}
+
+		const imageUrl = URL.createObjectURL(file);
+
+		this.watermarkState.imageSrc = imageUrl;
+
+		this.saveToHistory();
+	}
+	updateWatermarkState(updates: Partial<WatermarkState>): void {
+		if (updates.size !== undefined) {
+			updates.size = Math.max(1, Math.min(100, updates.size));
+		}
+		if (updates.opacity !== undefined) {
+			updates.opacity = Math.max(1, Math.min(100, updates.opacity));
+		}
+
+		Object.assign(this.watermarkState, updates);
+
+		if (updates.isEnabled === undefined) {
+			this.saveToHistory();
+		}
+
+		this.forceCanvasUpdate();
+	}
+
+	private forceCanvasUpdate(): void {
+		const tempLayer = { ...this.canvasState.layers[0] };
+		this.canvasState.layers = [
+			tempLayer,
+			...this.canvasState.layers.slice(1),
+		];
+	}
+	async renderWatermark(ctx: CanvasRenderingContext2D): Promise<void> {
+		if (!this.watermarkState.isEnabled || !this.watermarkState.imageSrc) {
+			return;
+		}
+
+		try {
+			const img = new Image();
+			img.src = this.watermarkState.imageSrc;
+			await new Promise((resolve, reject) => {
+				img.onload = resolve;
+				img.onerror = reject;
+			});
+
+			ctx.save();
+
+			ctx.globalAlpha = this.watermarkState.opacity / 100;
+
+			const scale = this.watermarkState.size / 100;
+			const watermarkWidth = img.width * scale;
+			const watermarkHeight = img.height * scale;
+
+			let x = 1;
+			let y = 1;
+
+			switch (this.watermarkState.position) {
+				case 'top-right':
+					x = this.canvasState.dimensions.width - watermarkWidth - 1;
+					break;
+				case 'bottom-left':
+					y =
+						this.canvasState.dimensions.height -
+						watermarkHeight -
+						1;
+					break;
+				case 'bottom-right':
+					x = this.canvasState.dimensions.width - watermarkWidth - 1;
+					y =
+						this.canvasState.dimensions.height -
+						watermarkHeight -
+						1;
+					break;
+				case 'center':
+					x =
+						(this.canvasState.dimensions.width - watermarkWidth) /
+						2;
+					y =
+						(this.canvasState.dimensions.height - watermarkHeight) /
+						2;
+					break;
+			}
+			ctx.drawImage(img, x, y, watermarkWidth, watermarkHeight);
+
+			ctx.restore();
+		} catch (error) {
+			console.error('Error rendering watermark:', error);
+		}
 	}
 }

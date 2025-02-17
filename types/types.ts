@@ -327,3 +327,18 @@ export interface BlurLayerData extends BaseLayerData {
 	type: 'blur';
 	blurRadius: number;
 }
+
+export type WatermarkPosition =
+	| 'top-left'
+	| 'top-right'
+	| 'bottom-left'
+	| 'bottom-right'
+	| 'center';
+
+export interface WatermarkState {
+	isEnabled: boolean;
+	imageSrc: string | null;
+	position: WatermarkPosition;
+	size: number;
+	opacity: number;
+}
