@@ -1102,4 +1102,81 @@ export class CanvasStore {
 			console.error('Error rendering watermark:', error);
 		}
 	}
+	async exportToImage(
+		format: 'image/png' | 'image/jpeg' = 'image/png'
+	): Promise<void> {
+		console.log(`[Export] Starting export in format: ${format}`);
+
+		if (!this.mainCanvasRef.current) {
+			console.error('[Export] Canvas reference not set');
+			return;
+		}
+
+		try {
+			const blob = await new Promise<Blob | null>((resolve) => {
+				this.mainCanvasRef.current!.toBlob(
+					(resultBlob) => {
+						resolve(resultBlob);
+					},
+					format,
+					format === 'image/jpeg' ? 0.9 : undefined
+				);
+			});
+
+			if (!blob) {
+				throw new Error('Failed to create blob');
+			}
+
+			const url = URL.createObjectURL(blob);
+
+			const timestamp = Math.floor(Date.now() / 1000);
+			const extension = format === 'image/png' ? 'png' : 'jpg';
+			const filename = `screenshot_${timestamp}.${extension}`;
+
+			const link = document.createElement('a');
+			link.href = url;
+			link.download = filename;
+
+			link.click();
+
+			setTimeout(() => URL.revokeObjectURL(url), 100);
+		} catch (error) {
+			console.error('[Export] Error during export:', error);
+		}
+	}
+
+	async copyToClipboard(): Promise<void> {
+		if (!this.mainCanvasRef.current) {
+			console.error('Canvas reference not set');
+			return;
+		}
+
+		try {
+			const blob = await new Promise<Blob | null>((resolve) => {
+				this.mainCanvasRef.current!.toBlob((blob) => {
+					resolve(blob);
+				}, 'image/png');
+			});
+
+			if (!blob) {
+				throw new Error('Failed to create blob');
+			}
+
+			await navigator.clipboard.write([
+				new ClipboardItem({
+					'image/png': blob,
+				}),
+			]);
+		} catch (error) {
+			console.error('Copy to clipboard failed:', error);
+		}
+	}
+
+	mainCanvasRef: React.RefObject<HTMLCanvasElement | null> = {
+		current: null,
+	};
+
+	setMainCanvas(canvas: HTMLCanvasElement) {
+		this.mainCanvasRef.current = canvas;
+	}
 }

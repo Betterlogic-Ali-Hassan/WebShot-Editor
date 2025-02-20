@@ -1477,6 +1477,7 @@ const Canvas = observer(() => {
 		const mainCanvas = mainCanvasRef.current;
 		const overlayCanvas = overlayCanvasRef.current;
 		if (!mainCanvas || !overlayCanvas) return;
+		canvasStore.setMainCanvas(mainCanvas);
 
 		const updateCanvasSize = () => {
 			const { width, height } = canvasStore.canvasState.dimensions;
