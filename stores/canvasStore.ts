@@ -1179,4 +1179,93 @@ export class CanvasStore {
 	setMainCanvas(canvas: HTMLCanvasElement) {
 		this.mainCanvasRef.current = canvas;
 	}
+	resizeCanvas(newWidth: number, newHeight: number) {
+		newWidth = Math.max(1, Math.round(newWidth));
+		newHeight = Math.max(1, Math.round(newHeight));
+
+		const { width: oldWidth, height: oldHeight } =
+			this.canvasState.dimensions;
+
+		const scaleX = newWidth / oldWidth;
+		const scaleY = newHeight / oldHeight;
+
+		this.canvasState.dimensions = { width: newWidth, height: newHeight };
+
+		this.canvasState.layers = this.canvasState.layers.map((layer) => {
+			return this.scaleLayer(layer, scaleX, scaleY);
+		});
+
+		if (this.mainCanvasRef.current) {
+			this.mainCanvasRef.current.width = newWidth;
+			this.mainCanvasRef.current.height = newHeight;
+		}
+
+		this.saveToHistory();
+
+		this.logCanvasState();
+	}
+	private scaleLayer(layer: Layer, scaleX: number, scaleY: number): Layer {
+		const scaledLayer = { ...layer };
+
+		scaledLayer.transform = {
+			...scaledLayer.transform,
+			x: Math.round(scaledLayer.transform.x * scaleX),
+			y: Math.round(scaledLayer.transform.y * scaleY),
+			width: Math.round(scaledLayer.transform.width * scaleX),
+			height: Math.round(scaledLayer.transform.height * scaleY),
+		};
+
+		if (scaledLayer.transform.center) {
+			scaledLayer.transform.center = {
+				x: Math.round(scaledLayer.transform.center.x * scaleX),
+				y: Math.round(scaledLayer.transform.center.y * scaleY),
+			};
+		}
+
+		switch (scaledLayer.type) {
+			case 'arrow': {
+				const arrowLayer = scaledLayer as ArrowLayerData;
+				arrowLayer.startPoint = {
+					x: Math.round(arrowLayer.startPoint.x * scaleX),
+					y: Math.round(arrowLayer.startPoint.y * scaleY),
+				};
+				arrowLayer.endPoint = {
+					x: Math.round(arrowLayer.endPoint.x * scaleX),
+					y: Math.round(arrowLayer.endPoint.y * scaleY),
+				};
+				arrowLayer.controlPoints = arrowLayer.controlPoints.map(
+					(point) => ({
+						x: Math.round(point.x * scaleX),
+						y: Math.round(point.y * scaleY),
+					})
+				);
+				break;
+			}
+			case 'drawing': {
+				const drawingLayer = scaledLayer as DrawingLayerData;
+				drawingLayer.points = drawingLayer.points.map((point) => ({
+					x: Math.round(point.x * scaleX),
+					y: Math.round(point.y * scaleY),
+				}));
+				break;
+			}
+			case 'text': {
+				break;
+			}
+			case 'number': {
+				break;
+			}
+			case 'shape': {
+				break;
+			}
+			case 'blur': {
+				break;
+			}
+			case 'image': {
+				break;
+			}
+		}
+
+		return scaledLayer;
+	}
 }
