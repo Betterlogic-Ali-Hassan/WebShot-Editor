@@ -1,6 +1,8 @@
+'use client';
 import { Layer } from '@/types/types';
 import { ReactElement, SVGProps } from 'react';
 import { renderToString } from 'react-dom/server';
+import { v4 as uuidv4 } from 'uuid';
 
 type SVGComponent = ReactElement<SVGProps<SVGSVGElement>>;
 
@@ -40,7 +42,7 @@ export const createImageLayer = (
 
 	return {
 		layer: {
-			id: crypto.randomUUID(),
+			id: uuidv4(),
 			type: 'image' as const,
 			name: file?.name || 'Image Layer',
 			visible: true,

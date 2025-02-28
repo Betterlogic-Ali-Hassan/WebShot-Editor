@@ -6,6 +6,7 @@ import { PopoverProvider } from '@/context/PopOverContext';
 import { useStore } from '@/stores/storeProvider';
 import { observer } from 'mobx-react-lite';
 import { useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 
 const Page = observer(() => {
 	const { canvasStore } = useStore();
@@ -20,7 +21,7 @@ const Page = observer(() => {
 
 		try {
 			const newLayer = {
-				id: crypto.randomUUID(),
+				id: uuidv4(),
 				type: 'image' as const,
 				name: 'Uploaded Image',
 				visible: true,

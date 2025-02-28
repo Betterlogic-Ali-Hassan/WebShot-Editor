@@ -1,4 +1,6 @@
+'use client';
 import { makeAutoObservable } from 'mobx';
+import { v4 as uuidv4 } from 'uuid';
 
 import {
 	CanvasState,
@@ -184,7 +186,7 @@ export class CanvasStore {
 			return;
 
 		const drawingLayer: DrawingLayerData = {
-			id: crypto.randomUUID(),
+			id: uuidv4(),
 			type: 'drawing',
 			name: `Drawing ${this.canvasState.layers.length + 1}`,
 			visible: true,
@@ -433,16 +435,12 @@ export class CanvasStore {
 		const dy = y - this.dragState.currentPosition.y;
 
 		if (selectedLayer.type === 'arrow') {
-			// Перемещаем только transform слоя
 			selectedLayer.transform = {
 				...selectedLayer.transform,
 				x: selectedLayer.transform.x + dx,
 				y: selectedLayer.transform.y + dy,
 			};
-
-			// Относительные координаты точек НЕ меняются, так как они относительны к transform
 		} else {
-			// Для других типов слоев обновляем только transform
 			selectedLayer.transform = {
 				...selectedLayer.transform,
 				x: selectedLayer.transform.x + dx,
@@ -450,10 +448,8 @@ export class CanvasStore {
 			};
 		}
 
-		// Обновляем позицию перетаскивания
 		this.dragState.currentPosition = { x, y };
 
-		// Уведомляем об изменении состояния
 		this.canvasState.layers = [...this.canvasState.layers];
 	}
 
@@ -483,7 +479,7 @@ export class CanvasStore {
 			return;
 
 		const shapeLayer: ShapeLayerData = {
-			id: crypto.randomUUID(),
+			id: uuidv4(),
 			type: 'shape',
 			name: `Shape ${this.canvasState.layers.length + 1}`,
 			visible: true,
@@ -592,7 +588,7 @@ export class CanvasStore {
 		const currentColor = this.getCurrentNumberColor();
 
 		const numberLayer: NumberLayerData = {
-			id: crypto.randomUUID(),
+			id: uuidv4(),
 			type: 'number',
 			name: `Number ${currentValue}`,
 			visible: true,
@@ -662,7 +658,7 @@ export class CanvasStore {
 
 	private createTextLayer(transform: { x: number; y: number }) {
 		const textLayer: TextLayerData = {
-			id: crypto.randomUUID(),
+			id: uuidv4(),
 			type: 'text',
 			name: 'Text Layer',
 			visible: true,
@@ -860,10 +856,8 @@ export class CanvasStore {
 		)
 			return;
 
-		// Вычисляем границы слоя
 		const bounds = this.arrowState.previewBounds;
 
-		// Создаем точки относительно границ слоя
 		const relativeStartPoint = {
 			x: this.arrowState.startPoint.x - bounds.x,
 			y: this.arrowState.startPoint.y - bounds.y,
@@ -882,7 +876,7 @@ export class CanvasStore {
 		);
 
 		const arrowLayer: ArrowLayerData = {
-			id: crypto.randomUUID(),
+			id: uuidv4(),
 			type: 'arrow',
 			name: `Arrow ${this.canvasState.layers.length + 1}`,
 			visible: true,
@@ -981,7 +975,7 @@ export class CanvasStore {
 			return;
 
 		const blurLayer: BlurLayerData = {
-			id: crypto.randomUUID(),
+			id: uuidv4(),
 			type: 'blur',
 			name: `Blur ${this.canvasState.layers.length + 1}`,
 			visible: true,

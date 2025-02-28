@@ -99,11 +99,13 @@ const ImageUploader = observer(({ isLoading }: ImageUploaderProps) => {
 					>
 						<div
 							className="p-4 rounded-[16px] border-dashed flex items-center border-2 justify-center flex-col min-h-[420px] w-full"
-							onPaste={(e) => {
+							onPaste={(
+								e: React.ClipboardEvent<HTMLDivElement>
+							) => {
 								const isFirstImage =
 									canvasStore.canvasState.layers.length === 0;
 								handleImagePaste(
-									e.nativeEvent,
+									e,
 									(result) => {
 										if (isFirstImage) {
 											if (result.initialZoom) {
@@ -125,12 +127,12 @@ const ImageUploader = observer(({ isLoading }: ImageUploaderProps) => {
 									isFirstImage
 								);
 							}}
-							onDrop={(e) => {
+							onDrop={(e: React.DragEvent<HTMLDivElement>) => {
 								e.preventDefault();
 								const isFirstImage =
 									canvasStore.canvasState.layers.length === 0;
 								handleImageDrop(
-									e.nativeEvent,
+									e,
 									(result) => {
 										if (isFirstImage) {
 											if (result.initialZoom) {

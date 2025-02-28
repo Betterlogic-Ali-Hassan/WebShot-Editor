@@ -1577,12 +1577,12 @@ const Canvas = observer(() => {
 		<div
 			style={containerStyle}
 			onDragOver={(e) => e.preventDefault()}
-			onDrop={(e) => {
+			onDrop={(e: React.DragEvent<HTMLDivElement>) => {
 				e.preventDefault();
 				const isFirstImage =
 					canvasStore.canvasState.layers.length === 0;
 				handleImageDrop(
-					e.nativeEvent,
+					e,
 					(result) => {
 						if (isFirstImage) {
 							if (result.initialZoom) {
@@ -1600,11 +1600,11 @@ const Canvas = observer(() => {
 					isFirstImage
 				);
 			}}
-			onPaste={(e) => {
+			onPaste={(e: React.ClipboardEvent<HTMLDivElement>) => {
 				const isFirstImage =
 					canvasStore.canvasState.layers.length === 0;
 				handleImagePaste(
-					e.nativeEvent,
+					e,
 					(result) => {
 						if (isFirstImage) {
 							if (result.initialZoom) {
