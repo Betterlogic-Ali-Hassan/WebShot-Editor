@@ -17,7 +17,7 @@ import WaterMarkSelector from '@/components/editor/Selectors/watermarkSelector/W
 import ZoomSelector from '@/components/editor/Selectors/zoomSelector/ZoomSelector';
 
 interface SelectorItem {
-	component: React.ComponentType<any>;
+	component: React.ComponentType<unknown>;
 	id: number;
 	selection: boolean;
 	toolType?: ToolType;
@@ -27,7 +27,7 @@ export const selectors: SelectorItem[] = [
 	{ component: ImgSelector, id: 1, selection: false },
 	{ component: ZoomSelector, id: 2, selection: false, toolType: 'select' },
 	{ component: ResizerSelector, id: 3, selection: false, toolType: 'resize' },
-	{ component: CropSelector, id: 4, selection: true, toolType: 'select' },
+	{ component: CropSelector, id: 4, selection: true, toolType: 'crop' },
 	{ component: PenSelector, id: 5, selection: true },
 	{ component: ShapeSelector, id: 6, selection: true, toolType: 'shape' },
 	{ component: ArrowSelector, id: 7, selection: true, toolType: 'arrow' },

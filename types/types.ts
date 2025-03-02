@@ -110,7 +110,8 @@ export type ToolType =
 	| 'textArrow'
 	| 'number'
 	| 'draw'
-	| 'arrow';
+	| 'arrow'
+	| 'crop';
 
 export interface EditorState {
 	currentTool: ToolType;

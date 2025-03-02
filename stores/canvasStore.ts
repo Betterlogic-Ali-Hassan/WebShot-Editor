@@ -27,8 +27,31 @@ import {
 	BlurDrawingState,
 	BlurLayerData,
 	WatermarkState,
+	Point,
 } from '@/types/types';
 
+export interface CropState {
+	isActive: boolean;
+	startPoint: Point | null;
+	currentPoint: Point | null;
+	previewBounds?: {
+		x: number;
+		y: number;
+		width: number;
+		height: number;
+	};
+	visibleArea: {
+		x: number;
+		y: number;
+		width: number;
+		height: number;
+	} | null;
+}
+
+interface EditorHistoryState {
+	canvasState: CanvasState;
+	cropState: CropState;
+}
 export class CanvasStore {
 	canvasState: CanvasState = {
 		id: '',
@@ -116,8 +139,20 @@ export class CanvasStore {
 		size: 50,
 		opacity: 50,
 	};
+	dragState = {
+		isDragging: false,
+		startPosition: { x: 0, y: 0 },
+		currentPosition: { x: 0, y: 0 },
+	};
+	cropState: CropState = {
+		isActive: false,
+		startPoint: null,
+		currentPoint: null,
+		previewBounds: undefined,
+		visibleArea: null,
+	};
 	currentTool: ToolType = 'select';
-	private history: CanvasState[] = [];
+	private history: EditorHistoryState[] = [];
 	private currentHistoryIndex: number = -1;
 
 	constructor() {
@@ -413,12 +448,6 @@ export class CanvasStore {
 		//   JSON.parse(JSON.stringify(this.selectionState))
 		// );
 	}
-
-	dragState = {
-		isDragging: false,
-		startPosition: { x: 0, y: 0 },
-		currentPosition: { x: 0, y: 0 },
-	};
 
 	startDragging(x: number, y: number) {
 		this.dragState.isDragging = true;
@@ -741,15 +770,24 @@ export class CanvasStore {
 			this.saveToHistory();
 		}
 	}
+
 	initHistory() {
-		this.history = [{ ...this.canvasState }];
+		this.history = [
+			{
+				canvasState: { ...this.canvasState },
+				cropState: { ...this.cropState },
+			},
+		];
 		this.currentHistoryIndex = 0;
 	}
 
 	saveToHistory() {
 		this.history = this.history.slice(0, this.currentHistoryIndex + 1);
 
-		this.history.push({ ...this.canvasState });
+		this.history.push({
+			canvasState: { ...this.canvasState },
+			cropState: { ...this.cropState },
+		});
 		this.currentHistoryIndex++;
 	}
 
@@ -767,7 +805,8 @@ export class CanvasStore {
 		this.currentHistoryIndex--;
 		const previousState = this.history[this.currentHistoryIndex];
 
-		this.canvasState = { ...previousState };
+		this.canvasState = { ...previousState.canvasState };
+		this.cropState = { ...previousState.cropState };
 
 		this.clearSelection();
 	}
@@ -778,7 +817,8 @@ export class CanvasStore {
 		this.currentHistoryIndex++;
 		const nextState = this.history[this.currentHistoryIndex];
 
-		this.canvasState = { ...nextState };
+		this.canvasState = { ...nextState.canvasState };
+		this.cropState = { ...nextState.cropState };
 
 		this.clearSelection();
 	}
@@ -789,10 +829,12 @@ export class CanvasStore {
 		this.currentHistoryIndex = 0;
 		const initialState = this.history[0];
 
-		this.canvasState = { ...initialState };
+		this.canvasState = { ...initialState.canvasState };
+		this.cropState = { ...initialState.cropState };
 
 		this.clearSelection();
 	}
+
 	startArrowDrawing(x: number, y: number) {
 		if (this.arrowState.isDrawing) return;
 
@@ -928,6 +970,7 @@ export class CanvasStore {
 			previewBounds: undefined,
 		};
 	}
+
 	startBlurDrawing(x: number, y: number) {
 		this.blurState.isDrawing = true;
 		this.blurState.startPoint = { x, y };
@@ -939,6 +982,7 @@ export class CanvasStore {
 			height: 0,
 		};
 	}
+
 	updateBlurDrawing(x: number, y: number) {
 		if (!this.blurState.isDrawing || !this.blurState.startPoint) return;
 
@@ -965,6 +1009,7 @@ export class CanvasStore {
 			height,
 		};
 	}
+
 	finishBlurDrawing() {
 		if (
 			!this.blurState.isDrawing ||
@@ -1004,6 +1049,7 @@ export class CanvasStore {
 
 		this.currentTool = 'select';
 	}
+
 	setWatermarkImage(file: File): void {
 		if (this.watermarkState.imageSrc) {
 			URL.revokeObjectURL(this.watermarkState.imageSrc);
@@ -1015,6 +1061,7 @@ export class CanvasStore {
 
 		this.saveToHistory();
 	}
+
 	updateWatermarkState(updates: Partial<WatermarkState>): void {
 		if (updates.size !== undefined) {
 			updates.size = Math.max(1, Math.min(100, updates.size));
@@ -1039,6 +1086,7 @@ export class CanvasStore {
 			...this.canvasState.layers.slice(1),
 		];
 	}
+
 	async renderWatermark(ctx: CanvasRenderingContext2D): Promise<void> {
 		if (!this.watermarkState.isEnabled || !this.watermarkState.imageSrc) {
 			return;
@@ -1096,6 +1144,7 @@ export class CanvasStore {
 			console.error('Error rendering watermark:', error);
 		}
 	}
+
 	async exportToImage(
 		format: 'image/png' | 'image/jpeg' = 'image/png'
 	): Promise<void> {
@@ -1107,8 +1156,37 @@ export class CanvasStore {
 		}
 
 		try {
+			const tempCanvas = document.createElement('canvas');
+			const tempCtx = tempCanvas.getContext('2d');
+
+			if (!tempCtx) {
+				throw new Error('Failed to get context for temp canvas');
+			}
+
+			if (this.cropState.visibleArea) {
+				const { x, y, width, height } = this.cropState.visibleArea;
+				tempCanvas.width = width;
+				tempCanvas.height = height;
+
+				tempCtx.drawImage(
+					this.mainCanvasRef.current,
+					x,
+					y,
+					width,
+					height,
+					0,
+					0,
+					width,
+					height
+				);
+			} else {
+				tempCanvas.width = this.canvasState.dimensions.width;
+				tempCanvas.height = this.canvasState.dimensions.height;
+				tempCtx.drawImage(this.mainCanvasRef.current, 0, 0);
+			}
+
 			const blob = await new Promise<Blob | null>((resolve) => {
-				this.mainCanvasRef.current!.toBlob(
+				tempCanvas.toBlob(
 					(resultBlob) => {
 						resolve(resultBlob);
 					},
@@ -1146,8 +1224,37 @@ export class CanvasStore {
 		}
 
 		try {
+			const tempCanvas = document.createElement('canvas');
+			const tempCtx = tempCanvas.getContext('2d');
+
+			if (!tempCtx) {
+				throw new Error('Failed to get context for temp canvas');
+			}
+
+			if (this.cropState.visibleArea) {
+				const { x, y, width, height } = this.cropState.visibleArea;
+				tempCanvas.width = width;
+				tempCanvas.height = height;
+
+				tempCtx.drawImage(
+					this.mainCanvasRef.current,
+					x,
+					y,
+					width,
+					height,
+					0,
+					0,
+					width,
+					height
+				);
+			} else {
+				tempCanvas.width = this.canvasState.dimensions.width;
+				tempCanvas.height = this.canvasState.dimensions.height;
+				tempCtx.drawImage(this.mainCanvasRef.current, 0, 0);
+			}
+
 			const blob = await new Promise<Blob | null>((resolve) => {
-				this.mainCanvasRef.current!.toBlob((blob) => {
+				tempCanvas.toBlob((blob) => {
 					resolve(blob);
 				}, 'image/png');
 			});
@@ -1261,5 +1368,144 @@ export class CanvasStore {
 		}
 
 		return scaledLayer;
+	}
+
+	startCropping(x: number, y: number) {
+		if (this.cropState.isActive) return;
+
+		this.cropState = {
+			...this.cropState,
+			isActive: true,
+			startPoint: { x, y },
+			currentPoint: { x, y },
+			previewBounds: {
+				x,
+				y,
+				width: 0,
+				height: 0,
+			},
+		};
+	}
+
+	updateCropping(x: number, y: number) {
+		if (!this.cropState.isActive || !this.cropState.startPoint) return;
+
+		this.cropState.currentPoint = { x, y };
+
+		const startX = Math.min(this.cropState.startPoint.x, x);
+		const startY = Math.min(this.cropState.startPoint.y, y);
+		const width = Math.abs(x - this.cropState.startPoint.x);
+		const height = Math.abs(y - this.cropState.startPoint.y);
+
+		this.cropState.previewBounds = {
+			x: startX,
+			y: startY,
+			width,
+			height,
+		};
+	}
+
+	applyCrop() {
+		if (!this.cropState.previewBounds) return;
+
+		const { x, y, width, height } = this.cropState.previewBounds;
+		if (width <= 0 || height <= 0) {
+			this.cancelCrop();
+			return;
+		}
+
+		this.cropState.visibleArea = {
+			x,
+			y,
+			width,
+			height,
+		};
+
+		this.cropState.isActive = false;
+		this.cropState.startPoint = null;
+		this.cropState.currentPoint = null;
+		this.cropState.previewBounds = undefined;
+
+		if (this.mainCanvasRef.current) {
+			const overlayCanvas = document.querySelector(
+				'canvas[style*="pointerEvents: none"]'
+			) as HTMLCanvasElement;
+			if (overlayCanvas) {
+				const ctx = overlayCanvas.getContext('2d');
+				if (ctx) {
+					ctx.clearRect(
+						0,
+						0,
+						overlayCanvas.width,
+						overlayCanvas.height
+					);
+				}
+			}
+		}
+
+		this.currentTool = 'select';
+		this.saveToHistory();
+	}
+
+	cancelCrop() {
+		this.cropState.isActive = false;
+		this.cropState.startPoint = null;
+		this.cropState.currentPoint = null;
+		this.cropState.previewBounds = undefined;
+
+		if (this.mainCanvasRef.current) {
+			const overlayCanvas = document.querySelector(
+				'canvas[style*="pointerEvents: none"]'
+			) as HTMLCanvasElement;
+			if (overlayCanvas) {
+				const ctx = overlayCanvas.getContext('2d');
+				if (ctx) {
+					ctx.clearRect(
+						0,
+						0,
+						overlayCanvas.width,
+						overlayCanvas.height
+					);
+				}
+			}
+		}
+
+		this.currentTool = 'select';
+	}
+
+	resetVisibleArea() {
+		if (this.cropState.visibleArea) {
+			this.cropState.visibleArea = null;
+			this.saveToHistory();
+		}
+	}
+
+	initCropFromVisibleArea() {
+		if (this.cropState.visibleArea) {
+			const { x, y, width, height } = this.cropState.visibleArea;
+
+			this.cropState.isActive = true;
+			this.cropState.startPoint = { x, y };
+			this.cropState.currentPoint = { x: x + width, y: y + height };
+			this.cropState.previewBounds = {
+				x,
+				y,
+				width,
+				height,
+			};
+		} else {
+			this.cropState.isActive = true;
+			this.cropState.startPoint = { x: 0, y: 0 };
+			this.cropState.currentPoint = {
+				x: this.canvasState.dimensions.width,
+				y: this.canvasState.dimensions.height,
+			};
+			this.cropState.previewBounds = {
+				x: 0,
+				y: 0,
+				width: this.canvasState.dimensions.width,
+				height: this.canvasState.dimensions.height,
+			};
+		}
 	}
 }

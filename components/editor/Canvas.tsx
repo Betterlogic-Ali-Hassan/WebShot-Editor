@@ -19,6 +19,8 @@ import { drawShape } from '@/utils/shapeUtils';
 import { useOutsideClick } from '@/hooks/useOutsideClick';
 import TextInput from '@/components/editor/TextInput/TextInput';
 import { drawArrow } from '@/utils/arrowUtils';
+import { Button } from '@/components/ui/button';
+
 const Canvas = observer(() => {
 	const { canvasStore } = useStore();
 	const mainCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -28,10 +30,40 @@ const Canvas = observer(() => {
 	const hoveredHandleRef = useRef<TransformHandleType | null>(null);
 	const selectedHandleRef = useRef<TransformHandleType | null>(null);
 	const tempCanvasRef = useRef<HTMLCanvasElement | null>(null);
+	const [showCropModal, setShowCropModal] = useState<boolean>(false);
+
 	const [textInputPosition, setTextInputPosition] = useState<{
 		x: number;
 		y: number;
 	} | null>(null);
+
+	const getCanvasStyle = (): React.CSSProperties => {
+		const baseStyle: React.CSSProperties = {
+			position: 'absolute',
+			maxWidth: '100%',
+			maxHeight: '100%',
+			transformOrigin: 'center center',
+			transform: `scale(${canvasStore.canvasState.zoom / 100})`,
+			willChange: 'transform',
+			imageRendering: 'pixelated' as const,
+		};
+
+		if (canvasStore.cropState.visibleArea) {
+			const { x, y, width, height } = canvasStore.cropState.visibleArea;
+			const canvasWidth = canvasStore.canvasState.dimensions.width;
+			const canvasHeight = canvasStore.canvasState.dimensions.height;
+
+			const left = (x / canvasWidth) * 100;
+			const top = (y / canvasHeight) * 100;
+			const right = ((x + width) / canvasWidth) * 100;
+			const bottom = ((y + height) / canvasHeight) * 100;
+
+			baseStyle.clipPath = `polygon(${left}% ${top}%, ${right}% ${top}%, ${right}% ${bottom}%, ${left}% ${bottom}%)`;
+		}
+
+		return baseStyle;
+	};
+	const canvasStyle = getCanvasStyle();
 	useEffect(() => {
 		const mainCanvas = mainCanvasRef.current;
 		const tempCanvas = document.createElement('canvas');
@@ -358,23 +390,20 @@ const Canvas = observer(() => {
 					const centerX = x + width / 2;
 					const centerY = y + height / 2;
 
-					// Устанавливаем трансформации
 					ctx.translate(centerX, centerY);
 					ctx.rotate((rotation * Math.PI) / 180);
 					ctx.scale(scale.x, scale.y);
 					ctx.translate(-centerX, -centerY);
 
-					// Отрисовка фона
 					if (layer.backgroundColor) {
 						console.log(
 							'Drawing background with color:',
 							layer.backgroundColor
-						); // debug
+						);
 						ctx.fillStyle = layer.backgroundColor;
 						ctx.fillRect(x, y, width, height);
 					}
 
-					// Установка стилей текста
 					ctx.font = `${layer.bold ? 'bold ' : ''}${
 						layer.italic ? 'italic ' : ''
 					}${layer.fontSize}px ${layer.fontFamily}`;
@@ -581,6 +610,7 @@ const Canvas = observer(() => {
 		},
 		[drawLayer]
 	);
+
 	const renderLayers = useCallback(async () => {
 		const mainCanvas = mainCanvasRef.current;
 		const ctx = mainCanvas?.getContext('2d');
@@ -588,11 +618,28 @@ const Canvas = observer(() => {
 
 		ctx.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
 
+		const visibleArea = canvasStore.cropState.visibleArea;
+		if (visibleArea) {
+			ctx.save();
+			ctx.beginPath();
+			ctx.rect(
+				visibleArea.x,
+				visibleArea.y,
+				visibleArea.width,
+				visibleArea.height
+			);
+			ctx.clip();
+		}
+
 		for (const layer of canvasStore.canvasState.layers) {
 			await drawLayer(ctx, layer);
 		}
 
 		await canvasStore.renderWatermark(ctx);
+
+		if (visibleArea) {
+			ctx.restore();
+		}
 	}, [drawLayer, canvasStore]);
 
 	const getCanvasCoordinates = useCallback((e: React.MouseEvent) => {
@@ -787,6 +834,11 @@ const Canvas = observer(() => {
 		async (e: React.MouseEvent) => {
 			const coords = getCanvasCoordinates(e);
 			if (!coords) return;
+
+			if (canvasStore.currentTool === 'crop') {
+				canvasStore.startCropping(coords.x, coords.y);
+				return;
+			}
 
 			if (canvasStore.currentTool === 'arrow') {
 				canvasStore.startArrowDrawing(coords.x, coords.y);
@@ -987,6 +1039,80 @@ const Canvas = observer(() => {
 		(e: React.MouseEvent) => {
 			const coords = getCanvasCoordinates(e);
 			if (!coords) return;
+
+			if (canvasStore.currentTool === 'crop') {
+				if (canvasStore.cropState.isActive) {
+					canvasStore.updateCropping(coords.x, coords.y);
+
+					const overlayCanvas = overlayCanvasRef.current;
+					const ctx = overlayCanvas?.getContext('2d');
+					if (
+						overlayCanvas &&
+						ctx &&
+						canvasStore.cropState.previewBounds
+					) {
+						ctx.clearRect(
+							0,
+							0,
+							overlayCanvas.width,
+							overlayCanvas.height
+						);
+
+						const bounds = canvasStore.cropState.previewBounds;
+
+						ctx.strokeStyle = '#0088ff';
+						ctx.lineWidth = 2;
+						ctx.strokeRect(
+							bounds.x,
+							bounds.y,
+							bounds.width,
+							bounds.height
+						);
+
+						const handlePositions = [
+							{ x: bounds.x, y: bounds.y },
+							{ x: bounds.x + bounds.width / 2, y: bounds.y },
+							{ x: bounds.x + bounds.width, y: bounds.y },
+							{ x: bounds.x, y: bounds.y + bounds.height / 2 },
+							{
+								x: bounds.x + bounds.width,
+								y: bounds.y + bounds.height / 2,
+							},
+							{ x: bounds.x, y: bounds.y + bounds.height },
+							{
+								x: bounds.x + bounds.width / 2,
+								y: bounds.y + bounds.height,
+							},
+							{
+								x: bounds.x + bounds.width,
+								y: bounds.y + bounds.height,
+							},
+						];
+
+						const scale = canvasStore.canvasState.zoom / 100;
+						const handleSize = TRANSFORM_HANDLE_SIZE * scale;
+
+						handlePositions.forEach((handle) => {
+							ctx.beginPath();
+							ctx.fillStyle = '#fff';
+							ctx.strokeStyle = '#0088ff';
+							ctx.lineWidth = 1;
+
+							ctx.arc(
+								handle.x,
+								handle.y,
+								handleSize / 2,
+								0,
+								Math.PI * 2
+							);
+
+							ctx.fill();
+							ctx.stroke();
+						});
+					}
+				}
+				return;
+			}
 
 			if (
 				canvasStore.currentTool === 'arrow' &&
@@ -1389,6 +1515,25 @@ const Canvas = observer(() => {
 		]
 	);
 	const handleMouseUp = useCallback(() => {
+		if (
+			canvasStore.currentTool === 'crop' &&
+			canvasStore.cropState.isActive &&
+			canvasStore.cropState.previewBounds
+		) {
+			const bounds = canvasStore.cropState.previewBounds;
+
+			if (bounds.width < 5 || bounds.height < 5) {
+				canvasStore.cancelCrop();
+				return;
+			}
+
+			canvasStore.cropState.isActive = false;
+			canvasStore.cropState.startPoint = null;
+			canvasStore.cropState.currentPoint = null;
+
+			setShowCropModal(true);
+			return;
+		}
 		if (canvasStore.arrowState.isDrawing) {
 			canvasStore.finishArrowDrawing();
 
@@ -1500,8 +1645,7 @@ const Canvas = observer(() => {
 
 		updateCanvasSize();
 		renderLayers();
-	}, [canvasStore.canvasState.dimensions, renderLayers]);
-
+	}, [canvasStore, canvasStore.canvasState.dimensions, renderLayers]);
 	useEffect(() => {
 		renderLayers();
 	}, [canvasStore.canvasState.layers, renderLayers]);
@@ -1532,15 +1676,6 @@ const Canvas = observer(() => {
 		position: 'relative',
 	};
 
-	const canvasStyle: React.CSSProperties = {
-		position: 'absolute',
-		maxWidth: '100%',
-		maxHeight: '100%',
-		transformOrigin: 'center center',
-		transform: `scale(${canvasStore.canvasState.zoom / 100})`,
-		willChange: 'transform',
-		imageRendering: 'pixelated' as const,
-	};
 	const handleDoubleClick = useCallback(
 		async (e: React.MouseEvent) => {
 			const coords = getCanvasCoordinates(e);
@@ -1647,6 +1782,45 @@ const Canvas = observer(() => {
 					position={textInputPosition}
 					onFinish={handleTextFinish}
 				/>
+			)}
+			{showCropModal && canvasStore.cropState.previewBounds && (
+				<div
+					style={{
+						position: 'fixed',
+						top: 0,
+						left: 0,
+						right: 0,
+						padding: '12px',
+						background: 'rgba(255, 255, 255, 0.9)',
+						display: 'flex',
+						justifyContent: 'center',
+						alignItems: 'center',
+						zIndex: 1000,
+						boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+						borderBottom: '1px solid #ccc',
+					}}
+				>
+					<div style={{ display: 'flex', gap: '12px' }}>
+						<Button
+							onClick={() => {
+								canvasStore.applyCrop();
+								setShowCropModal(false);
+							}}
+							className="bg-dark text-white hover:bg-dark/80"
+						>
+							Apply
+						</Button>
+						<Button
+							onClick={() => {
+								canvasStore.cancelCrop();
+								setShowCropModal(false);
+							}}
+							variant="outline"
+						>
+							Cancel
+						</Button>
+					</div>
+				</div>
 			)}
 		</div>
 	);
