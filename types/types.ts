@@ -21,7 +21,8 @@ export type LayerType =
 	| 'drawing'
 	| 'number'
 	| 'arrow'
-	| 'blur';
+	| 'blur'
+	| 'textArrow';
 
 export type NumberStyle = 'circle' | 'square' | 'plain';
 
@@ -62,6 +63,19 @@ export interface NumberLayerData extends BaseLayerData {
 	color: string;
 	fontSize: number;
 }
+export interface TextArrowLayerData extends BaseLayerData {
+	type: 'textArrow';
+	arrowType: ArrowType;
+	startPoint: Point;
+	endPoint: Point;
+	controlPoints: Point[];
+	strokeColor: string;
+	strokeWidth: number;
+	text: string;
+	fontSize: number;
+	fontFamily: string;
+	color: string;
+}
 export type Layer =
 	| ImageLayerData
 	| ShapeLayerData
@@ -69,7 +83,8 @@ export type Layer =
 	| NumberLayerData
 	| TextLayerData
 	| ArrowLayerData
-	| BlurLayerData;
+	| BlurLayerData
+	| TextArrowLayerData;
 export interface Filter {
 	type: 'brightness' | 'contrast' | 'saturation' | 'blur' | 'grayscale';
 	value: number;
@@ -111,7 +126,8 @@ export type ToolType =
 	| 'number'
 	| 'draw'
 	| 'arrow'
-	| 'crop';
+	| 'crop'
+	| 'pageText';
 
 export interface EditorState {
 	currentTool: ToolType;
@@ -342,4 +358,20 @@ export interface WatermarkState {
 	position: WatermarkPosition;
 	size: number;
 	opacity: number;
+}
+export interface TextArrowDrawingState {
+	isDrawing: boolean;
+	startPoint: Point | null;
+	endPoint: Point | null;
+	controlPoints: Point[];
+	arrowType: ArrowType;
+	strokeColor: string;
+	strokeWidth: number;
+	previewBounds?: {
+		x: number;
+		y: number;
+		width: number;
+		height: number;
+	};
+	textInput: boolean;
 }

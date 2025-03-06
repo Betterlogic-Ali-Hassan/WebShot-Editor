@@ -13,6 +13,7 @@ import {
 	ArrowDrawingState,
 	ARROW_HEAD_SIZE,
 	Point,
+	TextArrowLayerData,
 } from '@/types/types';
 import { handleImagePaste, handleImageDrop } from '@/utils/imageUtils';
 import { drawShape } from '@/utils/shapeUtils';
@@ -529,6 +530,89 @@ const Canvas = observer(() => {
 					ctx.restore();
 					break;
 				}
+				case 'textArrow': {
+					ctx.save();
+					const zoom = canvasStore.canvasState.zoom / 100;
+
+					const { x: layerX, y: layerY } = layer.transform;
+
+					const startPoint = {
+						x: layerX + layer.startPoint.x,
+						y: layerY + layer.startPoint.y,
+					};
+
+					const endPoint = {
+						x: layerX + layer.endPoint.x,
+						y: layerY + layer.endPoint.y,
+					};
+
+					const controlPoints = layer.controlPoints.map((point) => ({
+						x: layerX + point.x,
+						y: layerY + point.y,
+					}));
+
+					if (
+						layer.transform.rotation !== 0 ||
+						layer.transform.scale.x !== 1 ||
+						layer.transform.scale.y !== 1
+					) {
+						const centerX = layerX + layer.transform.width / 2;
+						const centerY = layerY + layer.transform.height / 2;
+
+						ctx.translate(centerX, centerY);
+						ctx.rotate((layer.transform.rotation * Math.PI) / 180);
+						ctx.scale(
+							layer.transform.scale.x,
+							layer.transform.scale.y
+						);
+						ctx.translate(-centerX, -centerY);
+					}
+
+					const scaledStrokeWidth = layer.strokeWidth * zoom;
+
+					drawArrow(
+						ctx,
+						startPoint,
+						endPoint,
+						controlPoints,
+						layer.arrowType,
+						layer.strokeColor,
+						scaledStrokeWidth
+					);
+
+					if (layer.text) {
+						ctx.save();
+						ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+						ctx.font = `${layer.fontSize}px ${layer.fontFamily}`;
+						ctx.fillStyle = layer.color;
+						ctx.textAlign = 'center';
+						ctx.textBaseline = 'middle';
+
+						const metrics = ctx.measureText(layer.text);
+						const textWidth = metrics.width;
+						const textHeight = layer.fontSize * 1.2;
+
+						const padding = 10;
+						const backgroundColor = '#FFFF00';
+
+						ctx.fillStyle = backgroundColor;
+						ctx.fillRect(
+							startPoint.x - textWidth / 2 - padding,
+							startPoint.y - textHeight / 2 - padding,
+							textWidth + padding * 2,
+							textHeight + padding * 2
+						);
+
+						ctx.fillStyle = layer.color;
+						ctx.fillText(layer.text, startPoint.x, startPoint.y);
+
+						ctx.restore();
+					}
+
+					ctx.restore();
+					break;
+				}
 			}
 		},
 		[
@@ -540,7 +624,11 @@ const Canvas = observer(() => {
 		]
 	);
 	const handleTextFinish = useCallback(() => {
-		canvasStore.finishTextEditing();
+		if (canvasStore.textArrowState.textInput) {
+			canvasStore.finishTextArrowTextInput();
+		} else {
+			canvasStore.finishTextEditing();
+		}
 		setTextInputPosition(null);
 	}, [canvasStore]);
 	const checkLayerTransparency = useCallback(
@@ -667,6 +755,33 @@ const Canvas = observer(() => {
 			);
 		}
 
+		if (layer.type === 'textArrow') {
+			const inTransformBox =
+				x >= layerX &&
+				x <= layerX + width &&
+				y >= layerY &&
+				y <= layerY + height;
+
+			if (inTransformBox) return true;
+
+			const startPointX =
+				layerX + (layer as TextArrowLayerData).startPoint.x;
+			const startPointY =
+				layerY + (layer as TextArrowLayerData).startPoint.y;
+
+			const textWidth =
+				(layer as TextArrowLayerData).text.length *
+				((layer as TextArrowLayerData).fontSize / 2);
+			const textHeight = (layer as TextArrowLayerData).fontSize * 1.5;
+
+			return (
+				x >= startPointX - textWidth / 2 &&
+				x <= startPointX + textWidth / 2 &&
+				y >= startPointY - textHeight / 2 &&
+				y <= startPointY + textHeight / 2
+			);
+		}
+
 		return (
 			x >= layerX &&
 			x <= layerX + width &&
@@ -686,7 +801,7 @@ const Canvas = observer(() => {
 			ctx.strokeStyle = '#0088ff';
 			ctx.lineWidth = SELECTION_BORDER_WIDTH;
 
-			if (layer.type === 'arrow') {
+			if (layer.type === 'arrow' || layer.type === 'textArrow') {
 				const bounds = layer.transform;
 				ctx.strokeRect(bounds.x, bounds.y, bounds.width, bounds.height);
 
@@ -834,7 +949,10 @@ const Canvas = observer(() => {
 		async (e: React.MouseEvent) => {
 			const coords = getCanvasCoordinates(e);
 			if (!coords) return;
-
+			if (canvasStore.currentTool === 'textArrow') {
+				canvasStore.startTextArrowDrawing(coords.x, coords.y);
+				return;
+			}
 			if (canvasStore.currentTool === 'crop') {
 				canvasStore.startCropping(coords.x, coords.y);
 				return;
@@ -894,7 +1012,10 @@ const Canvas = observer(() => {
 				const scale = canvasStore.canvasState.zoom / 100;
 				const handleSize = TRANSFORM_HANDLE_SIZE * scale;
 
-				if (selectedLayer.type === 'arrow') {
+				if (
+					selectedLayer.type === 'arrow' ||
+					selectedLayer.type === 'textArrow'
+				) {
 					const startPoint = {
 						x:
 							selectedLayer.transform.x +
@@ -925,8 +1046,10 @@ const Canvas = observer(() => {
 					}
 
 					if (
-						selectedLayer.arrowType === 'curved' ||
-						selectedLayer.arrowType === 'curvedLine'
+						(selectedLayer.arrowType === 'curved' ||
+							selectedLayer.arrowType === 'curvedLine') &&
+						selectedLayer.controlPoints &&
+						selectedLayer.controlPoints.length > 0
 					) {
 						for (
 							let i = 0;
@@ -1146,7 +1269,38 @@ const Canvas = observer(() => {
 				}
 				return;
 			}
+			if (
+				canvasStore.currentTool === 'textArrow' &&
+				canvasStore.textArrowState.isDrawing
+			) {
+				const overlayCanvas = overlayCanvasRef.current;
+				const ctx = overlayCanvas?.getContext('2d');
+				if (!overlayCanvas || !ctx) return;
 
+				ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+
+				canvasStore.updateTextArrowDrawing(coords.x, coords.y);
+
+				const zoom = canvasStore.canvasState.zoom / 100;
+				const scaledStrokeWidth =
+					canvasStore.textArrowState.strokeWidth * zoom;
+
+				if (
+					canvasStore.textArrowState.startPoint &&
+					canvasStore.textArrowState.endPoint
+				) {
+					drawArrow(
+						ctx,
+						canvasStore.textArrowState.startPoint,
+						canvasStore.textArrowState.endPoint,
+						canvasStore.textArrowState.controlPoints,
+						canvasStore.textArrowState.arrowType,
+						canvasStore.textArrowState.strokeColor,
+						scaledStrokeWidth
+					);
+				}
+				return;
+			}
 			if (canvasStore.drawingState.isDrawing) {
 				canvasStore.updateDrawing(coords.x, coords.y);
 
@@ -1314,7 +1468,10 @@ const Canvas = observer(() => {
 				const selectedLayer = canvasStore.getSelectedLayer();
 				if (!selectedLayer) return;
 
-				if (selectedLayer.type === 'arrow') {
+				if (
+					selectedLayer.type === 'arrow' ||
+					selectedLayer.type === 'textArrow'
+				) {
 					const updatedLayer = { ...selectedLayer };
 
 					switch (selectedHandleRef.current) {
@@ -1555,7 +1712,58 @@ const Canvas = observer(() => {
 			}
 			return;
 		}
+		if (canvasStore.textArrowState.isDrawing) {
+			canvasStore.finishTextArrowDrawing();
 
+			const overlayCanvas = overlayCanvasRef.current;
+			const ctx = overlayCanvas?.getContext('2d');
+			if (
+				overlayCanvas &&
+				ctx &&
+				canvasStore.textArrowState.previewBounds
+			) {
+				const bounds = canvasStore.textArrowState.previewBounds;
+				const padding =
+					Math.max(
+						canvasStore.textArrowState.strokeWidth,
+						ARROW_HEAD_SIZE
+					) + 2;
+				ctx.clearRect(
+					bounds.x - padding,
+					bounds.y - padding,
+					bounds.width + padding * 2,
+					bounds.height + padding * 2
+				);
+			}
+
+			if (canvasStore.textArrowState.textInput) {
+				const textArrowLayer =
+					canvasStore.getSelectedLayer() as TextArrowLayerData;
+				if (textArrowLayer && textArrowLayer.type === 'textArrow') {
+					const scale = canvasStore.canvasState.zoom / 100;
+					const rect = mainCanvasRef.current?.getBoundingClientRect();
+
+					if (rect) {
+						const globalStartPoint = {
+							x:
+								(textArrowLayer.transform.x +
+									textArrowLayer.startPoint.x) *
+									scale +
+								rect.left,
+							y:
+								(textArrowLayer.transform.y +
+									textArrowLayer.startPoint.y) *
+									scale +
+								rect.top,
+						};
+
+						setTextInputPosition(globalStartPoint);
+					}
+				}
+			}
+
+			return;
+		}
 		if (canvasStore.drawingState.isDrawing) {
 			canvasStore.finishDrawing();
 
@@ -1700,6 +1908,34 @@ const Canvas = observer(() => {
 					setTextInputPosition({
 						x: layer.transform.x * scale + rect.left,
 						y: layer.transform.y * scale + rect.top,
+					});
+
+					break;
+				} else if (
+					layer.type === 'textArrow' &&
+					isPointInLayer(coords.x, coords.y, layer)
+				) {
+					const rect = (
+						e.target as HTMLElement
+					).getBoundingClientRect();
+					const scale = canvasStore.canvasState.zoom / 100;
+
+					canvasStore.textState.isEditing = true;
+					canvasStore.textState.editingLayerId = layer.id;
+					canvasStore.textState.currentText = layer.text;
+					canvasStore.textState.fontSize = layer.fontSize;
+					canvasStore.textState.fontFamily = layer.fontFamily;
+					canvasStore.textState.color = layer.color;
+
+					canvasStore.textArrowState.textInput = true;
+
+					setTextInputPosition({
+						x:
+							(layer.transform.x + layer.startPoint.x) * scale +
+							rect.left,
+						y:
+							(layer.transform.y + layer.startPoint.y) * scale +
+							rect.top,
 					});
 
 					break;

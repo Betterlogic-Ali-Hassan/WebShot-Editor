@@ -28,6 +28,8 @@ import {
 	BlurLayerData,
 	WatermarkState,
 	Point,
+	TextArrowDrawingState,
+	TextArrowLayerData,
 } from '@/types/types';
 
 export interface CropState {
@@ -150,6 +152,17 @@ export class CanvasStore {
 		currentPoint: null,
 		previewBounds: undefined,
 		visibleArea: null,
+	};
+	textArrowState: TextArrowDrawingState = {
+		isDrawing: false,
+		startPoint: null,
+		endPoint: null,
+		controlPoints: [],
+		arrowType: 'straight',
+		strokeColor: '#000000',
+		strokeWidth: 2,
+		previewBounds: undefined,
+		textInput: false,
 	};
 	currentTool: ToolType = 'select';
 	private history: EditorHistoryState[] = [];
@@ -1507,5 +1520,173 @@ export class CanvasStore {
 				height: this.canvasState.dimensions.height,
 			};
 		}
+	}
+
+	startTextArrowDrawing(x: number, y: number) {
+		if (this.textArrowState.isDrawing) return;
+
+		this.textArrowState = {
+			...this.textArrowState,
+			isDrawing: true,
+			startPoint: { x, y },
+			endPoint: { x, y },
+			controlPoints: [],
+			previewBounds: {
+				x,
+				y,
+				width: 0,
+				height: 0,
+			},
+			textInput: false,
+		};
+	}
+
+	updateTextArrowDrawing(x: number, y: number) {
+		if (!this.textArrowState.isDrawing || !this.textArrowState.startPoint)
+			return;
+
+		this.textArrowState.endPoint = { x, y };
+
+		const startX = Math.min(this.textArrowState.startPoint.x, x);
+		const startY = Math.min(this.textArrowState.startPoint.y, y);
+		const width = Math.abs(x - this.textArrowState.startPoint.x);
+		const height = Math.abs(y - this.textArrowState.startPoint.y);
+
+		this.textArrowState.previewBounds = {
+			x: startX,
+			y: startY,
+			width,
+			height,
+		};
+
+		if (
+			this.textArrowState.arrowType === 'curved' ||
+			this.textArrowState.arrowType === 'curvedLine'
+		) {
+			const startPoint = this.textArrowState.startPoint;
+
+			this.textArrowState.controlPoints = [
+				{
+					x: startPoint.x + (x - startPoint.x) * 0.25,
+					y: startPoint.y + (y - startPoint.y) * 0.25,
+				},
+				{
+					x: startPoint.x + (x - startPoint.x) * 0.75,
+					y: startPoint.y + (y - startPoint.y) * 0.75,
+				},
+			];
+		}
+	}
+
+	finishTextArrowDrawing() {
+		if (
+			!this.textArrowState.isDrawing ||
+			!this.textArrowState.startPoint ||
+			!this.textArrowState.endPoint ||
+			!this.textArrowState.previewBounds
+		)
+			return;
+
+		const bounds = this.textArrowState.previewBounds;
+
+		const relativeStartPoint = {
+			x: this.textArrowState.startPoint.x - bounds.x,
+			y: this.textArrowState.startPoint.y - bounds.y,
+		};
+
+		const relativeEndPoint = {
+			x: this.textArrowState.endPoint.x - bounds.x,
+			y: this.textArrowState.endPoint.y - bounds.y,
+		};
+
+		const relativeControlPoints = this.textArrowState.controlPoints.map(
+			(point) => ({
+				x: point.x - bounds.x,
+				y: point.y - bounds.y,
+			})
+		);
+
+		const textArrowLayer: TextArrowLayerData = {
+			id: uuidv4(),
+			type: 'textArrow',
+			name: `Text Arrow ${this.canvasState.layers.length + 1}`,
+			visible: true,
+			locked: false,
+			opacity: 1,
+			transform: {
+				x: bounds.x,
+				y: bounds.y,
+				width: bounds.width,
+				height: bounds.height,
+				rotation: 0,
+				scale: { x: 1, y: 1 },
+			},
+			arrowType: this.textArrowState.arrowType,
+			startPoint: relativeStartPoint,
+			endPoint: relativeEndPoint,
+			controlPoints: relativeControlPoints,
+			strokeColor: this.textArrowState.strokeColor,
+			strokeWidth: this.textArrowState.strokeWidth,
+			text: '',
+			fontSize: this.textState.fontSize,
+			fontFamily: this.textState.fontFamily,
+			color: this.textState.color,
+		};
+
+		this.addLayer(textArrowLayer);
+		this.selectLayer(textArrowLayer.id);
+
+		this.textArrowState.textInput = true;
+
+		this.textState.editingLayerId = textArrowLayer.id;
+		this.textState.isEditing = true;
+		this.textState.currentText = '';
+
+		this.textState.position = {
+			x: this.textArrowState.startPoint.x,
+			y: this.textArrowState.startPoint.y,
+		};
+
+		const textInput = this.textArrowState.textInput;
+		this.textArrowState = {
+			...this.textArrowState,
+			isDrawing: false,
+			startPoint: null,
+			endPoint: null,
+			controlPoints: [],
+			previewBounds: undefined,
+			textInput,
+		};
+
+		this.saveToHistory();
+	}
+	finishTextArrowTextInput() {
+		if (!this.textArrowState.textInput || !this.textState.editingLayerId)
+			return;
+
+		const layerIndex = this.canvasState.layers.findIndex(
+			(layer) => layer.id === this.textState.editingLayerId
+		);
+
+		if (layerIndex !== -1) {
+			const layer = this.canvasState.layers[layerIndex];
+			if (layer.type === 'textArrow') {
+				(layer as TextArrowLayerData).text = this.textState.currentText;
+				if (this.textState.currentText.trim() === '') {
+					this.removeLayer(layer.id);
+				}
+			}
+		}
+
+		this.textState.isEditing = false;
+		this.textState.currentText = '';
+		this.textState.editingLayerId = null;
+		this.textState.position = null;
+
+		this.textArrowState.textInput = false;
+
+		this.currentTool = 'select';
+
+		this.saveToHistory();
 	}
 }
