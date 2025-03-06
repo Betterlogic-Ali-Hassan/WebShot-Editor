@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import ToolCard from '../../ToolCard';
 import ToolDropdown from '@/components/ToolDropdown';
 import { useState } from 'react';
@@ -16,6 +16,11 @@ const TextArrowSelector = observer(() => {
 	const [selectedText, setSelectedText] = useState<string>(arrowBox[0].name);
 	const [isActive, setIsActive] = useState(false);
 
+	const lastTextArrowColor = useRef(canvasStore.textArrowState.strokeColor);
+	const lastPageTextColor = useRef(
+		canvasStore.pageTextState.backgroundColor || '#FFFF00'
+	);
+
 	useEffect(() => {
 		setIsActive(
 			(selectedText === 'Text Arrow' &&
@@ -23,7 +28,19 @@ const TextArrowSelector = observer(() => {
 				(selectedText === 'Page Text' &&
 					canvasStore.currentTool === 'pageText')
 		);
-	}, [canvasStore.currentTool, selectedText]);
+
+		if (canvasStore.currentTool === 'textArrow') {
+			lastTextArrowColor.current = canvasStore.textArrowState.strokeColor;
+		} else if (canvasStore.currentTool === 'pageText') {
+			lastPageTextColor.current =
+				canvasStore.pageTextState.backgroundColor;
+		}
+	}, [
+		canvasStore.currentTool,
+		selectedText,
+		canvasStore.textArrowState.strokeColor,
+		canvasStore.pageTextState.backgroundColor,
+	]);
 
 	const handleSelection = (icon: React.ReactNode, text: string) => {
 		const wasTextArrow = selectedText === 'Text Arrow';
@@ -38,12 +55,16 @@ const TextArrowSelector = observer(() => {
 			} else {
 				canvasStore.currentTool = 'textArrow';
 				canvasStore.textArrowState.arrowType = 'straight';
+				canvasStore.textArrowState.strokeColor =
+					lastTextArrowColor.current;
 			}
 		} else if (text === 'Page Text') {
 			if (wasPageText && canvasStore.currentTool === 'pageText') {
 				canvasStore.currentTool = 'select';
 			} else {
-				canvasStore.currentTool = 'select';
+				canvasStore.currentTool = 'pageText';
+				canvasStore.pageTextState.backgroundColor =
+					lastPageTextColor.current;
 			}
 		}
 	};
@@ -62,13 +83,23 @@ const TextArrowSelector = observer(() => {
 				<TextArrow
 					onClick={handleSelection}
 					selectedIcon={selectedIcon}
-					onColorChange={(color) =>
-						(canvasStore.textArrowState.strokeColor = color)
-					}
+					onColorChange={(color) => {
+						if (selectedText === 'Text Arrow') {
+							canvasStore.textArrowState.strokeColor = color;
+							lastTextArrowColor.current = color;
+						} else if (selectedText === 'Page Text') {
+							canvasStore.pageTextState.backgroundColor = color;
+							lastPageTextColor.current = color;
+						}
+					}}
 					onWidthChange={(width) =>
 						(canvasStore.textArrowState.strokeWidth = width)
 					}
-					currentColor={canvasStore.textArrowState.strokeColor}
+					currentColor={
+						selectedText === 'Page Text'
+							? canvasStore.pageTextState.backgroundColor
+							: canvasStore.textArrowState.strokeColor
+					}
 					currentWidth={canvasStore.textArrowState.strokeWidth}
 				/>
 			}

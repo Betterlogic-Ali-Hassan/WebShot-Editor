@@ -22,9 +22,19 @@ export type LayerType =
 	| 'number'
 	| 'arrow'
 	| 'blur'
-	| 'textArrow';
+	| 'textArrow'
+	| 'pageText';
 
 export type NumberStyle = 'circle' | 'square' | 'plain';
+
+export interface PageTextLayerData extends BaseLayerData {
+	type: 'pageText';
+	text: string;
+	fontSize: number;
+	fontFamily: string;
+	color: string;
+	backgroundColor: string;
+}
 
 export interface BaseLayerData {
 	id: string;
@@ -84,7 +94,8 @@ export type Layer =
 	| TextLayerData
 	| ArrowLayerData
 	| BlurLayerData
-	| TextArrowLayerData;
+	| TextArrowLayerData
+	| PageTextLayerData;
 export interface Filter {
 	type: 'brightness' | 'contrast' | 'saturation' | 'blur' | 'grayscale';
 	value: number;

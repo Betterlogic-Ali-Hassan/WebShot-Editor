@@ -30,6 +30,7 @@ import {
 	Point,
 	TextArrowDrawingState,
 	TextArrowLayerData,
+	PageTextLayerData,
 } from '@/types/types';
 
 export interface CropState {
@@ -49,7 +50,12 @@ export interface CropState {
 		height: number;
 	} | null;
 }
-
+export interface PageTextState {
+	isActive: boolean;
+	position: Point | null;
+	backgroundColor: string;
+	textInput: boolean;
+}
 interface EditorHistoryState {
 	canvasState: CanvasState;
 	cropState: CropState;
@@ -162,6 +168,12 @@ export class CanvasStore {
 		strokeColor: '#000000',
 		strokeWidth: 2,
 		previewBounds: undefined,
+		textInput: false,
+	};
+	pageTextState: PageTextState = {
+		isActive: false,
+		position: null,
+		backgroundColor: '#FFFF00',
 		textInput: false,
 	};
 	currentTool: ToolType = 'select';
@@ -1684,6 +1696,118 @@ export class CanvasStore {
 		this.textState.position = null;
 
 		this.textArrowState.textInput = false;
+
+		this.currentTool = 'select';
+
+		this.saveToHistory();
+	}
+
+	startPageText(x: number, y: number) {
+		if (this.pageTextState.isActive) return;
+
+		this.pageTextState = {
+			...this.pageTextState,
+			isActive: true,
+			textInput: true,
+		};
+
+		const pageTextLayer: PageTextLayerData = {
+			id: uuidv4(),
+			type: 'pageText',
+			name: `PageText ${this.canvasState.layers.length + 1}`,
+			visible: true,
+			locked: false,
+			opacity: 1,
+			transform: {
+				x: x - 50,
+				y: y - 80,
+				width: 100,
+				height: 50,
+				rotation: 0,
+				scale: { x: 1, y: 1 },
+			},
+			text: '',
+			fontSize: this.textState.fontSize,
+			fontFamily: this.textState.fontFamily,
+			color: '#000000',
+			backgroundColor: this.pageTextState.backgroundColor,
+		};
+
+		this.addLayer(pageTextLayer);
+		this.selectLayer(pageTextLayer.id);
+
+		this.textState.isEditing = true;
+		this.textState.currentText = '';
+		this.textState.editingLayerId = pageTextLayer.id;
+		this.textState.position = { x, y: y - 30 };
+
+		this.textState.color = '#000000';
+
+		console.log('Started PageText with layerId:', pageTextLayer.id);
+
+		return pageTextLayer;
+	}
+
+	finishPageTextInput() {
+		if (!this.pageTextState.textInput) return;
+
+		console.log(
+			'Finishing PageText input, editingLayerId:',
+			this.textState.editingLayerId
+		);
+		console.log('Current text:', this.textState.currentText);
+
+		if (!this.textState.editingLayerId) {
+			const pageTextLayers = this.canvasState.layers.filter(
+				(layer) => layer.type === 'pageText'
+			);
+			if (pageTextLayers.length > 0) {
+				const lastPageTextLayer =
+					pageTextLayers[pageTextLayers.length - 1];
+				console.log(
+					'No editingLayerId set, using last PageText layer:',
+					lastPageTextLayer.id
+				);
+				this.textState.editingLayerId = lastPageTextLayer.id;
+			} else {
+				console.error(
+					'No PageText layers found and no editingLayerId set'
+				);
+			}
+		}
+
+		if (this.textState.editingLayerId) {
+			const layerIndex = this.canvasState.layers.findIndex(
+				(layer) => layer.id === this.textState.editingLayerId
+			);
+
+			if (layerIndex !== -1) {
+				const layer = this.canvasState.layers[layerIndex];
+				if (layer.type === 'pageText') {
+					console.log(
+						'Found PageText layer, setting text:',
+						this.textState.currentText
+					);
+
+					(layer as PageTextLayerData).text =
+						this.textState.currentText;
+
+					if (this.textState.currentText.trim() === '') {
+						this.removeLayer(layer.id);
+					} else {
+						this.canvasState.layers = [...this.canvasState.layers];
+					}
+				}
+			}
+		}
+
+		this.textState.isEditing = false;
+		this.textState.currentText = '';
+		this.textState.editingLayerId = null;
+		this.textState.position = null;
+
+		this.pageTextState.textInput = false;
+		this.pageTextState.isActive = false;
 
 		this.currentTool = 'select';
 

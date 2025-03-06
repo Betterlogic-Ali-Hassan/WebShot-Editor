@@ -613,6 +613,111 @@ const Canvas = observer(() => {
 					ctx.restore();
 					break;
 				}
+
+				case 'pageText': {
+					ctx.save();
+					const { x, y, width, height, rotation, scale } =
+						layer.transform;
+					const centerX = x + width / 2;
+					const centerY = y + height / 2;
+
+					ctx.translate(centerX, centerY);
+					ctx.rotate((rotation * Math.PI) / 180);
+					ctx.scale(scale.x, scale.y);
+					ctx.translate(-centerX, -centerY);
+
+					const padding = 10;
+					const borderRadius = 5;
+					const pointerHeight = 10;
+
+					const pointerX = x + width / 2;
+					const pointerY = y + height + pointerHeight;
+
+					ctx.fillStyle = layer.backgroundColor;
+					ctx.beginPath();
+
+					ctx.moveTo(x + borderRadius, y);
+
+					ctx.lineTo(x + width - borderRadius, y);
+
+					ctx.quadraticCurveTo(
+						x + width,
+						y,
+						x + width,
+						y + borderRadius
+					);
+
+					ctx.lineTo(x + width, y + height - borderRadius);
+
+					ctx.quadraticCurveTo(
+						x + width,
+						y + height,
+						x + width - borderRadius,
+						y + height
+					);
+
+					ctx.lineTo(pointerX + 10, y + height);
+
+					ctx.lineTo(pointerX, pointerY);
+					ctx.lineTo(pointerX - 10, y + height);
+
+					ctx.lineTo(x + borderRadius, y + height);
+
+					ctx.quadraticCurveTo(
+						x,
+						y + height,
+						x,
+						y + height - borderRadius
+					);
+
+					ctx.lineTo(x, y + borderRadius);
+
+					ctx.quadraticCurveTo(x, y, x + borderRadius, y);
+
+					ctx.closePath();
+					ctx.fill();
+
+					if (layer.text) {
+						ctx.font = `${layer.fontSize}px ${layer.fontFamily}`;
+						ctx.fillStyle = layer.color;
+						ctx.textAlign = 'center';
+						ctx.textBaseline = 'middle';
+
+						const maxWidth = width - padding * 2;
+
+						const words = layer.text.split(' ');
+						const lineHeight = layer.fontSize * 1.2;
+						let line = '';
+						const lines = [];
+
+						for (const word of words) {
+							const testLine = line + (line ? ' ' : '') + word;
+							const metrics = ctx.measureText(testLine);
+
+							if (metrics.width > maxWidth && line) {
+								lines.push(line);
+								line = word;
+							} else {
+								line = testLine;
+							}
+						}
+
+						if (line) {
+							lines.push(line);
+						}
+
+						for (let i = 0; i < lines.length; i++) {
+							ctx.fillText(
+								lines[i],
+								centerX,
+								y + padding + i * lineHeight + lineHeight / 2
+							);
+						}
+					}
+
+					ctx.restore();
+					break;
+				}
 			}
 		},
 		[
@@ -626,6 +731,12 @@ const Canvas = observer(() => {
 	const handleTextFinish = useCallback(() => {
 		if (canvasStore.textArrowState.textInput) {
 			canvasStore.finishTextArrowTextInput();
+		} else if (canvasStore.pageTextState.textInput) {
+			console.log(
+				'Finishing PageText input with text:',
+				canvasStore.textState.currentText
+			);
+			canvasStore.finishPageTextInput();
 		} else {
 			canvasStore.finishTextEditing();
 		}
@@ -782,6 +893,28 @@ const Canvas = observer(() => {
 			);
 		}
 
+		if (layer.type === 'pageText') {
+			const inRectangle =
+				x >= layerX &&
+				x <= layerX + width &&
+				y >= layerY &&
+				y <= layerY + height;
+
+			const pointerX = layerX + width / 2;
+			const pointerHeight = 10;
+			const pointerY = layerY + height + pointerHeight;
+
+			const inPointer =
+				x >= pointerX - 10 &&
+				x <= pointerX + 10 &&
+				y >= layerY + height &&
+				y <= pointerY &&
+				Math.abs(x - pointerX) * (pointerY - (layerY + height)) <=
+					10 * (y - (layerY + height));
+
+			return inRectangle || inPointer;
+		}
+
 		return (
 			x >= layerX &&
 			x <= layerX + width &&
@@ -876,7 +1009,67 @@ const Canvas = observer(() => {
 					ctx.fill();
 					ctx.stroke();
 				});
+			} else if (layer.type === 'pageText') {
+				const { x, y, width, height } = layer.transform;
+				ctx.strokeRect(x, y, width, height);
+
+				const handlePositions: Array<{
+					type: TransformHandleType;
+					x: number;
+					y: number;
+				}> = [
+					{ type: 'topLeft', x, y },
+					{ type: 'topCenter', x: x + width / 2, y },
+					{ type: 'topRight', x: x + width, y },
+					{ type: 'middleLeft', x, y: y + height / 2 },
+					{ type: 'middleRight', x: x + width, y: y + height / 2 },
+					{ type: 'bottomLeft', x, y: y + height },
+					{ type: 'bottomCenter', x: x + width / 2, y: y + height },
+					{ type: 'bottomRight', x: x + width, y: y + height },
+				];
+
+				handlePositions.forEach((handle) => {
+					const isHovered = hoveredHandleRef.current === handle.type;
+					const isSelected =
+						selectedHandleRef.current === handle.type;
+					const handleSizeWithHover = isHovered
+						? TRANSFORM_HANDLE_HOVER_SIZE * scale
+						: handleSize;
+
+					ctx.beginPath();
+					ctx.fillStyle = isSelected ? '#ff0000' : '#fff';
+					ctx.strokeStyle = '#0088ff';
+					ctx.lineWidth = 1;
+
+					const isCorner = [
+						'topLeft',
+						'topRight',
+						'bottomLeft',
+						'bottomRight',
+					].includes(handle.type);
+
+					if (isCorner) {
+						ctx.arc(
+							handle.x,
+							handle.y,
+							handleSizeWithHover / 2,
+							0,
+							Math.PI * 2
+						);
+					} else {
+						ctx.rect(
+							handle.x - handleSizeWithHover / 2,
+							handle.y - handleSizeWithHover / 2,
+							handleSizeWithHover,
+							handleSizeWithHover
+						);
+					}
+
+					ctx.fill();
+					ctx.stroke();
+				});
 			} else {
+				// Код для других типов слоев остается без изменений
 				const { x, y, width, height } = layer.transform;
 				ctx.strokeRect(x, y, width, height);
 
@@ -949,6 +1142,25 @@ const Canvas = observer(() => {
 		async (e: React.MouseEvent) => {
 			const coords = getCanvasCoordinates(e);
 			if (!coords) return;
+
+			if (canvasStore.currentTool === 'pageText') {
+				const pageTextLayer = canvasStore.startPageText(
+					coords.x,
+					coords.y
+				);
+				if (pageTextLayer) {
+					const scale = canvasStore.canvasState.zoom / 100;
+					const rect = (
+						e.target as HTMLElement
+					).getBoundingClientRect();
+					setTextInputPosition({
+						x: pageTextLayer.transform.x * scale + rect.left,
+						y: pageTextLayer.transform.y * scale + rect.top,
+					});
+				}
+				return;
+			}
+
 			if (canvasStore.currentTool === 'textArrow') {
 				canvasStore.startTextArrowDrawing(coords.x, coords.y);
 				return;
@@ -1895,6 +2107,41 @@ const Canvas = observer(() => {
 
 			for (const layer of reversedLayers) {
 				if (
+					layer.type === 'pageText' &&
+					isPointInLayer(coords.x, coords.y, layer)
+				) {
+					const rect = (
+						e.target as HTMLElement
+					).getBoundingClientRect();
+					const scale = canvasStore.canvasState.zoom / 100;
+
+					canvasStore.textState.isEditing = true;
+					canvasStore.textState.editingLayerId = layer.id;
+					canvasStore.textState.currentText = layer.text || '';
+					canvasStore.textState.fontSize = layer.fontSize;
+					canvasStore.textState.fontFamily = layer.fontFamily;
+					canvasStore.textState.color = layer.color;
+
+					canvasStore.pageTextState.textInput = true;
+					canvasStore.pageTextState.backgroundColor =
+						layer.backgroundColor;
+
+					setTextInputPosition({
+						x:
+							(layer.transform.x + layer.transform.width / 2) *
+								scale +
+							rect.left -
+							50,
+						y: layer.transform.y * scale + rect.top + 10,
+					});
+
+					console.log(
+						'Double click on PageText, setting text input to:',
+						layer.text
+					);
+					break;
+				}
+				if (
 					layer.type === 'text' &&
 					isPointInLayer(coords.x, coords.y, layer)
 				) {
@@ -1936,6 +2183,32 @@ const Canvas = observer(() => {
 						y:
 							(layer.transform.y + layer.startPoint.y) * scale +
 							rect.top,
+					});
+
+					break;
+				} else if (
+					layer.type === 'pageText' &&
+					isPointInLayer(coords.x, coords.y, layer)
+				) {
+					const rect = (
+						e.target as HTMLElement
+					).getBoundingClientRect();
+					const scale = canvasStore.canvasState.zoom / 100;
+
+					canvasStore.textState.isEditing = true;
+					canvasStore.textState.editingLayerId = layer.id;
+					canvasStore.textState.currentText = layer.text;
+					canvasStore.textState.fontSize = layer.fontSize;
+					canvasStore.textState.fontFamily = layer.fontFamily;
+					canvasStore.textState.color = layer.color;
+
+					canvasStore.pageTextState.textInput = true;
+					canvasStore.pageTextState.backgroundColor =
+						layer.backgroundColor;
+
+					setTextInputPosition({
+						x: layer.transform.x * scale + rect.left,
+						y: layer.transform.y * scale + rect.top,
 					});
 
 					break;

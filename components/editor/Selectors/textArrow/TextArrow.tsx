@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import LinePicker from '../BorderPicker';
 import ColorPicker from '../borderSelector/ColorPicker2';
 import { arrowBox } from '@/constant/arrowBox';
@@ -26,6 +26,9 @@ const TextArrow = ({
 }: Props) => {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [selectedColor, setSelectedColor] = useState(currentColor);
+	useEffect(() => {
+		setSelectedColor(currentColor);
+	}, [currentColor]);
 
 	const handleColorChange = (color: string) => {
 		setSelectedColor(color);
@@ -61,7 +64,7 @@ const TextArrow = ({
 					<ColorPicker
 						select
 						onColorChange={handleColorChange}
-						initialColor={currentColor}
+						initialColor={selectedColor}
 					/>
 				</li>
 				<li className="flex items-center gap-1.5 rounded-md hover:bg-light cursor-pointer">
