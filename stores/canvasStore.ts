@@ -59,6 +59,13 @@ export interface PageTextState {
 interface EditorHistoryState {
 	canvasState: CanvasState;
 	cropState: CropState;
+	paddingState: PaddingState;
+}
+
+export interface PaddingState {
+	isEnabled: boolean;
+	size: number;
+	color: string;
 }
 export class CanvasStore {
 	canvasState: CanvasState = {
@@ -175,6 +182,11 @@ export class CanvasStore {
 		position: null,
 		backgroundColor: '#FFFF00',
 		textInput: false,
+	};
+	paddingState: PaddingState = {
+		isEnabled: false,
+		size: 100,
+		color: '#FFFFFF',
 	};
 	currentTool: ToolType = 'select';
 	private history: EditorHistoryState[] = [];
@@ -801,6 +813,7 @@ export class CanvasStore {
 			{
 				canvasState: { ...this.canvasState },
 				cropState: { ...this.cropState },
+				paddingState: { ...this.paddingState },
 			},
 		];
 		this.currentHistoryIndex = 0;
@@ -812,6 +825,7 @@ export class CanvasStore {
 		this.history.push({
 			canvasState: { ...this.canvasState },
 			cropState: { ...this.cropState },
+			paddingState: { ...this.paddingState },
 		});
 		this.currentHistoryIndex++;
 	}
@@ -832,6 +846,7 @@ export class CanvasStore {
 
 		this.canvasState = { ...previousState.canvasState };
 		this.cropState = { ...previousState.cropState };
+		this.paddingState = { ...previousState.paddingState };
 
 		this.clearSelection();
 	}
@@ -844,6 +859,7 @@ export class CanvasStore {
 
 		this.canvasState = { ...nextState.canvasState };
 		this.cropState = { ...nextState.cropState };
+		this.paddingState = { ...nextState.paddingState };
 
 		this.clearSelection();
 	}
@@ -856,6 +872,7 @@ export class CanvasStore {
 
 		this.canvasState = { ...initialState.canvasState };
 		this.cropState = { ...initialState.cropState };
+		this.paddingState = { ...initialState.paddingState };
 
 		this.clearSelection();
 	}
@@ -1169,14 +1186,10 @@ export class CanvasStore {
 			console.error('Error rendering watermark:', error);
 		}
 	}
-
 	async exportToImage(
 		format: 'image/png' | 'image/jpeg' = 'image/png'
 	): Promise<void> {
-		console.log(`[Export] Starting export in format: ${format}`);
-
 		if (!this.mainCanvasRef.current) {
-			console.error('[Export] Canvas reference not set');
 			return;
 		}
 
@@ -1188,27 +1201,53 @@ export class CanvasStore {
 				throw new Error('Failed to get context for temp canvas');
 			}
 
+			let sourceX = 0;
+			let sourceY = 0;
+			let sourceWidth = this.canvasState.dimensions.width;
+			let sourceHeight = this.canvasState.dimensions.height;
+			let targetX = 0;
+			let targetY = 0;
+			let targetWidth = sourceWidth;
+			let targetHeight = sourceHeight;
+
 			if (this.cropState.visibleArea) {
 				const { x, y, width, height } = this.cropState.visibleArea;
-				tempCanvas.width = width;
-				tempCanvas.height = height;
-
-				tempCtx.drawImage(
-					this.mainCanvasRef.current,
-					x,
-					y,
-					width,
-					height,
-					0,
-					0,
-					width,
-					height
-				);
-			} else {
-				tempCanvas.width = this.canvasState.dimensions.width;
-				tempCanvas.height = this.canvasState.dimensions.height;
-				tempCtx.drawImage(this.mainCanvasRef.current, 0, 0);
+				sourceX = x;
+				sourceY = y;
+				sourceWidth = width;
+				sourceHeight = height;
+				targetWidth = width;
+				targetHeight = height;
 			}
+			if (this.paddingState.isEnabled) {
+				const paddingSize = this.paddingState.size;
+
+				targetWidth += paddingSize * 2;
+				targetHeight += paddingSize * 2;
+
+				targetX = paddingSize;
+				targetY = paddingSize;
+			}
+
+			tempCanvas.width = targetWidth;
+			tempCanvas.height = targetHeight;
+
+			if (this.paddingState.isEnabled) {
+				tempCtx.fillStyle = this.paddingState.color;
+				tempCtx.fillRect(0, 0, targetWidth, targetHeight);
+			}
+
+			tempCtx.drawImage(
+				this.mainCanvasRef.current,
+				sourceX,
+				sourceY,
+				sourceWidth,
+				sourceHeight,
+				targetX,
+				targetY,
+				sourceWidth,
+				sourceHeight
+			);
 
 			const blob = await new Promise<Blob | null>((resolve) => {
 				tempCanvas.toBlob(
@@ -1256,27 +1295,54 @@ export class CanvasStore {
 				throw new Error('Failed to get context for temp canvas');
 			}
 
+			let sourceX = 0;
+			let sourceY = 0;
+			let sourceWidth = this.canvasState.dimensions.width;
+			let sourceHeight = this.canvasState.dimensions.height;
+			let targetX = 0;
+			let targetY = 0;
+			let targetWidth = sourceWidth;
+			let targetHeight = sourceHeight;
+
 			if (this.cropState.visibleArea) {
 				const { x, y, width, height } = this.cropState.visibleArea;
-				tempCanvas.width = width;
-				tempCanvas.height = height;
-
-				tempCtx.drawImage(
-					this.mainCanvasRef.current,
-					x,
-					y,
-					width,
-					height,
-					0,
-					0,
-					width,
-					height
-				);
-			} else {
-				tempCanvas.width = this.canvasState.dimensions.width;
-				tempCanvas.height = this.canvasState.dimensions.height;
-				tempCtx.drawImage(this.mainCanvasRef.current, 0, 0);
+				sourceX = x;
+				sourceY = y;
+				sourceWidth = width;
+				sourceHeight = height;
+				targetWidth = width;
+				targetHeight = height;
 			}
+
+			if (this.paddingState.isEnabled) {
+				const paddingSize = this.paddingState.size;
+
+				targetWidth += paddingSize * 2;
+				targetHeight += paddingSize * 2;
+
+				targetX = paddingSize;
+				targetY = paddingSize;
+			}
+
+			tempCanvas.width = targetWidth;
+			tempCanvas.height = targetHeight;
+
+			if (this.paddingState.isEnabled) {
+				tempCtx.fillStyle = this.paddingState.color;
+				tempCtx.fillRect(0, 0, targetWidth, targetHeight);
+			}
+
+			tempCtx.drawImage(
+				this.mainCanvasRef.current,
+				sourceX,
+				sourceY,
+				sourceWidth,
+				sourceHeight,
+				targetX,
+				targetY,
+				sourceWidth,
+				sourceHeight
+			);
 
 			const blob = await new Promise<Blob | null>((resolve) => {
 				tempCanvas.toBlob((blob) => {
@@ -1743,19 +1809,11 @@ export class CanvasStore {
 
 		this.textState.color = '#000000';
 
-		console.log('Started PageText with layerId:', pageTextLayer.id);
-
 		return pageTextLayer;
 	}
 
 	finishPageTextInput() {
 		if (!this.pageTextState.textInput) return;
-
-		console.log(
-			'Finishing PageText input, editingLayerId:',
-			this.textState.editingLayerId
-		);
-		console.log('Current text:', this.textState.currentText);
 
 		if (!this.textState.editingLayerId) {
 			const pageTextLayers = this.canvasState.layers.filter(
@@ -1764,15 +1822,7 @@ export class CanvasStore {
 			if (pageTextLayers.length > 0) {
 				const lastPageTextLayer =
 					pageTextLayers[pageTextLayers.length - 1];
-				console.log(
-					'No editingLayerId set, using last PageText layer:',
-					lastPageTextLayer.id
-				);
 				this.textState.editingLayerId = lastPageTextLayer.id;
-			} else {
-				console.error(
-					'No PageText layers found and no editingLayerId set'
-				);
 			}
 		}
 
@@ -1784,11 +1834,6 @@ export class CanvasStore {
 			if (layerIndex !== -1) {
 				const layer = this.canvasState.layers[layerIndex];
 				if (layer.type === 'pageText') {
-					console.log(
-						'Found PageText layer, setting text:',
-						this.textState.currentText
-					);
-
 					(layer as PageTextLayerData).text =
 						this.textState.currentText;
 
@@ -1812,5 +1857,18 @@ export class CanvasStore {
 		this.currentTool = 'select';
 
 		this.saveToHistory();
+	}
+	updatePaddingState(updates: Partial<PaddingState>): void {
+		if (updates.size !== undefined) {
+			updates.size = Math.max(0, Math.min(200, updates.size));
+		}
+
+		Object.assign(this.paddingState, updates);
+
+		if (updates.isEnabled === undefined) {
+			this.saveToHistory();
+		}
+
+		this.forceCanvasUpdate();
 	}
 }

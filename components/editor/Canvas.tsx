@@ -32,21 +32,70 @@ const Canvas = observer(() => {
 	const selectedHandleRef = useRef<TransformHandleType | null>(null);
 	const tempCanvasRef = useRef<HTMLCanvasElement | null>(null);
 	const [showCropModal, setShowCropModal] = useState<boolean>(false);
-
+	const paddingCanvasRef = useRef<HTMLCanvasElement>(null);
 	const [textInputPosition, setTextInputPosition] = useState<{
 		x: number;
 		y: number;
 	} | null>(null);
+	const renderPadding = useCallback(() => {
+		const paddingCanvas = paddingCanvasRef.current;
+		const ctx = paddingCanvas?.getContext('2d');
+		if (!paddingCanvas || !ctx) {
+			return;
+		}
 
-	const getCanvasStyle = (): React.CSSProperties => {
+		const { paddingState, canvasState } = canvasStore;
+
+		ctx.clearRect(0, 0, paddingCanvas.width, paddingCanvas.height);
+
+		if (!paddingState.isEnabled) {
+			return;
+		}
+
+		const paddingSize = paddingState.size;
+		const totalWidth = canvasState.dimensions.width + paddingSize * 2;
+		const totalHeight = canvasState.dimensions.height + paddingSize * 2;
+
+		paddingCanvas.width = totalWidth;
+		paddingCanvas.height = totalHeight;
+		ctx.fillStyle = paddingState.color;
+		ctx.fillRect(0, 0, totalWidth, totalHeight);
+		ctx.clearRect(
+			paddingSize,
+			paddingSize,
+			canvasState.dimensions.width,
+			canvasState.dimensions.height
+		);
+	}, [canvasStore]);
+
+	const getPaddingCanvasStyle = (): React.CSSProperties => {
 		const baseStyle: React.CSSProperties = {
 			position: 'absolute',
 			maxWidth: '100%',
 			maxHeight: '100%',
-			transformOrigin: 'center center',
-			transform: `scale(${canvasStore.canvasState.zoom / 100})`,
+			transform: `translate(-50%, -50%) scale(${
+				canvasStore.canvasState.zoom / 100
+			})`,
 			willChange: 'transform',
 			imageRendering: 'pixelated' as const,
+			zIndex: 1,
+			pointerEvents: 'none',
+			top: '50%',
+			left: '50%',
+		};
+		return baseStyle;
+	};
+	const getCanvasStyle = (): React.CSSProperties => {
+		const baseStyle: React.CSSProperties = {
+			position: 'absolute',
+			top: '50%',
+			left: '50%',
+			transform: `translate(-50%, -50%) scale(${
+				canvasStore.canvasState.zoom / 100
+			})`,
+			transformOrigin: 'center center',
+			maxWidth: '100%',
+			maxHeight: '100%',
 		};
 
 		if (canvasStore.cropState.visibleArea) {
@@ -64,7 +113,6 @@ const Canvas = observer(() => {
 
 		return baseStyle;
 	};
-	const canvasStyle = getCanvasStyle();
 	useEffect(() => {
 		const mainCanvas = mainCanvasRef.current;
 		const tempCanvas = document.createElement('canvas');
@@ -397,10 +445,6 @@ const Canvas = observer(() => {
 					ctx.translate(-centerX, -centerY);
 
 					if (layer.backgroundColor) {
-						console.log(
-							'Drawing background with color:',
-							layer.backgroundColor
-						);
 						ctx.fillStyle = layer.backgroundColor;
 						ctx.fillRect(x, y, width, height);
 					}
@@ -732,10 +776,6 @@ const Canvas = observer(() => {
 		if (canvasStore.textArrowState.textInput) {
 			canvasStore.finishTextArrowTextInput();
 		} else if (canvasStore.pageTextState.textInput) {
-			console.log(
-				'Finishing PageText input with text:',
-				canvasStore.textState.currentText
-			);
 			canvasStore.finishPageTextInput();
 		} else {
 			canvasStore.finishTextEditing();
@@ -2041,7 +2081,12 @@ const Canvas = observer(() => {
 	useEffect(() => {
 		const mainCanvas = mainCanvasRef.current;
 		const overlayCanvas = overlayCanvasRef.current;
-		if (!mainCanvas || !overlayCanvas) return;
+		const paddingCanvas = paddingCanvasRef.current;
+
+		if (!mainCanvas || !overlayCanvas || !paddingCanvas) {
+			return;
+		}
+
 		canvasStore.setMainCanvas(mainCanvas);
 
 		const updateCanvasSize = () => {
@@ -2061,15 +2106,61 @@ const Canvas = observer(() => {
 				tempCanvasRef.current.width = width;
 				tempCanvasRef.current.height = height;
 			}
+			if (canvasStore.paddingState.isEnabled) {
+				const paddingSize = canvasStore.paddingState.size;
+				const paddingWidth = width + paddingSize * 2;
+				const paddingHeight = height + paddingSize * 2;
+
+				paddingCanvas.width = paddingWidth;
+				paddingCanvas.height = paddingHeight;
+			} else {
+				paddingCanvas.width = width;
+				paddingCanvas.height = height;
+			}
 		};
 
 		updateCanvasSize();
+		renderPadding();
 		renderLayers();
-	}, [canvasStore, canvasStore.canvasState.dimensions, renderLayers]);
+	}, [
+		canvasStore,
+		canvasStore.canvasState.dimensions,
+		renderLayers,
+		renderPadding,
+	]);
+
 	useEffect(() => {
 		renderLayers();
 	}, [canvasStore.canvasState.layers, renderLayers]);
 
+	useEffect(() => {
+		const paddingCanvas = paddingCanvasRef.current;
+		if (!paddingCanvas) {
+			return;
+		}
+
+		if (canvasStore.paddingState.isEnabled) {
+			const { width, height } = canvasStore.canvasState.dimensions;
+			const paddingSize = canvasStore.paddingState.size;
+			const paddingWidth = width + paddingSize * 2;
+			const paddingHeight = height + paddingSize * 2;
+
+			paddingCanvas.width = paddingWidth;
+			paddingCanvas.height = paddingHeight;
+		} else {
+			const { width, height } = canvasStore.canvasState.dimensions;
+			paddingCanvas.width = width;
+			paddingCanvas.height = height;
+		}
+
+		renderPadding();
+	}, [
+		canvasStore.paddingState.isEnabled,
+		canvasStore.paddingState.size,
+		canvasStore.paddingState.color,
+		canvasStore.canvasState.dimensions,
+		renderPadding,
+	]);
 	useEffect(() => {
 		const overlayCanvas = overlayCanvasRef.current;
 		const ctx = overlayCanvas?.getContext('2d');
@@ -2135,10 +2226,6 @@ const Canvas = observer(() => {
 						y: layer.transform.y * scale + rect.top + 10,
 					});
 
-					console.log(
-						'Double click on PageText, setting text input to:',
-						layer.text
-					);
 					break;
 				}
 				if (
@@ -2268,8 +2355,14 @@ const Canvas = observer(() => {
 			}}
 		>
 			<canvas
+				ref={paddingCanvasRef}
+				style={getPaddingCanvasStyle()}
+				data-testid="padding-canvas"
+			/>
+			<canvas
 				ref={mainCanvasRef}
-				style={canvasStyle}
+				style={getCanvasStyle()}
+				data-testid="main-canvas"
 				onMouseDown={(e) => {
 					e.preventDefault();
 					handleMouseDown(e).catch(console.error);
@@ -2282,9 +2375,10 @@ const Canvas = observer(() => {
 			<canvas
 				ref={overlayCanvasRef}
 				style={{
-					...canvasStyle,
+					...getCanvasStyle(),
 					pointerEvents: 'none',
 				}}
+				data-testid="overlay-canvas"
 			/>
 			{textInputPosition && canvasStore.textState.isEditing && (
 				<TextInput

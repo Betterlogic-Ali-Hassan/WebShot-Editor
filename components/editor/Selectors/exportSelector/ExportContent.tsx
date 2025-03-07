@@ -15,7 +15,6 @@ const ExportContent = observer(() => {
 
 		try {
 			isExporting.current = true;
-			console.log('Handling click for:', name);
 
 			switch (name) {
 				case 'Save as PNG':
