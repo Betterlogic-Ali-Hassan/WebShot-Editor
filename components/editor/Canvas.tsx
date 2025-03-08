@@ -37,6 +37,7 @@ const Canvas = observer(() => {
 		x: number;
 		y: number;
 	} | null>(null);
+
 	const renderPadding = useCallback(() => {
 		const paddingCanvas = paddingCanvasRef.current;
 		const ctx = paddingCanvas?.getContext('2d');
@@ -44,7 +45,7 @@ const Canvas = observer(() => {
 			return;
 		}
 
-		const { paddingState, canvasState } = canvasStore;
+		const { paddingState, cropState, canvasState } = canvasStore;
 
 		ctx.clearRect(0, 0, paddingCanvas.width, paddingCanvas.height);
 
@@ -52,20 +53,23 @@ const Canvas = observer(() => {
 			return;
 		}
 
+		const contentWidth = cropState.visibleArea
+			? cropState.visibleArea.width
+			: canvasState.dimensions.width;
+
+		const contentHeight = cropState.visibleArea
+			? cropState.visibleArea.height
+			: canvasState.dimensions.height;
+
 		const paddingSize = paddingState.size;
-		const totalWidth = canvasState.dimensions.width + paddingSize * 2;
-		const totalHeight = canvasState.dimensions.height + paddingSize * 2;
+		const totalWidth = contentWidth + paddingSize * 2;
+		const totalHeight = contentHeight + paddingSize * 2;
 
 		paddingCanvas.width = totalWidth;
 		paddingCanvas.height = totalHeight;
 		ctx.fillStyle = paddingState.color;
 		ctx.fillRect(0, 0, totalWidth, totalHeight);
-		ctx.clearRect(
-			paddingSize,
-			paddingSize,
-			canvasState.dimensions.width,
-			canvasState.dimensions.height
-		);
+		ctx.clearRect(paddingSize, paddingSize, contentWidth, contentHeight);
 	}, [canvasStore]);
 
 	const getPaddingCanvasStyle = (): React.CSSProperties => {
@@ -78,11 +82,12 @@ const Canvas = observer(() => {
 			})`,
 			willChange: 'transform',
 			imageRendering: 'pixelated' as const,
-			zIndex: 1,
+			zIndex: 3,
 			pointerEvents: 'none',
 			top: '50%',
 			left: '50%',
 		};
+
 		return baseStyle;
 	};
 	const getCanvasStyle = (): React.CSSProperties => {
@@ -102,6 +107,14 @@ const Canvas = observer(() => {
 			const { x, y, width, height } = canvasStore.cropState.visibleArea;
 			const canvasWidth = canvasStore.canvasState.dimensions.width;
 			const canvasHeight = canvasStore.canvasState.dimensions.height;
+
+			const offsetX = -(x + width / 2 - canvasWidth / 2);
+			const offsetY = -(y + height / 2 - canvasHeight / 2);
+
+			const zoom = canvasStore.canvasState.zoom / 100;
+			baseStyle.transform = `translate(-50%, -50%) translate(${
+				offsetX * zoom
+			}px, ${offsetY * zoom}px) scale(${zoom})`;
 
 			const left = (x / canvasWidth) * 100;
 			const top = (y / canvasHeight) * 100;
@@ -2134,31 +2147,13 @@ const Canvas = observer(() => {
 	}, [canvasStore.canvasState.layers, renderLayers]);
 
 	useEffect(() => {
-		const paddingCanvas = paddingCanvasRef.current;
-		if (!paddingCanvas) {
-			return;
-		}
-
-		if (canvasStore.paddingState.isEnabled) {
-			const { width, height } = canvasStore.canvasState.dimensions;
-			const paddingSize = canvasStore.paddingState.size;
-			const paddingWidth = width + paddingSize * 2;
-			const paddingHeight = height + paddingSize * 2;
-
-			paddingCanvas.width = paddingWidth;
-			paddingCanvas.height = paddingHeight;
-		} else {
-			const { width, height } = canvasStore.canvasState.dimensions;
-			paddingCanvas.width = width;
-			paddingCanvas.height = height;
-		}
-
 		renderPadding();
 	}, [
 		canvasStore.paddingState.isEnabled,
 		canvasStore.paddingState.size,
 		canvasStore.paddingState.color,
 		canvasStore.canvasState.dimensions,
+		canvasStore.cropState.visibleArea,
 		renderPadding,
 	]);
 	useEffect(() => {
@@ -2355,13 +2350,11 @@ const Canvas = observer(() => {
 			}}
 		>
 			<canvas
-				ref={paddingCanvasRef}
-				style={getPaddingCanvasStyle()}
-				data-testid="padding-canvas"
-			/>
-			<canvas
 				ref={mainCanvasRef}
-				style={getCanvasStyle()}
+				style={{
+					...getCanvasStyle(),
+					zIndex: 1,
+				}}
 				data-testid="main-canvas"
 				onMouseDown={(e) => {
 					e.preventDefault();
@@ -2377,8 +2370,14 @@ const Canvas = observer(() => {
 				style={{
 					...getCanvasStyle(),
 					pointerEvents: 'none',
+					zIndex: 2,
 				}}
 				data-testid="overlay-canvas"
+			/>
+			<canvas
+				ref={paddingCanvasRef}
+				style={getPaddingCanvasStyle()}
+				data-testid="padding-canvas"
 			/>
 			{textInputPosition && canvasStore.textState.isEditing && (
 				<TextInput

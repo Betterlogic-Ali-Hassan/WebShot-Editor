@@ -1537,7 +1537,6 @@ export class CanvasStore {
 		this.currentTool = 'select';
 		this.saveToHistory();
 	}
-
 	cancelCrop() {
 		this.cropState.isActive = false;
 		this.cropState.startPoint = null;
@@ -1563,7 +1562,6 @@ export class CanvasStore {
 
 		this.currentTool = 'select';
 	}
-
 	resetVisibleArea() {
 		if (this.cropState.visibleArea) {
 			this.cropState.visibleArea = null;
