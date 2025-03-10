@@ -386,3 +386,14 @@ export interface TextArrowDrawingState {
 	};
 	textInput: boolean;
 }
+export type BrowserStyle = 'mac' | 'windows' | 'url-top' | 'url-bottom';
+export type URLPosition = 'top' | 'bottom';
+
+export interface BrowserFrameState {
+	isEnabled: boolean;
+	style: BrowserStyle;
+	urlPosition: URLPosition;
+	showUrl: boolean;
+	showDate: boolean;
+	url: string;
+}

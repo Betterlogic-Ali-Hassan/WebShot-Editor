@@ -38,6 +38,24 @@ const Canvas = observer(() => {
 		y: number;
 	} | null>(null);
 
+	const getBrowserFrameCanvasStyle = (): React.CSSProperties => {
+		const baseStyle: React.CSSProperties = {
+			position: 'absolute',
+			maxWidth: '100%',
+			maxHeight: '100%',
+			transform: `translate(-50%, -50%) scale(${
+				canvasStore.canvasState.zoom / 100
+			})`,
+			willChange: 'transform',
+			imageRendering: 'pixelated' as const,
+			zIndex: 3,
+			pointerEvents: 'none',
+			top: '50%',
+			left: '50%',
+		};
+		return baseStyle;
+	};
+
 	const renderPadding = useCallback(() => {
 		const paddingCanvas = paddingCanvasRef.current;
 		const ctx = paddingCanvas?.getContext('2d');
@@ -2095,8 +2113,14 @@ const Canvas = observer(() => {
 		const mainCanvas = mainCanvasRef.current;
 		const overlayCanvas = overlayCanvasRef.current;
 		const paddingCanvas = paddingCanvasRef.current;
+		const browserFrameCanvas = canvasStore.browserFrameCanvasRef.current;
 
-		if (!mainCanvas || !overlayCanvas || !paddingCanvas) {
+		if (
+			!mainCanvas ||
+			!overlayCanvas ||
+			!paddingCanvas ||
+			!browserFrameCanvas
+		) {
 			return;
 		}
 
@@ -2130,18 +2154,50 @@ const Canvas = observer(() => {
 				paddingCanvas.width = width;
 				paddingCanvas.height = height;
 			}
+			if (canvasStore.browserFrameState.isEnabled) {
+				const headerHeight = Math.max(30, Math.round(height * 0.05));
+				const footerHeight =
+					canvasStore.browserFrameState.urlPosition === 'bottom'
+						? headerHeight
+						: 0;
+
+				browserFrameCanvas.width = width;
+				browserFrameCanvas.height =
+					height + headerHeight + footerHeight;
+			} else {
+				browserFrameCanvas.width = width;
+				browserFrameCanvas.height = height;
+			}
 		};
 
 		updateCanvasSize();
 		renderPadding();
 		renderLayers();
+		canvasStore.renderBrowserFramePreview();
 	}, [
 		canvasStore,
 		canvasStore.canvasState.dimensions,
+		canvasStore.paddingState.isEnabled,
+		canvasStore.paddingState.size,
+		canvasStore.browserFrameState.isEnabled,
+		canvasStore.browserFrameState.urlPosition,
 		renderLayers,
 		renderPadding,
 	]);
 
+	useEffect(() => {
+		canvasStore.renderBrowserFramePreview();
+	}, [
+		canvasStore,
+		canvasStore.browserFrameState.isEnabled,
+		canvasStore.browserFrameState.style,
+		canvasStore.browserFrameState.urlPosition,
+		canvasStore.browserFrameState.showUrl,
+		canvasStore.browserFrameState.showDate,
+		canvasStore.browserFrameState.url,
+		canvasStore.renderBrowserFramePreview,
+		canvasStore.cropState.visibleArea,
+	]);
 	useEffect(() => {
 		renderLayers();
 	}, [canvasStore.canvasState.layers, renderLayers]);
@@ -2365,19 +2421,25 @@ const Canvas = observer(() => {
 				onMouseLeave={handleMouseUp}
 				onDoubleClick={handleDoubleClick}
 			/>
+
 			<canvas
-				ref={overlayCanvasRef}
-				style={{
-					...getCanvasStyle(),
-					pointerEvents: 'none',
-					zIndex: 2,
-				}}
-				data-testid="overlay-canvas"
+				ref={canvasStore.browserFrameCanvasRef}
+				style={getBrowserFrameCanvasStyle()}
+				data-testid="browser-frame-canvas"
 			/>
 			<canvas
 				ref={paddingCanvasRef}
 				style={getPaddingCanvasStyle()}
 				data-testid="padding-canvas"
+			/>
+			<canvas
+				ref={overlayCanvasRef}
+				style={{
+					...getCanvasStyle(),
+					pointerEvents: 'none',
+					zIndex: 5,
+				}}
+				data-testid="overlay-canvas"
 			/>
 			{textInputPosition && canvasStore.textState.isEditing && (
 				<TextInput

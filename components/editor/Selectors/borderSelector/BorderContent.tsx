@@ -9,8 +9,7 @@ import { useStore } from '@/stores/storeProvider';
 import { observer } from 'mobx-react-lite';
 
 export const BrowserContent = observer(() => {
-	const { browser, paddingRef, toggleBrowser, togglePadding } =
-		useBrowserContent();
+	const { paddingRef, toggleBrowser, togglePadding } = useBrowserContent();
 	const { canvasStore } = useStore();
 
 	const handlePaddingToggle = () => {
@@ -28,15 +27,24 @@ export const BrowserContent = observer(() => {
 		canvasStore.updatePaddingState({ color });
 	};
 
+	const handleBrowserFrameToggle = () => {
+		canvasStore.updateBrowserFrameState({
+			isEnabled: !canvasStore.browserFrameState.isEnabled,
+		});
+		toggleBrowser();
+	};
+
 	return (
 		<div className="w-60 px-4 py-2 space-y-4">
-			<ToggleSwitch
-				id="browser"
-				label="Browser"
-				checked={browser}
-				onToggle={toggleBrowser}
-			/>
-			{browser && <Browser />}
+			<div className="space-y-2">
+				<ToggleSwitch
+					id="browser"
+					label="Browser"
+					checked={canvasStore.browserFrameState.isEnabled}
+					onToggle={handleBrowserFrameToggle}
+				/>
+				{canvasStore.browserFrameState.isEnabled && <Browser />}
+			</div>
 			<div className="space-y-2">
 				<ToggleSwitch
 					id="padding"

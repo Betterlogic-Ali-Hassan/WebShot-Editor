@@ -1,7 +1,7 @@
 'use client';
 import { makeAutoObservable } from 'mobx';
 import { v4 as uuidv4 } from 'uuid';
-
+import { useCallback } from 'react';
 import {
 	CanvasState,
 	Layer,
@@ -31,6 +31,8 @@ import {
 	TextArrowDrawingState,
 	TextArrowLayerData,
 	PageTextLayerData,
+	BrowserFrameState,
+	BrowserStyle,
 } from '@/types/types';
 
 export interface CropState {
@@ -60,6 +62,7 @@ interface EditorHistoryState {
 	canvasState: CanvasState;
 	cropState: CropState;
 	paddingState: PaddingState;
+	browserFrameState: BrowserFrameState;
 }
 
 export interface PaddingState {
@@ -188,6 +191,14 @@ export class CanvasStore {
 		size: 100,
 		color: '#FFFFFF',
 	};
+	browserFrameState: BrowserFrameState = {
+		isEnabled: false,
+		style: 'windows',
+		urlPosition: 'top',
+		showUrl: false,
+		showDate: false,
+		url: 'https://example.com',
+	};
 	currentTool: ToolType = 'select';
 	private history: EditorHistoryState[] = [];
 	private currentHistoryIndex: number = -1;
@@ -199,9 +210,94 @@ export class CanvasStore {
 				logCanvasState: false,
 				dragState: false,
 				selectionState: false,
+				renderBrowserFramePreview: false, // Используем существующее поле вместо browserFrameImages
 			},
 			{ autoBind: true }
 		);
+		this.loadBrowserFrameImages().catch((error) => {
+			console.error('Failed to preload browser frame images:', error);
+		});
+	}
+
+	private browserFrameImages: {
+		mac: {
+			left?: HTMLImageElement;
+			middle?: HTMLImageElement;
+			right?: HTMLImageElement;
+		};
+		windows: {
+			left?: HTMLImageElement;
+			middle?: HTMLImageElement;
+			right?: HTMLImageElement;
+		};
+	} = {
+		mac: {},
+		windows: {},
+	};
+
+	private async loadBrowserFrameImages(): Promise<void> {
+		try {
+			this.browserFrameImages.mac.left = await this.loadImage(
+				'/mac1.png'
+			);
+			this.browserFrameImages.mac.middle = await this.loadImage(
+				'/mac2.png'
+			);
+			this.browserFrameImages.mac.right = await this.loadImage(
+				'/mac3.png'
+			);
+
+			this.browserFrameImages.windows.left = await this.loadImage(
+				'/win1.png'
+			);
+			this.browserFrameImages.windows.middle = await this.loadImage(
+				'/win2.png'
+			);
+			this.browserFrameImages.windows.right = await this.loadImage(
+				'/win3.png'
+			);
+		} catch (error) {
+			console.error('Failed to load browser frame images:', error);
+		}
+	}
+
+	private loadImage(src: string): Promise<HTMLImageElement> {
+		return new Promise((resolve, reject) => {
+			const img = new Image();
+			img.onload = () => resolve(img);
+			img.onerror = () =>
+				reject(new Error(`Failed to load image: ${src}`));
+			img.src = src;
+		});
+	}
+
+	private readonly MIN_WIDTH_MAC = 329;
+	private readonly MIN_WIDTH_WINDOWS = 314;
+	private checkMinimumWidthForBrowserFrame(): boolean {
+		if (
+			this.browserFrameState.style === 'url-top' ||
+			this.browserFrameState.style === 'url-bottom'
+		) {
+			return true;
+		}
+		const contentWidth = this.cropState.visibleArea
+			? this.cropState.visibleArea.width
+			: this.canvasState.dimensions.width;
+
+		const minWidth =
+			this.browserFrameState.style === 'mac'
+				? this.MIN_WIDTH_MAC
+				: this.MIN_WIDTH_WINDOWS;
+
+		if (contentWidth < minWidth) {
+			alert(
+				`The image width (${contentWidth}px) is too small for browser frame. Minimum required width: ${minWidth}px.`
+			);
+			this.browserFrameState.isEnabled = false;
+			return false;
+		}
+
+		return true;
 	}
 	startDrawing(x: number, y: number) {
 		if (this.drawingState.isDrawing) return;
@@ -814,6 +910,7 @@ export class CanvasStore {
 				canvasState: { ...this.canvasState },
 				cropState: { ...this.cropState },
 				paddingState: { ...this.paddingState },
+				browserFrameState: { ...this.browserFrameState },
 			},
 		];
 		this.currentHistoryIndex = 0;
@@ -826,6 +923,7 @@ export class CanvasStore {
 			canvasState: { ...this.canvasState },
 			cropState: { ...this.cropState },
 			paddingState: { ...this.paddingState },
+			browserFrameState: { ...this.browserFrameState },
 		});
 		this.currentHistoryIndex++;
 	}
@@ -847,6 +945,7 @@ export class CanvasStore {
 		this.canvasState = { ...previousState.canvasState };
 		this.cropState = { ...previousState.cropState };
 		this.paddingState = { ...previousState.paddingState };
+		this.browserFrameState = { ...previousState.browserFrameState };
 
 		this.clearSelection();
 	}
@@ -860,6 +959,7 @@ export class CanvasStore {
 		this.canvasState = { ...nextState.canvasState };
 		this.cropState = { ...nextState.cropState };
 		this.paddingState = { ...nextState.paddingState };
+		this.browserFrameState = { ...nextState.browserFrameState };
 
 		this.clearSelection();
 	}
@@ -873,6 +973,7 @@ export class CanvasStore {
 		this.canvasState = { ...initialState.canvasState };
 		this.cropState = { ...initialState.cropState };
 		this.paddingState = { ...initialState.paddingState };
+		this.browserFrameState = { ...initialState.browserFrameState };
 
 		this.clearSelection();
 	}
@@ -1194,21 +1295,10 @@ export class CanvasStore {
 		}
 
 		try {
-			const tempCanvas = document.createElement('canvas');
-			const tempCtx = tempCanvas.getContext('2d');
-
-			if (!tempCtx) {
-				throw new Error('Failed to get context for temp canvas');
-			}
-
 			let sourceX = 0;
 			let sourceY = 0;
 			let sourceWidth = this.canvasState.dimensions.width;
 			let sourceHeight = this.canvasState.dimensions.height;
-			let targetX = 0;
-			let targetY = 0;
-			let targetWidth = sourceWidth;
-			let targetHeight = sourceHeight;
 
 			if (this.cropState.visibleArea) {
 				const { x, y, width, height } = this.cropState.visibleArea;
@@ -1216,41 +1306,106 @@ export class CanvasStore {
 				sourceY = y;
 				sourceWidth = width;
 				sourceHeight = height;
-				targetWidth = width;
-				targetHeight = height;
 			}
-			if (this.paddingState.isEnabled) {
+			let finalWidth = sourceWidth;
+			let finalHeight = sourceHeight;
+			if (this.browserFrameState.isEnabled) {
+				if (
+					(this.browserFrameState.style === 'mac' ||
+						this.browserFrameState.style === 'windows') &&
+					!this.checkMinimumWidthForBrowserFrame()
+				) {
+					return;
+				}
+
+				let frameHeight = 0;
+
+				if (this.browserFrameState.style === 'mac') {
+					frameHeight = 69;
+				} else if (this.browserFrameState.style === 'windows') {
+					frameHeight = 77;
+				} else if (
+					this.browserFrameState.style === 'url-top' ||
+					this.browserFrameState.style === 'url-bottom'
+				) {
+					frameHeight = 30;
+				}
+
+				finalHeight += frameHeight;
+			} else if (this.paddingState.isEnabled) {
 				const paddingSize = this.paddingState.size;
-
-				targetWidth += paddingSize * 2;
-				targetHeight += paddingSize * 2;
-
-				targetX = paddingSize;
-				targetY = paddingSize;
+				finalWidth += paddingSize * 2;
+				finalHeight += paddingSize * 2;
 			}
+			const finalCanvas = document.createElement('canvas');
+			finalCanvas.width = finalWidth;
+			finalCanvas.height = finalHeight;
+			const finalCtx = finalCanvas.getContext('2d');
 
-			tempCanvas.width = targetWidth;
-			tempCanvas.height = targetHeight;
+			if (!finalCtx) {
+				throw new Error('Failed to get context for final canvas');
+			}
 
 			if (this.paddingState.isEnabled) {
-				tempCtx.fillStyle = this.paddingState.color;
-				tempCtx.fillRect(0, 0, targetWidth, targetHeight);
-			}
+				finalCtx.fillStyle = this.paddingState.color;
+				finalCtx.fillRect(0, 0, finalWidth, finalHeight);
+				finalCtx.drawImage(
+					this.mainCanvasRef.current,
+					sourceX,
+					sourceY,
+					sourceWidth,
+					sourceHeight,
+					this.paddingState.size,
+					this.paddingState.size,
+					sourceWidth,
+					sourceHeight
+				);
+			} else if (this.browserFrameState.isEnabled) {
+				let frameHeight = 0;
+				let contentY = 0;
+				if (this.browserFrameState.style === 'mac') {
+					frameHeight = 69;
+					contentY = frameHeight;
+				} else if (this.browserFrameState.style === 'windows') {
+					frameHeight = 77;
+					contentY = frameHeight;
+				} else if (this.browserFrameState.style === 'url-top') {
+					frameHeight = 30;
+					contentY = frameHeight;
+				} else if (this.browserFrameState.style === 'url-bottom') {
+					frameHeight = 30;
+					contentY = 0;
+				}
 
-			tempCtx.drawImage(
-				this.mainCanvasRef.current,
-				sourceX,
-				sourceY,
-				sourceWidth,
-				sourceHeight,
-				targetX,
-				targetY,
-				sourceWidth,
-				sourceHeight
-			);
+				finalCtx.drawImage(
+					this.mainCanvasRef.current,
+					sourceX,
+					sourceY,
+					sourceWidth,
+					sourceHeight,
+					0,
+					contentY,
+					sourceWidth,
+					sourceHeight
+				);
+
+				await this.renderBrowserFrame(finalCtx);
+			} else {
+				finalCtx.drawImage(
+					this.mainCanvasRef.current,
+					sourceX,
+					sourceY,
+					sourceWidth,
+					sourceHeight,
+					0,
+					0,
+					sourceWidth,
+					sourceHeight
+				);
+			}
 
 			const blob = await new Promise<Blob | null>((resolve) => {
-				tempCanvas.toBlob(
+				finalCanvas.toBlob(
 					(resultBlob) => {
 						resolve(resultBlob);
 					},
@@ -1288,21 +1443,10 @@ export class CanvasStore {
 		}
 
 		try {
-			const tempCanvas = document.createElement('canvas');
-			const tempCtx = tempCanvas.getContext('2d');
-
-			if (!tempCtx) {
-				throw new Error('Failed to get context for temp canvas');
-			}
-
 			let sourceX = 0;
 			let sourceY = 0;
 			let sourceWidth = this.canvasState.dimensions.width;
 			let sourceHeight = this.canvasState.dimensions.height;
-			let targetX = 0;
-			let targetY = 0;
-			let targetWidth = sourceWidth;
-			let targetHeight = sourceHeight;
 
 			if (this.cropState.visibleArea) {
 				const { x, y, width, height } = this.cropState.visibleArea;
@@ -1310,42 +1454,111 @@ export class CanvasStore {
 				sourceY = y;
 				sourceWidth = width;
 				sourceHeight = height;
-				targetWidth = width;
-				targetHeight = height;
 			}
 
-			if (this.paddingState.isEnabled) {
+			let finalWidth = sourceWidth;
+			let finalHeight = sourceHeight;
+
+			if (this.browserFrameState.isEnabled) {
+				if (
+					(this.browserFrameState.style === 'mac' ||
+						this.browserFrameState.style === 'windows') &&
+					!this.checkMinimumWidthForBrowserFrame()
+				) {
+					return;
+				}
+
+				let frameHeight = 0;
+
+				if (this.browserFrameState.style === 'mac') {
+					frameHeight = 69;
+				} else if (this.browserFrameState.style === 'windows') {
+					frameHeight = 77;
+				} else if (
+					this.browserFrameState.style === 'url-top' ||
+					this.browserFrameState.style === 'url-bottom'
+				) {
+					frameHeight = 30;
+				}
+
+				finalHeight += frameHeight;
+			} else if (this.paddingState.isEnabled) {
 				const paddingSize = this.paddingState.size;
-
-				targetWidth += paddingSize * 2;
-				targetHeight += paddingSize * 2;
-
-				targetX = paddingSize;
-				targetY = paddingSize;
+				finalWidth += paddingSize * 2;
+				finalHeight += paddingSize * 2;
 			}
 
-			tempCanvas.width = targetWidth;
-			tempCanvas.height = targetHeight;
+			const finalCanvas = document.createElement('canvas');
+			finalCanvas.width = finalWidth;
+			finalCanvas.height = finalHeight;
+			const finalCtx = finalCanvas.getContext('2d');
+
+			if (!finalCtx) {
+				throw new Error('Failed to get context for final canvas');
+			}
 
 			if (this.paddingState.isEnabled) {
-				tempCtx.fillStyle = this.paddingState.color;
-				tempCtx.fillRect(0, 0, targetWidth, targetHeight);
-			}
+				finalCtx.fillStyle = this.paddingState.color;
+				finalCtx.fillRect(0, 0, finalWidth, finalHeight);
 
-			tempCtx.drawImage(
-				this.mainCanvasRef.current,
-				sourceX,
-				sourceY,
-				sourceWidth,
-				sourceHeight,
-				targetX,
-				targetY,
-				sourceWidth,
-				sourceHeight
-			);
+				finalCtx.drawImage(
+					this.mainCanvasRef.current,
+					sourceX,
+					sourceY,
+					sourceWidth,
+					sourceHeight,
+					this.paddingState.size,
+					this.paddingState.size,
+					sourceWidth,
+					sourceHeight
+				);
+			} else if (this.browserFrameState.isEnabled) {
+				let frameHeight = 0;
+				let contentY = 0;
+
+				if (this.browserFrameState.style === 'mac') {
+					frameHeight = 69;
+					contentY = frameHeight;
+				} else if (this.browserFrameState.style === 'windows') {
+					frameHeight = 77;
+					contentY = frameHeight;
+				} else if (this.browserFrameState.style === 'url-top') {
+					frameHeight = 30;
+					contentY = frameHeight;
+				} else if (this.browserFrameState.style === 'url-bottom') {
+					frameHeight = 30;
+					contentY = 0;
+				}
+
+				finalCtx.drawImage(
+					this.mainCanvasRef.current,
+					sourceX,
+					sourceY,
+					sourceWidth,
+					sourceHeight,
+					0,
+					contentY,
+					sourceWidth,
+					sourceHeight
+				);
+
+				await this.renderBrowserFrame(finalCtx);
+			} else {
+				finalCtx.drawImage(
+					this.mainCanvasRef.current,
+					sourceX,
+					sourceY,
+					sourceWidth,
+					sourceHeight,
+					0,
+					0,
+					sourceWidth,
+					sourceHeight
+				);
+			}
 
 			const blob = await new Promise<Blob | null>((resolve) => {
-				tempCanvas.toBlob((blob) => {
+				finalCanvas.toBlob((blob) => {
 					resolve(blob);
 				}, 'image/png');
 			});
@@ -1392,8 +1605,11 @@ export class CanvasStore {
 			this.mainCanvasRef.current.height = newHeight;
 		}
 
-		this.saveToHistory();
+		if (this.browserFrameState.isEnabled) {
+			this.checkMinimumWidthForBrowserFrame();
+		}
 
+		this.saveToHistory();
 		this.logCanvasState();
 	}
 	private scaleLayer(layer: Layer, scaleX: number, scaleY: number): Layer {
@@ -1860,6 +2076,9 @@ export class CanvasStore {
 		if (updates.size !== undefined) {
 			updates.size = Math.max(0, Math.min(200, updates.size));
 		}
+		if (updates.isEnabled === true) {
+			this.browserFrameState.isEnabled = false;
+		}
 
 		Object.assign(this.paddingState, updates);
 
@@ -1869,4 +2088,344 @@ export class CanvasStore {
 
 		this.forceCanvasUpdate();
 	}
+	updateBrowserFrameState(updates: Partial<BrowserFrameState>): void {
+		if (updates.isEnabled === true) {
+			this.paddingState.isEnabled = false;
+			if (!this.browserFrameImages.mac.left) {
+				this.loadBrowserFrameImages().then(() => {
+					if (this.checkMinimumWidthForBrowserFrame()) {
+						Object.assign(this.browserFrameState, updates);
+						this.forceCanvasUpdate();
+					}
+				});
+				return;
+			}
+
+			if (!this.checkMinimumWidthForBrowserFrame()) {
+				return;
+			}
+		}
+
+		Object.assign(this.browserFrameState, updates);
+
+		if (updates.isEnabled === undefined) {
+			this.saveToHistory();
+		}
+
+		this.forceCanvasUpdate();
+	}
+
+	async renderBrowserFrame(ctx: CanvasRenderingContext2D): Promise<void> {
+		if (!this.browserFrameState.isEnabled) {
+			return;
+		}
+
+		try {
+			const { style, showUrl, showDate, url } = this.browserFrameState;
+			const contentWidth = ctx.canvas.width;
+
+			if (style === 'url-top' || style === 'url-bottom') {
+				this.renderUrlBar(ctx, style, url, showDate, contentWidth);
+				return;
+			}
+
+			if (
+				!this.browserFrameImages.mac.left ||
+				!this.browserFrameImages.windows.left
+			) {
+				await this.loadBrowserFrameImages();
+			}
+
+			if (!this.checkMinimumWidthForBrowserFrame()) {
+				return;
+			}
+
+			const images =
+				style === 'mac'
+					? this.browserFrameImages.mac
+					: this.browserFrameImages.windows;
+			if (!images.left || !images.middle || !images.right) {
+				console.error('Browser frame images are not loaded properly');
+				return;
+			}
+
+			const leftImage = images.left;
+			const middleImage = images.middle;
+			const rightImage = images.right;
+
+			const frameHeight = style === 'mac' ? 69 : 77;
+			const yPosition = 0;
+
+			ctx.save();
+
+			ctx.drawImage(leftImage, 0, yPosition);
+
+			const leftWidth = leftImage.width;
+			const rightWidth = rightImage.width;
+			const middleWidth = contentWidth - leftWidth - rightWidth;
+
+			for (let x = leftWidth; x < leftWidth + middleWidth; x++) {
+				ctx.drawImage(middleImage, x, yPosition, 1, frameHeight);
+			}
+
+			ctx.drawImage(rightImage, leftWidth + middleWidth, yPosition);
+
+			if (showUrl) {
+				this.renderURL(ctx, style, url, contentWidth);
+			}
+
+			if (showDate) {
+				this.renderDate(ctx, style, contentWidth);
+			}
+
+			ctx.restore();
+		} catch (error) {
+			console.error('Error rendering browser frame:', error);
+		}
+	}
+
+	private renderUrlBar(
+		ctx: CanvasRenderingContext2D,
+		style: BrowserStyle,
+		url: string,
+		showDate: boolean,
+		contentWidth: number
+	): void {
+		ctx.save();
+
+		const barHeight = 30;
+
+		const isTop = style === 'url-top';
+		const yPosition = isTop ? 0 : ctx.canvas.height - barHeight;
+
+		ctx.fillStyle = '#000000';
+		ctx.fillRect(0, yPosition, contentWidth, barHeight);
+
+		ctx.fillStyle = '#FFFFFF';
+		ctx.font = '14px Arial, sans-serif';
+		ctx.textBaseline = 'middle';
+
+		let displayText = url;
+		if (showDate) {
+			const today = new Date();
+			const day = String(today.getDate()).padStart(2, '0');
+			const month = String(today.getMonth() + 1).padStart(2, '0');
+			const year = today.getFullYear();
+			const dateText = `${day}/${month}/${year} - `;
+			displayText = dateText + url;
+		}
+
+		const padding = 10; // Отступ от краев
+		const maxWidth = contentWidth - padding * 2;
+		const truncatedText = this.truncateText(ctx, displayText, maxWidth);
+
+		ctx.textAlign = 'left';
+		ctx.fillText(truncatedText, padding, yPosition + barHeight / 2);
+
+		ctx.restore();
+	}
+	private renderURL(
+		ctx: CanvasRenderingContext2D,
+		style: BrowserStyle,
+		url: string,
+		contentWidth: number
+	): void {
+		ctx.save();
+
+		let leftOffset: number;
+		let bottomOffset: number;
+		let rightOffset: number;
+		let fontFamily: string;
+
+		if (style === 'mac') {
+			leftOffset = 110;
+			bottomOffset = 11;
+			rightOffset = 90;
+			fontFamily =
+				"system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
+			ctx.fillStyle = '#333333';
+			ctx.font = `13px ${fontFamily}`;
+		} else {
+			leftOffset = 125;
+			bottomOffset = 9;
+			rightOffset = 111;
+			fontFamily = "'Segoe UI', Tahoma, sans-serif";
+			ctx.fillStyle = '#000000';
+			ctx.font = `14px ${fontFamily}`;
+		}
+
+		const frameHeight = style === 'mac' ? 69 : 77;
+		const maxWidth = contentWidth - leftOffset - rightOffset;
+
+		const truncatedUrl = this.truncateText(ctx, url, maxWidth);
+
+		ctx.textBaseline = 'bottom';
+		ctx.fillText(truncatedUrl, leftOffset, frameHeight - bottomOffset);
+
+		ctx.restore();
+	}
+
+	private truncateText(
+		ctx: CanvasRenderingContext2D,
+		text: string,
+		maxWidth: number
+	): string {
+		const ellipsis = '...';
+		const ellipsisWidth = ctx.measureText(ellipsis).width;
+
+		if (ctx.measureText(text).width <= maxWidth) {
+			return text;
+		}
+
+		let truncatedText = text;
+		while (truncatedText.length > 0) {
+			truncatedText = truncatedText.substring(
+				0,
+				truncatedText.length - 1
+			);
+			if (
+				ctx.measureText(truncatedText).width + ellipsisWidth <=
+				maxWidth
+			) {
+				return truncatedText + ellipsis;
+			}
+		}
+
+		return ellipsis;
+	}
+
+	private renderDate(
+		ctx: CanvasRenderingContext2D,
+		style: BrowserStyle,
+		contentWidth: number
+	): void {
+		ctx.save();
+
+		const today = new Date();
+		const day = String(today.getDate()).padStart(2, '0');
+		const month = String(today.getMonth() + 1).padStart(2, '0');
+		const year = today.getFullYear();
+		const dateText = `${day}/${month}/${year}`;
+
+		let fontFamily: string;
+
+		if (style === 'mac') {
+			fontFamily =
+				"system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
+			ctx.fillStyle = '#666666';
+			ctx.font = `12px ${fontFamily}`;
+		} else {
+			fontFamily = "'Segoe UI', Tahoma, sans-serif";
+			ctx.fillStyle = '#555555';
+			ctx.font = `12px ${fontFamily}`;
+		}
+
+		ctx.textAlign = 'center';
+		ctx.textBaseline = 'middle';
+		ctx.fillText(dateText, contentWidth / 2, 28);
+
+		ctx.restore();
+	}
+
+	browserFrameCanvasRef: React.RefObject<HTMLCanvasElement | null> = {
+		current: null,
+	};
+
+	renderBrowserFramePreview = useCallback(() => {
+		const browserFrameCanvas = this.browserFrameCanvasRef.current;
+		const ctx = browserFrameCanvas?.getContext('2d');
+		if (!browserFrameCanvas || !ctx) {
+			return;
+		}
+
+		const { browserFrameState, cropState, canvasState } = this;
+
+		browserFrameCanvas.width = 0;
+		browserFrameCanvas.height = 0;
+
+		if (!browserFrameState.isEnabled) {
+			return;
+		}
+
+		const contentWidth = cropState.visibleArea
+			? cropState.visibleArea.width
+			: canvasState.dimensions.width;
+
+		const contentHeight = cropState.visibleArea
+			? cropState.visibleArea.height
+			: canvasState.dimensions.height;
+
+		let frameHeight = 0;
+		let contentY = 0;
+
+		if (browserFrameState.style === 'mac') {
+			frameHeight = 69;
+			contentY = frameHeight;
+		} else if (browserFrameState.style === 'windows') {
+			frameHeight = 77;
+			contentY = frameHeight;
+		} else if (browserFrameState.style === 'url-top') {
+			frameHeight = 30;
+			contentY = frameHeight;
+		} else if (browserFrameState.style === 'url-bottom') {
+			frameHeight = 30;
+			contentY = 0;
+		}
+
+		if (
+			(browserFrameState.style === 'mac' ||
+				browserFrameState.style === 'windows') &&
+			(!this.browserFrameImages.mac.left ||
+				!this.browserFrameImages.windows.left)
+		) {
+			this.loadBrowserFrameImages().then(() => {
+				this.renderBrowserFramePreview();
+			});
+			return;
+		}
+
+		if (
+			(browserFrameState.style === 'mac' ||
+				browserFrameState.style === 'windows') &&
+			!this.checkMinimumWidthForBrowserFrame()
+		) {
+			return;
+		}
+
+		const totalWidth = contentWidth;
+		const totalHeight = contentHeight + frameHeight;
+
+		browserFrameCanvas.width = totalWidth;
+		browserFrameCanvas.height = totalHeight;
+
+		if (cropState.visibleArea) {
+			const { x, y, width, height } = cropState.visibleArea;
+
+			ctx.drawImage(
+				this.mainCanvasRef.current!,
+				x,
+				y,
+				width,
+				height,
+				0,
+				contentY,
+				width,
+				height
+			);
+		} else {
+			ctx.drawImage(
+				this.mainCanvasRef.current!,
+				0,
+				0,
+				canvasState.dimensions.width,
+				canvasState.dimensions.height,
+				0,
+				contentY,
+				canvasState.dimensions.width,
+				canvasState.dimensions.height
+			);
+		}
+
+		this.renderBrowserFrame(ctx);
+	}, []);
 }

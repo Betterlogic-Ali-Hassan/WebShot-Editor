@@ -1,30 +1,47 @@
-"use client";
+'use client';
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback } from 'react';
+import { useStore } from '@/stores/storeProvider';
 
 export function useBrowserContent() {
-  const [browser, setBrowser] = useState(false);
-  const [padding, setPadding] = useState(false);
-  const paddingRef = useRef<HTMLDivElement>(null);
+	const { canvasStore } = useStore();
+	const [browser, setBrowser] = useState(
+		canvasStore.browserFrameState.isEnabled
+	);
+	const [padding, setPadding] = useState(canvasStore.paddingState.isEnabled);
+	const paddingRef = useRef<HTMLDivElement>(null);
 
-  const toggleBrowser = useCallback(() => setBrowser((prev) => !prev), []);
-  const togglePadding = useCallback(() => {
-    setPadding((prev) => !prev);
-    if (!padding) {
-      setTimeout(() => {
-        paddingRef.current?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }, 100);
-    }
-  }, [padding]);
+	const toggleBrowser = useCallback(() => {
+		const newState = !browser;
+		setBrowser(newState);
 
-  return {
-    browser,
-    padding,
-    paddingRef,
-    toggleBrowser,
-    togglePadding,
-  };
+		if (newState) {
+			setPadding(false);
+		}
+	}, [browser]);
+
+	const togglePadding = useCallback(() => {
+		const newState = !padding;
+		setPadding(newState);
+
+		if (newState) {
+			setBrowser(false);
+		}
+		if (!padding) {
+			setTimeout(() => {
+				paddingRef.current?.scrollIntoView({
+					behavior: 'smooth',
+					block: 'start',
+				});
+			}, 100);
+		}
+	}, [padding]);
+
+	return {
+		browser,
+		padding,
+		paddingRef,
+		toggleBrowser,
+		togglePadding,
+	};
 }
