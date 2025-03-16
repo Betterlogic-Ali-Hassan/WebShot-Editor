@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import ToolCard from '../../ToolCard';
 import ToolDropdown from '@/components/ToolDropdown';
 import Brush from './Brush';
@@ -15,6 +15,11 @@ const PenSelector = observer(() => {
 		brushData[0].icon
 	);
 	const [selectedText, setSelectedText] = useState<string>(brushData[0].name);
+	const [isToolActive, setIsToolActive] = useState(false);
+
+	useEffect(() => {
+		setIsToolActive(canvasStore.currentTool === 'draw');
+	}, [canvasStore.currentTool]);
 
 	const handleSelection = (
 		icon: React.ReactNode,
@@ -23,22 +28,36 @@ const PenSelector = observer(() => {
 	) => {
 		setSelectedIcon(icon);
 		setSelectedText(text);
-		canvasStore.currentTool = 'draw'; // переключаем в режим рисования
-		canvasStore.drawingState.currentTool = toolType; // устанавливаем тип инструмента
+		canvasStore.currentTool = 'draw';
+		canvasStore.drawingState.currentTool = toolType;
+		setIsToolActive(true);
 	};
 
 	const handleColorChange = (color: string) => {
 		canvasStore.drawingState.color = color;
+
+		if (isToolActive) {
+			canvasStore.currentTool = 'draw';
+		}
 	};
 
 	const handleLineWidthChange = (width: number) => {
 		canvasStore.drawingState.lineWidth = width;
+
+		if (isToolActive) {
+			canvasStore.currentTool = 'draw';
+		}
 	};
 
 	return (
 		<ToolDropdown
 			trigger={
-				<ToolCard text={selectedText} icon={selectedIcon} id={7} />
+				<ToolCard
+					text={selectedText}
+					icon={selectedIcon}
+					id={7}
+					isActive={isToolActive}
+				/>
 			}
 			content={
 				<Brush
@@ -46,9 +65,11 @@ const PenSelector = observer(() => {
 					selectedIcon={selectedIcon}
 					onColorChange={handleColorChange}
 					onLineWidthChange={handleLineWidthChange}
+					isToolActive={isToolActive}
 				/>
 			}
 			id="num4"
+			keepOpenAfterInteraction={true}
 		/>
 	);
 });

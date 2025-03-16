@@ -7,6 +7,7 @@ import LinePicker from '../BorderPicker';
 import ColorPicker from '../borderSelector/ColorPicker2';
 import Cursor from '../../Cursor';
 import { DrawingToolType } from '@/types/types';
+import { useStore } from '@/stores/storeProvider';
 
 interface Props {
 	onClick: (
@@ -17,6 +18,7 @@ interface Props {
 	selectedIcon?: React.ReactNode;
 	onColorChange: (color: string) => void;
 	onLineWidthChange: (width: number) => void;
+	isToolActive?: boolean;
 }
 
 const toolTypeMap = {
@@ -30,24 +32,52 @@ const Brush = ({
 	selectedIcon,
 	onColorChange,
 	onLineWidthChange,
+	isToolActive = false,
 }: Props) => {
+	const { canvasStore } = useStore();
 	const [selectedColor, setSelectedColor] = useState('rgba(0, 0, 0, 1)');
+	const [selectedName, setSelectedName] = useState<string>('Pencil');
 
 	useEffect(() => {
 		onColorChange(selectedColor);
-	}, []);
+
+		const currentTool = brushData.find(
+			(item) => item.icon === selectedIcon
+		);
+		if (currentTool) {
+			setSelectedName(currentTool.name);
+		}
+	}, [selectedIcon, onColorChange, selectedColor]);
+
 	const containerRef = useRef<HTMLDivElement>(null);
 
 	const handleColorChange = (color: string) => {
 		setSelectedColor(color);
 		onColorChange(color);
+
+		if (isToolActive) {
+			const toolType =
+				toolTypeMap[selectedName as keyof typeof toolTypeMap] ||
+				'pencil';
+			canvasStore.currentTool = 'draw';
+			canvasStore.drawingState.currentTool = toolType;
+		}
 	};
 
 	const handleLineWidthChange = (value: number) => {
 		onLineWidthChange(value);
+
+		if (isToolActive) {
+			const toolType =
+				toolTypeMap[selectedName as keyof typeof toolTypeMap] ||
+				'pencil';
+			canvasStore.currentTool = 'draw';
+			canvasStore.drawingState.currentTool = toolType;
+		}
 	};
 
 	const handleToolClick = (item: { name: string; icon: React.ReactNode }) => {
+		setSelectedName(item.name);
 		const toolType = toolTypeMap[item.name as keyof typeof toolTypeMap];
 		onClick(item.icon, item.name, toolType);
 	};
