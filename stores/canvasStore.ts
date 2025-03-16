@@ -596,18 +596,60 @@ export class CanvasStore {
 		const dx = x - this.dragState.currentPosition.x;
 		const dy = y - this.dragState.currentPosition.y;
 
-		if (selectedLayer.type === 'arrow') {
+		if (selectedLayer.type === 'drawing') {
 			selectedLayer.transform = {
 				...selectedLayer.transform,
 				x: selectedLayer.transform.x + dx,
 				y: selectedLayer.transform.y + dy,
 			};
+
+			if (selectedLayer.transform.center) {
+				selectedLayer.transform.center = {
+					x:
+						selectedLayer.transform.x +
+						selectedLayer.transform.width / 2,
+					y:
+						selectedLayer.transform.y +
+						selectedLayer.transform.height / 2,
+				};
+			}
+		} else if (
+			selectedLayer.type === 'arrow' ||
+			selectedLayer.type === 'textArrow'
+		) {
+			selectedLayer.transform = {
+				...selectedLayer.transform,
+				x: selectedLayer.transform.x + dx,
+				y: selectedLayer.transform.y + dy,
+			};
+
+			if (selectedLayer.transform.center) {
+				selectedLayer.transform.center = {
+					x:
+						selectedLayer.transform.x +
+						selectedLayer.transform.width / 2,
+					y:
+						selectedLayer.transform.y +
+						selectedLayer.transform.height / 2,
+				};
+			}
 		} else {
 			selectedLayer.transform = {
 				...selectedLayer.transform,
 				x: selectedLayer.transform.x + dx,
 				y: selectedLayer.transform.y + dy,
 			};
+
+			if (selectedLayer.transform.center) {
+				selectedLayer.transform.center = {
+					x:
+						selectedLayer.transform.x +
+						selectedLayer.transform.width / 2,
+					y:
+						selectedLayer.transform.y +
+						selectedLayer.transform.height / 2,
+				};
+			}
 		}
 
 		this.dragState.currentPosition = { x, y };

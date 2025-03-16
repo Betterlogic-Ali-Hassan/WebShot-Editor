@@ -161,12 +161,16 @@ const Canvas = observer(() => {
 	const drawPencilLine = useCallback(
 		(
 			ctx: CanvasRenderingContext2D,
-			points: Array<{ x: number; y: number }>
+			points: Array<{ x: number; y: number }>,
+			offsetX: number = 0,
+			offsetY: number = 0
 		) => {
+			if (points.length < 2) return;
+
 			ctx.beginPath();
-			ctx.moveTo(points[0].x, points[0].y);
+			ctx.moveTo(offsetX + points[0].x, offsetY + points[0].y);
 			for (let i = 1; i < points.length; i++) {
-				ctx.lineTo(points[i].x, points[i].y);
+				ctx.lineTo(offsetX + points[i].x, offsetY + points[i].y);
 			}
 			ctx.stroke();
 		},
@@ -176,12 +180,16 @@ const Canvas = observer(() => {
 	const drawBrushLine = useCallback(
 		(
 			ctx: CanvasRenderingContext2D,
-			points: Array<{ x: number; y: number }>
+			points: Array<{ x: number; y: number }>,
+			offsetX: number = 0,
+			offsetY: number = 0
 		) => {
+			if (points.length < 2) return;
+
 			ctx.beginPath();
-			ctx.moveTo(points[0].x, points[0].y);
+			ctx.moveTo(offsetX + points[0].x, offsetY + points[0].y);
 			for (let i = 1; i < points.length; i++) {
-				ctx.lineTo(points[i].x, points[i].y);
+				ctx.lineTo(offsetX + points[i].x, offsetY + points[i].y);
 			}
 			ctx.stroke();
 		},
@@ -191,12 +199,16 @@ const Canvas = observer(() => {
 	const drawHighlighterLine = useCallback(
 		(
 			ctx: CanvasRenderingContext2D,
-			points: Array<{ x: number; y: number }>
+			points: Array<{ x: number; y: number }>,
+			offsetX: number = 0,
+			offsetY: number = 0
 		) => {
+			if (points.length < 2) return;
+
 			ctx.beginPath();
-			ctx.moveTo(points[0].x, points[0].y);
+			ctx.moveTo(offsetX + points[0].x, offsetY + points[0].y);
 			for (let i = 1; i < points.length; i++) {
-				ctx.lineTo(points[i].x, points[i].y);
+				ctx.lineTo(offsetX + points[i].x, offsetY + points[i].y);
 			}
 			ctx.stroke();
 		},
@@ -323,19 +335,19 @@ const Canvas = observer(() => {
 							case 'pencil':
 								ctx.lineJoin = 'round';
 								ctx.lineCap = 'round';
-								drawPencilLine(ctx, layer.points);
+								drawPencilLine(ctx, layer.points, x, y);
 								break;
 							case 'brush':
 								ctx.lineJoin = 'round';
 								ctx.lineCap = 'round';
 								ctx.shadowBlur = layer.params.lineWidth / 2;
 								ctx.shadowColor = layer.params.color;
-								drawBrushLine(ctx, layer.points);
+								drawBrushLine(ctx, layer.points, x, y);
 								break;
 							case 'highlighter':
 								ctx.lineJoin = 'round';
 								ctx.lineCap = 'square';
-								drawHighlighterLine(ctx, layer.points);
+								drawHighlighterLine(ctx, layer.points, x, y);
 								break;
 						}
 					}
@@ -924,17 +936,80 @@ const Canvas = observer(() => {
 		};
 	}, []);
 
+	const distanceToLine = (
+		x: number,
+		y: number,
+		x1: number,
+		y1: number,
+		x2: number,
+		y2: number
+	): number => {
+		const A = x - x1;
+		const B = y - y1;
+		const C = x2 - x1;
+		const D = y2 - y1;
+
+		const dot = A * C + B * D;
+		const lenSq = C * C + D * D;
+
+		if (lenSq === 0) return Math.sqrt(A * A + B * B);
+
+		const param = dot / lenSq;
+
+		let xx, yy;
+
+		if (param < 0) {
+			xx = x1;
+			yy = y1;
+		} else if (param > 1) {
+			xx = x2;
+			yy = y2;
+		} else {
+			xx = x1 + param * C;
+			yy = y1 + param * D;
+		}
+
+		const dx = x - xx;
+		const dy = y - yy;
+
+		return Math.sqrt(dx * dx + dy * dy);
+	};
+
 	const isPointInLayer = useCallback((x: number, y: number, layer: Layer) => {
 		const { transform } = layer;
 		const { x: layerX, y: layerY, width, height } = transform;
 
 		if (layer.type === 'drawing') {
-			return (
+			const inBounds =
 				x >= layerX &&
 				x <= layerX + width &&
 				y >= layerY &&
-				y <= layerY + height
-			);
+				y <= layerY + height;
+
+			if (!inBounds) return false;
+
+			const points = layer.points;
+			const threshold = Math.max(3, layer.params.lineWidth / 2);
+
+			if (points.length < 2) return false;
+
+			for (let i = 1; i < points.length; i++) {
+				const p1 = {
+					x: layerX + points[i - 1].x,
+					y: layerY + points[i - 1].y,
+				};
+				const p2 = {
+					x: layerX + points[i].x,
+					y: layerY + points[i].y,
+				};
+
+				const distance = distanceToLine(x, y, p1.x, p1.y, p2.x, p2.y);
+				if (distance <= threshold) {
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		if (layer.type === 'textArrow') {
@@ -1005,10 +1080,15 @@ const Canvas = observer(() => {
 			ctx.strokeStyle = '#0088ff';
 			ctx.lineWidth = SELECTION_BORDER_WIDTH;
 
-			if (layer.type === 'arrow' || layer.type === 'textArrow') {
-				const bounds = layer.transform;
-				ctx.strokeRect(bounds.x, bounds.y, bounds.width, bounds.height);
+			const bounds = layer.transform;
+			ctx.strokeRect(bounds.x, bounds.y, bounds.width, bounds.height);
 
+			if (layer.type === 'drawing') {
+				ctx.restore();
+				return;
+			}
+
+			if (layer.type === 'arrow' || layer.type === 'textArrow') {
 				const transformHandlePoints: Array<{
 					type: TransformHandleType;
 					point: Point;
@@ -1082,8 +1162,6 @@ const Canvas = observer(() => {
 				});
 			} else if (layer.type === 'pageText') {
 				const { x, y, width, height } = layer.transform;
-				ctx.strokeRect(x, y, width, height);
-
 				const handlePositions: Array<{
 					type: TransformHandleType;
 					x: number;
@@ -1140,10 +1218,7 @@ const Canvas = observer(() => {
 					ctx.stroke();
 				});
 			} else {
-				// Код для других типов слоев остается без изменений
 				const { x, y, width, height } = layer.transform;
-				ctx.strokeRect(x, y, width, height);
-
 				const handlePositions: Array<{
 					type: TransformHandleType;
 					x: number;
@@ -1232,171 +1307,15 @@ const Canvas = observer(() => {
 				return;
 			}
 
-			if (canvasStore.currentTool === 'textArrow') {
-				canvasStore.startTextArrowDrawing(coords.x, coords.y);
-				return;
-			}
 			if (canvasStore.currentTool === 'crop') {
 				canvasStore.startCropping(coords.x, coords.y);
 				return;
 			}
 
-			if (canvasStore.currentTool === 'arrow') {
-				canvasStore.startArrowDrawing(coords.x, coords.y);
-				return;
-			}
+			const tempCanvas = tempCanvasRef.current;
+			const tempCtx = tempCanvas?.getContext('2d');
 
-			if (canvasStore.currentTool === 'text') {
-				const transform = canvasStore.startTextEditing(
-					coords.x,
-					coords.y
-				);
-				if (transform) {
-					const scale = canvasStore.canvasState.zoom / 100;
-					const rect = (
-						e.target as HTMLElement
-					).getBoundingClientRect();
-					setTextInputPosition({
-						x: (e.clientX - rect.left) / scale,
-						y: (e.clientY - rect.top) / scale,
-					});
-				}
-				return;
-			}
-
-			if (canvasStore.currentTool === 'draw') {
-				canvasStore.startDrawing(coords.x, coords.y);
-				return;
-			}
-
-			if (canvasStore.currentTool === 'shape') {
-				canvasStore.startShapeDrawing(coords.x, coords.y);
-				return;
-			}
-
-			if (canvasStore.currentTool === 'number') {
-				const numberLayer = canvasStore.createNumberLayer(
-					coords.x - 20,
-					coords.y - 20
-				);
-				canvasStore.selectLayer(numberLayer.id);
-				return;
-			}
-			if (canvasStore.currentTool === 'blur') {
-				canvasStore.startBlurDrawing(coords.x, coords.y);
-				return;
-			}
-			const clickedHandle = (() => {
-				const selectedLayer = canvasStore.getSelectedLayer();
-				if (!selectedLayer) return null;
-				if (canvasStore.canvasState.layers.indexOf(selectedLayer) === 0)
-					return null;
-
-				const scale = canvasStore.canvasState.zoom / 100;
-				const handleSize = TRANSFORM_HANDLE_SIZE * scale;
-
-				if (
-					selectedLayer.type === 'arrow' ||
-					selectedLayer.type === 'textArrow'
-				) {
-					const startPoint = {
-						x:
-							selectedLayer.transform.x +
-							selectedLayer.startPoint.x,
-						y:
-							selectedLayer.transform.y +
-							selectedLayer.startPoint.y,
-					};
-					const endPoint = {
-						x: selectedLayer.transform.x + selectedLayer.endPoint.x,
-						y: selectedLayer.transform.y + selectedLayer.endPoint.y,
-					};
-
-					if (
-						Math.abs(coords.x - startPoint.x) <= handleSize / 2 &&
-						Math.abs(coords.y - startPoint.y) <= handleSize / 2
-					) {
-						return { type: 'start' } as {
-							type: TransformHandleType;
-						};
-					}
-
-					if (
-						Math.abs(coords.x - endPoint.x) <= handleSize / 2 &&
-						Math.abs(coords.y - endPoint.y) <= handleSize / 2
-					) {
-						return { type: 'end' } as { type: TransformHandleType };
-					}
-
-					if (
-						(selectedLayer.arrowType === 'curved' ||
-							selectedLayer.arrowType === 'curvedLine') &&
-						selectedLayer.controlPoints &&
-						selectedLayer.controlPoints.length > 0
-					) {
-						for (
-							let i = 0;
-							i < selectedLayer.controlPoints.length;
-							i++
-						) {
-							const point = {
-								x:
-									selectedLayer.transform.x +
-									selectedLayer.controlPoints[i].x,
-								y:
-									selectedLayer.transform.y +
-									selectedLayer.controlPoints[i].y,
-							};
-							if (
-								Math.abs(coords.x - point.x) <=
-									handleSize / 2 &&
-								Math.abs(coords.y - point.y) <= handleSize / 2
-							) {
-								return {
-									type: i === 0 ? 'control1' : 'control2',
-								} as { type: TransformHandleType };
-							}
-						}
-					}
-					return null;
-				}
-
-				const { x, y, width, height } = selectedLayer.transform;
-				const handlePositions: Array<{
-					type: TransformHandleType;
-					x: number;
-					y: number;
-				}> = [
-					{ type: 'topLeft', x, y },
-					{ type: 'topCenter', x: x + width / 2, y },
-					{ type: 'topRight', x: x + width, y },
-					{ type: 'middleLeft', x, y: y + height / 2 },
-					{ type: 'middleRight', x: x + width, y: y + height / 2 },
-					{ type: 'bottomLeft', x, y: y + height },
-					{ type: 'bottomCenter', x: x + width / 2, y: y + height },
-					{ type: 'bottomRight', x: x + width, y: y + height },
-				];
-
-				return handlePositions.find(
-					(handle) =>
-						Math.abs(coords.x - handle.x) <=
-							TRANSFORM_HANDLE_SIZE / 2 &&
-						Math.abs(coords.y - handle.y) <=
-							TRANSFORM_HANDLE_SIZE / 2
-				);
-			})();
-
-			if (clickedHandle) {
-				selectedHandleRef.current = clickedHandle.type;
-				canvasStore.startTransforming(clickedHandle.type);
-			} else {
-				selectedHandleRef.current = null;
-
-				const tempCanvas = tempCanvasRef.current;
-				const tempCtx = tempCanvas?.getContext('2d');
-
-				if (!tempCanvas || !tempCtx) return;
-
+			if (tempCanvas && tempCtx) {
 				const layers = [...canvasStore.canvasState.layers].reverse();
 
 				for (let i = 0; i < layers.length; i++) {
@@ -1416,6 +1335,10 @@ const Canvas = observer(() => {
 								);
 
 							if (isNotTransparent) {
+								if (canvasStore.currentTool !== 'select') {
+									canvasStore.currentTool = 'select';
+								}
+
 								canvasStore.selectLayer(layer.id);
 								canvasStore.startDragging(coords.x, coords.y);
 								return;
@@ -1428,9 +1351,195 @@ const Canvas = observer(() => {
 						}
 					}
 				}
+			}
 
-				canvasStore.clearSelection();
-				canvasStore.stopDragging();
+			switch (canvasStore.currentTool) {
+				case 'textArrow':
+					canvasStore.startTextArrowDrawing(coords.x, coords.y);
+					break;
+
+				case 'arrow':
+					canvasStore.startArrowDrawing(coords.x, coords.y);
+					break;
+
+				case 'text':
+					const transform = canvasStore.startTextEditing(
+						coords.x,
+						coords.y
+					);
+					if (transform) {
+						const scale = canvasStore.canvasState.zoom / 100;
+						const rect = (
+							e.target as HTMLElement
+						).getBoundingClientRect();
+						setTextInputPosition({
+							x: (e.clientX - rect.left) / scale,
+							y: (e.clientY - rect.top) / scale,
+						});
+					}
+					break;
+
+				case 'draw':
+					canvasStore.startDrawing(coords.x, coords.y);
+					break;
+
+				case 'shape':
+					canvasStore.startShapeDrawing(coords.x, coords.y);
+					break;
+
+				case 'number':
+					const numberLayer = canvasStore.createNumberLayer(
+						coords.x - 20,
+						coords.y - 20
+					);
+					canvasStore.selectLayer(numberLayer.id);
+					break;
+
+				case 'blur':
+					canvasStore.startBlurDrawing(coords.x, coords.y);
+					break;
+
+				case 'select':
+					const clickedHandle = (() => {
+						const selectedLayer = canvasStore.getSelectedLayer();
+						if (!selectedLayer) return null;
+						if (
+							canvasStore.canvasState.layers.indexOf(
+								selectedLayer
+							) === 0
+						)
+							return null;
+
+						if (selectedLayer.type === 'drawing') return null;
+
+						const scale = canvasStore.canvasState.zoom / 100;
+						const handleSize = TRANSFORM_HANDLE_SIZE * scale;
+
+						if (
+							selectedLayer.type === 'arrow' ||
+							selectedLayer.type === 'textArrow'
+						) {
+							const startPoint = {
+								x:
+									selectedLayer.transform.x +
+									selectedLayer.startPoint.x,
+								y:
+									selectedLayer.transform.y +
+									selectedLayer.startPoint.y,
+							};
+							const endPoint = {
+								x:
+									selectedLayer.transform.x +
+									selectedLayer.endPoint.x,
+								y:
+									selectedLayer.transform.y +
+									selectedLayer.endPoint.y,
+							};
+
+							if (
+								Math.abs(coords.x - startPoint.x) <=
+									handleSize / 2 &&
+								Math.abs(coords.y - startPoint.y) <=
+									handleSize / 2
+							) {
+								return { type: 'start' as TransformHandleType };
+							}
+
+							if (
+								Math.abs(coords.x - endPoint.x) <=
+									handleSize / 2 &&
+								Math.abs(coords.y - endPoint.y) <=
+									handleSize / 2
+							) {
+								return { type: 'end' as TransformHandleType };
+							}
+
+							if (
+								(selectedLayer.arrowType === 'curved' ||
+									selectedLayer.arrowType === 'curvedLine') &&
+								selectedLayer.controlPoints &&
+								selectedLayer.controlPoints.length > 0
+							) {
+								for (
+									let i = 0;
+									i < selectedLayer.controlPoints.length;
+									i++
+								) {
+									const point = {
+										x:
+											selectedLayer.transform.x +
+											selectedLayer.controlPoints[i].x,
+										y:
+											selectedLayer.transform.y +
+											selectedLayer.controlPoints[i].y,
+									};
+									if (
+										Math.abs(coords.x - point.x) <=
+											handleSize / 2 &&
+										Math.abs(coords.y - point.y) <=
+											handleSize / 2
+									) {
+										return {
+											type:
+												i === 0
+													? ('control1' as TransformHandleType)
+													: ('control2' as TransformHandleType),
+										};
+									}
+								}
+							}
+							return null;
+						}
+
+						const { x, y, width, height } = selectedLayer.transform;
+						const handlePositions: Array<{
+							type: TransformHandleType;
+							x: number;
+							y: number;
+						}> = [
+							{ type: 'topLeft', x, y },
+							{ type: 'topCenter', x: x + width / 2, y },
+							{ type: 'topRight', x: x + width, y },
+							{ type: 'middleLeft', x, y: y + height / 2 },
+							{
+								type: 'middleRight',
+								x: x + width,
+								y: y + height / 2,
+							},
+							{ type: 'bottomLeft', x, y: y + height },
+							{
+								type: 'bottomCenter',
+								x: x + width / 2,
+								y: y + height,
+							},
+							{
+								type: 'bottomRight',
+								x: x + width,
+								y: y + height,
+							},
+						];
+
+						return handlePositions.find(
+							(handle) =>
+								Math.abs(coords.x - handle.x) <=
+									handleSize / 2 &&
+								Math.abs(coords.y - handle.y) <= handleSize / 2
+						);
+					})();
+
+					if (clickedHandle) {
+						selectedHandleRef.current = clickedHandle.type;
+						canvasStore.startTransforming(clickedHandle.type);
+					} else {
+						selectedHandleRef.current = null;
+						canvasStore.clearSelection();
+						canvasStore.stopDragging();
+					}
+					break;
+
+				default:
+					canvasStore.clearSelection();
+					break;
 			}
 		},
 		[
@@ -1661,6 +1770,10 @@ const Canvas = observer(() => {
 				!selectedHandleRef.current
 			) {
 				canvasStore.updateDragPosition(coords.x, coords.y);
+				requestAnimationFrame(() => {
+					renderLayers();
+				});
+
 				const overlayCanvas = overlayCanvasRef.current;
 				const ctx = overlayCanvas?.getContext('2d');
 				if (overlayCanvas && ctx) {
