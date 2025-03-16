@@ -1680,18 +1680,36 @@ export class CanvasStore {
 	startCropping(x: number, y: number) {
 		if (this.cropState.isActive) return;
 
-		this.cropState = {
-			...this.cropState,
-			isActive: true,
-			startPoint: { x, y },
-			currentPoint: { x, y },
-			previewBounds: {
-				x,
-				y,
-				width: 0,
-				height: 0,
-			},
-		};
+		if (this.cropState.visibleArea) {
+			const relativeX = x;
+			const relativeY = y;
+
+			this.cropState = {
+				...this.cropState,
+				isActive: true,
+				startPoint: { x: relativeX, y: relativeY },
+				currentPoint: { x: relativeX, y: relativeY },
+				previewBounds: {
+					x: relativeX,
+					y: relativeY,
+					width: 0,
+					height: 0,
+				},
+			};
+		} else {
+			this.cropState = {
+				...this.cropState,
+				isActive: true,
+				startPoint: { x, y },
+				currentPoint: { x, y },
+				previewBounds: {
+					x,
+					y,
+					width: 0,
+					height: 0,
+				},
+			};
+		}
 	}
 
 	updateCropping(x: number, y: number) {
@@ -1721,13 +1739,23 @@ export class CanvasStore {
 			return;
 		}
 
-		this.cropState.visibleArea = {
-			x,
-			y,
-			width,
-			height,
-		};
+		if (this.cropState.visibleArea) {
+			const prevArea = this.cropState.visibleArea;
 
+			this.cropState.visibleArea = {
+				x: prevArea.x + x,
+				y: prevArea.y + y,
+				width: width,
+				height: height,
+			};
+		} else {
+			this.cropState.visibleArea = {
+				x,
+				y,
+				width,
+				height,
+			};
+		}
 		this.cropState.isActive = false;
 		this.cropState.startPoint = null;
 		this.cropState.currentPoint = null;

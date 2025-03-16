@@ -2468,6 +2468,20 @@ const Canvas = observer(() => {
 						<Button
 							onClick={() => {
 								canvasStore.applyCrop();
+								if (overlayCanvasRef.current) {
+									const ctx =
+										overlayCanvasRef.current.getContext(
+											'2d'
+										);
+									if (ctx) {
+										ctx.clearRect(
+											0,
+											0,
+											overlayCanvasRef.current.width,
+											overlayCanvasRef.current.height
+										);
+									}
+								}
 								setShowCropModal(false);
 							}}
 							className="bg-dark text-white hover:bg-dark/80"
