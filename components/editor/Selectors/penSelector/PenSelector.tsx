@@ -1,53 +1,28 @@
 'use client';
-import React, { useEffect } from 'react';
+import React from 'react';
 import ToolCard from '../../ToolCard';
 import ToolDropdown from '@/components/ToolDropdown';
 import Brush from './Brush';
-import { useState } from 'react';
 import { brushData } from '@/constant/PencilData';
 import { useStore } from '@/stores/storeProvider';
-import { DrawingToolType } from '@/types/types';
 import { observer } from 'mobx-react-lite';
+
+const toolTypeMap = {
+	pencil: { name: 'Pencil', index: 0 },
+	brush: { name: 'Brush', index: 1 },
+	highlighter: { name: 'Highlighter', index: 2 },
+};
 
 const PenSelector = observer(() => {
 	const { canvasStore } = useStore();
-	const [selectedIcon, setSelectedIcon] = useState<React.ReactNode>(
-		brushData[0].icon
-	);
-	const [selectedText, setSelectedText] = useState<string>(brushData[0].name);
-	const [isToolActive, setIsToolActive] = useState(false);
 
-	useEffect(() => {
-		setIsToolActive(canvasStore.currentTool === 'draw');
-	}, [canvasStore.currentTool]);
+	const currentToolType = canvasStore.drawingState.currentTool || 'pencil';
+	const toolInfo = toolTypeMap[currentToolType] || toolTypeMap.pencil;
 
-	const handleSelection = (
-		icon: React.ReactNode,
-		text: string,
-		toolType: DrawingToolType
-	) => {
-		setSelectedIcon(icon);
-		setSelectedText(text);
-		canvasStore.currentTool = 'draw';
-		canvasStore.drawingState.currentTool = toolType;
-		setIsToolActive(true);
-	};
+	const isToolActive = canvasStore.currentTool === 'draw';
 
-	const handleColorChange = (color: string) => {
-		canvasStore.drawingState.color = color;
-
-		if (isToolActive) {
-			canvasStore.currentTool = 'draw';
-		}
-	};
-
-	const handleLineWidthChange = (width: number) => {
-		canvasStore.drawingState.lineWidth = width;
-
-		if (isToolActive) {
-			canvasStore.currentTool = 'draw';
-		}
-	};
+	const selectedIcon = brushData[toolInfo.index].icon;
+	const selectedText = toolInfo.name;
 
 	return (
 		<ToolDropdown
@@ -60,13 +35,7 @@ const PenSelector = observer(() => {
 				/>
 			}
 			content={
-				<Brush
-					onClick={handleSelection}
-					selectedIcon={selectedIcon}
-					onColorChange={handleColorChange}
-					onLineWidthChange={handleLineWidthChange}
-					isToolActive={isToolActive}
-				/>
+				<Brush canvasStore={canvasStore} isToolActive={isToolActive} />
 			}
 			id="num4"
 			keepOpenAfterInteraction={true}

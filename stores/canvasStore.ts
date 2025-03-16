@@ -709,7 +709,11 @@ export class CanvasStore {
 	}
 
 	resetTool() {
-		if (this.currentTool === 'select' || this.shapeDrawingState.isDrawing) {
+		if (
+			this.currentTool === 'select' ||
+			this.shapeDrawingState.isDrawing ||
+			(this.currentTool === 'draw' && !this.drawingState.isDrawing)
+		) {
 			return;
 		}
 

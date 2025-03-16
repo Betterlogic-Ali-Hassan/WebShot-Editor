@@ -2,117 +2,96 @@
 
 import { brushData } from '@/constant/PencilData';
 import { cn } from '@/lib/utils';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 import LinePicker from '../BorderPicker';
 import ColorPicker from '../borderSelector/ColorPicker2';
 import Cursor from '../../Cursor';
 import { DrawingToolType } from '@/types/types';
-import { useStore } from '@/stores/storeProvider';
+import { observer } from 'mobx-react-lite';
+import { CanvasStore } from '@/stores/canvasStore';
 
 interface Props {
-	onClick: (
-		icon: React.ReactNode,
-		text: string,
-		toolType: DrawingToolType
-	) => void;
-	selectedIcon?: React.ReactNode;
-	onColorChange: (color: string) => void;
-	onLineWidthChange: (width: number) => void;
+	canvasStore: CanvasStore;
 	isToolActive?: boolean;
 }
 
-const toolTypeMap = {
+const toolNameToTypeMap = {
 	Pencil: 'pencil',
 	Brush: 'brush',
 	Highlighter: 'highlighter',
 } as const;
 
-const Brush = ({
-	onClick,
-	selectedIcon,
-	onColorChange,
-	onLineWidthChange,
-	isToolActive = false,
-}: Props) => {
-	const { canvasStore } = useStore();
-	const [selectedColor, setSelectedColor] = useState('rgba(0, 0, 0, 1)');
-	const [selectedName, setSelectedName] = useState<string>('Pencil');
-
-	useEffect(() => {
-		onColorChange(selectedColor);
-
-		const currentTool = brushData.find(
-			(item) => item.icon === selectedIcon
-		);
-		if (currentTool) {
-			setSelectedName(currentTool.name);
-		}
-	}, [selectedIcon, onColorChange, selectedColor]);
-
+const Brush = observer(({ canvasStore }: Props) => {
 	const containerRef = useRef<HTMLDivElement>(null);
 
+	const currentColor = canvasStore.drawingState.color;
+	const currentLineWidth = canvasStore.drawingState.lineWidth;
+	const currentToolType = canvasStore.drawingState.currentTool || 'pencil';
+	const handleToolClick = (item: { name: string }) => {
+		const toolType = toolNameToTypeMap[
+			item.name as keyof typeof toolNameToTypeMap
+		] as DrawingToolType;
+
+		canvasStore.currentTool = 'draw';
+		canvasStore.drawingState.currentTool = toolType;
+	};
+
 	const handleColorChange = (color: string) => {
-		setSelectedColor(color);
-		onColorChange(color);
-
-		if (isToolActive) {
-			const toolType =
-				toolTypeMap[selectedName as keyof typeof toolTypeMap] ||
-				'pencil';
-			canvasStore.currentTool = 'draw';
-			canvasStore.drawingState.currentTool = toolType;
-		}
+		canvasStore.drawingState.color = color;
 	};
 
-	const handleLineWidthChange = (value: number) => {
-		onLineWidthChange(value);
-
-		if (isToolActive) {
-			const toolType =
-				toolTypeMap[selectedName as keyof typeof toolTypeMap] ||
-				'pencil';
-			canvasStore.currentTool = 'draw';
-			canvasStore.drawingState.currentTool = toolType;
-		}
+	const handleLineWidthChange = (width: number) => {
+		canvasStore.drawingState.lineWidth = width;
 	};
 
-	const handleToolClick = (item: { name: string; icon: React.ReactNode }) => {
-		setSelectedName(item.name);
-		const toolType = toolTypeMap[item.name as keyof typeof toolTypeMap];
-		onClick(item.icon, item.name, toolType);
-	};
+	const toolInfo = brushData.find(
+		(item) =>
+			toolNameToTypeMap[item.name as keyof typeof toolNameToTypeMap] ===
+			currentToolType
+	);
+	const currentIcon = toolInfo?.icon;
 
 	return (
 		<div ref={containerRef}>
 			<ul className="flex items-center max-sm:flex-col gap-2 w-full px-4">
-				{brushData.map((item, index) => (
-					<li
-						key={index}
-						className={cn(
-							'flex items-center gap-1.5 max-sm:w-full rounded-md py-2 px-3 hover:bg-light cursor-pointer text-sm border-2 border-transparent',
-							selectedIcon === item.icon &&
-								'border-dotted border-card-border bg-secondary'
-						)}
-						onClick={() => handleToolClick(item)}
-					>
-						{item.icon}
-						{item.name}
-					</li>
-				))}
+				{brushData.map((item, index) => {
+					const isSelected =
+						toolNameToTypeMap[
+							item.name as keyof typeof toolNameToTypeMap
+						] === currentToolType;
+
+					return (
+						<li
+							key={index}
+							className={cn(
+								'flex items-center gap-1.5 max-sm:w-full rounded-md py-2 px-3 hover:bg-light cursor-pointer text-sm border-2 border-transparent',
+								isSelected &&
+									'border-dotted border-card-border bg-secondary'
+							)}
+							onClick={() => handleToolClick(item)}
+						>
+							{item.icon}
+							{item.name}
+						</li>
+					);
+				})}
 				<li className="flex items-center gap-1.5 rounded-md hover:bg-light cursor-pointer">
 					<ColorPicker
 						select
 						onColorChange={handleColorChange}
-						initialColor="rgba(0, 0, 0, 1)"
+						initialColor={currentColor}
 					/>
 				</li>
 				<li className="flex items-center gap-1.5 rounded-md hover:bg-light cursor-pointer">
-					<LinePicker onChange={handleLineWidthChange} />
+					<LinePicker
+						onChange={handleLineWidthChange}
+						initialWidth={currentLineWidth}
+					/>
 				</li>
 			</ul>
 			<Cursor
-				selectedColor={selectedColor}
-				selectedIcon={selectedIcon}
+				selectedColor={currentColor}
+				selectedIcon={currentIcon}
 				ref={containerRef}
 				positionX={26}
 				positionY={13}
@@ -120,6 +99,6 @@ const Brush = ({
 			/>
 		</div>
 	);
-};
+});
 
 export default Brush;

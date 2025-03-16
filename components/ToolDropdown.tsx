@@ -38,6 +38,8 @@ const ToolDropdown = ({
 	const handleOpenChange = (open: boolean) => {
 		if (open) {
 			setOpenPopoverId(id);
+			const event = new CustomEvent('popoverOpen', { detail: id });
+			document.dispatchEvent(event);
 		} else if (shouldAutoClose) {
 			setOpenPopoverId(null);
 		}
