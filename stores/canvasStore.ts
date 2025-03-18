@@ -202,7 +202,8 @@ export class CanvasStore {
 	currentTool: ToolType = 'select';
 	private history: EditorHistoryState[] = [];
 	private currentHistoryIndex: number = -1;
-
+	private _batchOperationActive: boolean = false;
+	private _lastSavedStateHash: string = '';
 	constructor() {
 		makeAutoObservable(
 			this,
@@ -210,7 +211,7 @@ export class CanvasStore {
 				logCanvasState: false,
 				dragState: false,
 				selectionState: false,
-				renderBrowserFramePreview: false, // Используем существующее поле вместо browserFrameImages
+				renderBrowserFramePreview: false,
 			},
 			{ autoBind: true }
 		);
@@ -218,7 +219,30 @@ export class CanvasStore {
 			console.error('Failed to preload browser frame images:', error);
 		});
 	}
+	startBatchOperation(): void {
+		this._batchOperationActive = true;
+	}
 
+	endBatchOperation(): void {
+		this._batchOperationActive = false;
+		this.saveToHistory();
+	}
+
+	private createStateHash(): string {
+		const layerIds = this.canvasState.layers.map((l) => l.id).join(',');
+		const selectedIds = this.canvasState.selectedLayerIds.join(',');
+		const dimensions = `${this.canvasState.dimensions.width}x${this.canvasState.dimensions.height}`;
+
+		const cropHash = this.cropState.visibleArea
+			? `crop:${this.cropState.visibleArea.x},${this.cropState.visibleArea.y},${this.cropState.visibleArea.width},${this.cropState.visibleArea.height}`
+			: 'crop:none';
+
+		const paddingHash = `padding:${this.paddingState.isEnabled},${this.paddingState.size},${this.paddingState.color}`;
+
+		const browserHash = `browser:${this.browserFrameState.isEnabled},${this.browserFrameState.style}`;
+
+		return `${layerIds}|${selectedIds}|${dimensions}|${cropHash}|${paddingHash}|${browserHash}`;
+	}
 	private browserFrameImages: {
 		mac: {
 			left?: HTMLImageElement;
@@ -458,7 +482,6 @@ export class CanvasStore {
 		this.selectionState.isTransforming = false;
 		this.selectionState.activeHandle = null;
 		this.selectionState.transformOrigin = null;
-		this.logCanvasState();
 	}
 
 	clearSelection() {
@@ -682,6 +705,8 @@ export class CanvasStore {
 		)
 			return;
 
+		this.startBatchOperation();
+
 		const shapeLayer: ShapeLayerData = {
 			id: uuidv4(),
 			type: 'shape',
@@ -715,12 +740,11 @@ export class CanvasStore {
 		};
 
 		this.addLayer(shapeLayer);
-
 		this.shapeDrawingState.isDrawing = false;
 		this.shapeDrawingState.startPoint = null;
 		this.shapeDrawingState.currentPoint = null;
 
-		this.saveToHistory();
+		this.endBatchOperation();
 	}
 
 	setShapeType(shapeType: ShapeType) {
@@ -865,6 +889,8 @@ export class CanvasStore {
 	}
 
 	private createTextLayer(transform: { x: number; y: number }) {
+		this.startBatchOperation();
+
 		const textLayer: TextLayerData = {
 			id: uuidv4(),
 			type: 'text',
@@ -891,6 +917,8 @@ export class CanvasStore {
 		};
 
 		this.addLayer(textLayer);
+
+		this.endBatchOperation();
 	}
 
 	private updateTextLayer(layerId: string) {
@@ -963,15 +991,27 @@ export class CanvasStore {
 	}
 
 	saveToHistory() {
+		if (this._batchOperationActive) {
+			return;
+		}
+		const currentStateHash = this.createStateHash();
+		if (currentStateHash === this._lastSavedStateHash) {
+			return;
+		}
+
 		this.history = this.history.slice(0, this.currentHistoryIndex + 1);
 
 		this.history.push({
-			canvasState: { ...this.canvasState },
-			cropState: { ...this.cropState },
-			paddingState: { ...this.paddingState },
-			browserFrameState: { ...this.browserFrameState },
+			canvasState: JSON.parse(JSON.stringify(this.canvasState)),
+			cropState: JSON.parse(JSON.stringify(this.cropState)),
+			paddingState: JSON.parse(JSON.stringify(this.paddingState)),
+			browserFrameState: JSON.parse(
+				JSON.stringify(this.browserFrameState)
+			),
 		});
+
 		this.currentHistoryIndex++;
+		this._lastSavedStateHash = currentStateHash;
 	}
 
 	canUndo(): boolean {
@@ -988,10 +1028,18 @@ export class CanvasStore {
 		this.currentHistoryIndex--;
 		const previousState = this.history[this.currentHistoryIndex];
 
-		this.canvasState = { ...previousState.canvasState };
-		this.cropState = { ...previousState.cropState };
-		this.paddingState = { ...previousState.paddingState };
-		this.browserFrameState = { ...previousState.browserFrameState };
+		this.canvasState = JSON.parse(
+			JSON.stringify(previousState.canvasState)
+		);
+		this.cropState = JSON.parse(JSON.stringify(previousState.cropState));
+		this.paddingState = JSON.parse(
+			JSON.stringify(previousState.paddingState)
+		);
+		this.browserFrameState = JSON.parse(
+			JSON.stringify(previousState.browserFrameState)
+		);
+
+		this._lastSavedStateHash = this.createStateHash();
 
 		this.clearSelection();
 	}
@@ -1002,10 +1050,14 @@ export class CanvasStore {
 		this.currentHistoryIndex++;
 		const nextState = this.history[this.currentHistoryIndex];
 
-		this.canvasState = { ...nextState.canvasState };
-		this.cropState = { ...nextState.cropState };
-		this.paddingState = { ...nextState.paddingState };
-		this.browserFrameState = { ...nextState.browserFrameState };
+		this.canvasState = JSON.parse(JSON.stringify(nextState.canvasState));
+		this.cropState = JSON.parse(JSON.stringify(nextState.cropState));
+		this.paddingState = JSON.parse(JSON.stringify(nextState.paddingState));
+		this.browserFrameState = JSON.parse(
+			JSON.stringify(nextState.browserFrameState)
+		);
+
+		this._lastSavedStateHash = this.createStateHash();
 
 		this.clearSelection();
 	}
@@ -1016,10 +1068,16 @@ export class CanvasStore {
 		this.currentHistoryIndex = 0;
 		const initialState = this.history[0];
 
-		this.canvasState = { ...initialState.canvasState };
-		this.cropState = { ...initialState.cropState };
-		this.paddingState = { ...initialState.paddingState };
-		this.browserFrameState = { ...initialState.browserFrameState };
+		this.canvasState = JSON.parse(JSON.stringify(initialState.canvasState));
+		this.cropState = JSON.parse(JSON.stringify(initialState.cropState));
+		this.paddingState = JSON.parse(
+			JSON.stringify(initialState.paddingState)
+		);
+		this.browserFrameState = JSON.parse(
+			JSON.stringify(initialState.browserFrameState)
+		);
+
+		this._lastSavedStateHash = this.createStateHash();
 
 		this.clearSelection();
 	}
@@ -1087,6 +1145,8 @@ export class CanvasStore {
 		)
 			return;
 
+		this.startBatchOperation();
+
 		const bounds = this.arrowState.previewBounds;
 
 		const relativeStartPoint = {
@@ -1130,14 +1190,11 @@ export class CanvasStore {
 		};
 
 		this.addLayer(arrowLayer);
-
 		this.resetArrowState();
-
 		this.currentTool = 'select';
-
 		this.selectLayer(arrowLayer.id);
 
-		this.saveToHistory();
+		this.endBatchOperation();
 	}
 
 	setArrowType(arrowType: ArrowType) {
@@ -1208,6 +1265,8 @@ export class CanvasStore {
 		)
 			return;
 
+		this.startBatchOperation();
+
 		const blurLayer: BlurLayerData = {
 			id: uuidv4(),
 			type: 'blur',
@@ -1237,6 +1296,8 @@ export class CanvasStore {
 		};
 
 		this.currentTool = 'select';
+
+		this.endBatchOperation();
 	}
 
 	setWatermarkImage(file: File): void {
@@ -1953,6 +2014,8 @@ export class CanvasStore {
 		)
 			return;
 
+		this.startBatchOperation();
+
 		const bounds = this.textArrowState.previewBounds;
 
 		const relativeStartPoint = {
@@ -2001,13 +2064,10 @@ export class CanvasStore {
 
 		this.addLayer(textArrowLayer);
 		this.selectLayer(textArrowLayer.id);
-
 		this.textArrowState.textInput = true;
-
 		this.textState.editingLayerId = textArrowLayer.id;
 		this.textState.isEditing = true;
 		this.textState.currentText = '';
-
 		this.textState.position = {
 			x: this.textArrowState.startPoint.x,
 			y: this.textArrowState.startPoint.y,
@@ -2024,7 +2084,7 @@ export class CanvasStore {
 			textInput,
 		};
 
-		this.saveToHistory();
+		this.endBatchOperation();
 	}
 	finishTextArrowTextInput() {
 		if (!this.textArrowState.textInput || !this.textState.editingLayerId)
