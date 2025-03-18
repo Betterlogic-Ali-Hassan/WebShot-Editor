@@ -72,14 +72,13 @@ const TextInput = observer(({ position, onFinish }: TextInputProps) => {
 		const { fontSize, fontFamily, color, bold, italic, alignment } =
 			canvasStore.textState;
 
-		return {
+		const isTextArrow = canvasStore.textArrowState.textInput;
+		const isPageText = canvasStore.pageTextState.textInput;
+		const baseStyles: React.CSSProperties = {
 			position: 'absolute',
-			left: `${position.x}px`,
-			top: `${position.y}px`,
-			padding: '2px',
+			padding: '4px',
 			margin: 0,
-			background: '#fff',
-			border: 'none',
+			border: '1px solid rgba(51, 153, 255, 0.5)',
 			outline: 'none',
 			resize: 'none',
 			overflow: 'hidden',
@@ -90,8 +89,38 @@ const TextInput = observer(({ position, onFinish }: TextInputProps) => {
 			fontStyle: italic ? 'italic' : 'normal',
 			textAlign: alignment,
 			zIndex: 1000,
-			minWidth: '20px',
+			background: 'rgba(255, 255, 255, 0.8)',
+			boxShadow: '0 0 3px rgba(0, 0, 0, 0.1)',
+			borderRadius: '3px',
+			minWidth: isTextArrow ? '150px' : isPageText ? '150px' : '150px',
 			minHeight: `${fontSize + 4}px`,
+		};
+
+		if (isTextArrow) {
+			return {
+				...baseStyles,
+				left: `${position.x}px`,
+				top: `${position.y}px`,
+				// transform: 'translate(-50%, -50%)',
+				textAlign: 'center',
+				background: 'rgba(255, 255, 0, 0.8)',
+			};
+		} else if (isPageText) {
+			return {
+				...baseStyles,
+				left: `${position.x}px`,
+				top: `${position.y}px`,
+				// transform: 'translateX(-50%)',
+				textAlign: 'center',
+				background: 'rgba(255, 255, 0, 0.8)',
+				padding: '6px 10px',
+			};
+		}
+
+		return {
+			...baseStyles,
+			left: `${position.x}px`,
+			top: `${position.y}px`,
 		};
 	};
 

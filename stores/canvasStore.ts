@@ -2100,6 +2100,8 @@ export class CanvasStore {
 				(layer as TextArrowLayerData).text = this.textState.currentText;
 				if (this.textState.currentText.trim() === '') {
 					this.removeLayer(layer.id);
+				} else {
+					this.canvasState.layers = [...this.canvasState.layers];
 				}
 			}
 		}
@@ -2112,6 +2114,7 @@ export class CanvasStore {
 		this.textArrowState.textInput = false;
 
 		this.currentTool = 'select';
+		this.forceCanvasUpdate();
 
 		this.saveToHistory();
 	}
@@ -2125,6 +2128,12 @@ export class CanvasStore {
 			textInput: true,
 		};
 
+		const width = Math.max(100, this.textState.fontSize * 5);
+		const height = Math.max(50, this.textState.fontSize * 2);
+
+		const left = x - width / 2;
+		const top = y - height - 10;
+
 		const pageTextLayer: PageTextLayerData = {
 			id: uuidv4(),
 			type: 'pageText',
@@ -2133,10 +2142,10 @@ export class CanvasStore {
 			locked: false,
 			opacity: 1,
 			transform: {
-				x: x - 50,
-				y: y - 80,
-				width: 100,
-				height: 50,
+				x: left,
+				y: top,
+				width: width,
+				height: height,
 				rotation: 0,
 				scale: { x: 1, y: 1 },
 			},
@@ -2153,9 +2162,10 @@ export class CanvasStore {
 		this.textState.isEditing = true;
 		this.textState.currentText = '';
 		this.textState.editingLayerId = pageTextLayer.id;
-		this.textState.position = { x, y: y - 30 };
-
-		this.textState.color = '#000000';
+		this.textState.position = {
+			x: x,
+			y: top + height / 2,
+		};
 
 		return pageTextLayer;
 	}
@@ -2204,6 +2214,7 @@ export class CanvasStore {
 
 		this.currentTool = 'select';
 
+		this.forceCanvasUpdate();
 		this.saveToHistory();
 	}
 	updatePaddingState(updates: Partial<PaddingState>): void {

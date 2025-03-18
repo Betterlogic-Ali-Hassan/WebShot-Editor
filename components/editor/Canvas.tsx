@@ -669,13 +669,11 @@ const Canvas = observer(() => {
 
 					if (layer.text) {
 						ctx.save();
-						ctx.setTransform(1, 0, 0, 1, 0, 0);
 
 						ctx.font = `${layer.fontSize}px ${layer.fontFamily}`;
 						ctx.fillStyle = layer.color;
 						ctx.textAlign = 'center';
 						ctx.textBaseline = 'middle';
-
 						const metrics = ctx.measureText(layer.text);
 						const textWidth = metrics.width;
 						const textHeight = layer.fontSize * 1.2;
@@ -724,41 +722,31 @@ const Canvas = observer(() => {
 					ctx.beginPath();
 
 					ctx.moveTo(x + borderRadius, y);
-
 					ctx.lineTo(x + width - borderRadius, y);
-
 					ctx.quadraticCurveTo(
 						x + width,
 						y,
 						x + width,
 						y + borderRadius
 					);
-
 					ctx.lineTo(x + width, y + height - borderRadius);
-
 					ctx.quadraticCurveTo(
 						x + width,
 						y + height,
 						x + width - borderRadius,
 						y + height
 					);
-
 					ctx.lineTo(pointerX + 10, y + height);
-
 					ctx.lineTo(pointerX, pointerY);
 					ctx.lineTo(pointerX - 10, y + height);
-
 					ctx.lineTo(x + borderRadius, y + height);
-
 					ctx.quadraticCurveTo(
 						x,
 						y + height,
 						x,
 						y + height - borderRadius
 					);
-
 					ctx.lineTo(x, y + borderRadius);
-
 					ctx.quadraticCurveTo(x, y, x + borderRadius, y);
 
 					ctx.closePath();
@@ -1300,8 +1288,16 @@ const Canvas = observer(() => {
 						e.target as HTMLElement
 					).getBoundingClientRect();
 					setTextInputPosition({
-						x: pageTextLayer.transform.x * scale + rect.left,
-						y: pageTextLayer.transform.y * scale + rect.top,
+						x:
+							(pageTextLayer.transform.x +
+								pageTextLayer.transform.width / 2) *
+								scale +
+							rect.left / 2,
+						y:
+							(pageTextLayer.transform.y +
+								pageTextLayer.transform.height * 0.3) *
+								scale +
+							rect.top / 2,
 					});
 				}
 				return;
@@ -1373,12 +1369,11 @@ const Canvas = observer(() => {
 							e.target as HTMLElement
 						).getBoundingClientRect();
 						setTextInputPosition({
-							x: (e.clientX - rect.left) / scale,
-							y: (e.clientY - rect.top) / scale,
+							x: transform.x * scale + rect.left,
+							y: transform.y * scale + rect.top,
 						});
 					}
 					break;
-
 				case 'draw':
 					canvasStore.startDrawing(coords.x, coords.y);
 					break;
@@ -2385,9 +2380,8 @@ const Canvas = observer(() => {
 						x:
 							(layer.transform.x + layer.transform.width / 2) *
 								scale +
-							rect.left -
-							50,
-						y: layer.transform.y * scale + rect.top + 10,
+							rect.left,
+						y: layer.transform.y * scale + rect.top + 10 * scale,
 					});
 
 					break;
@@ -2434,32 +2428,6 @@ const Canvas = observer(() => {
 						y:
 							(layer.transform.y + layer.startPoint.y) * scale +
 							rect.top,
-					});
-
-					break;
-				} else if (
-					layer.type === 'pageText' &&
-					isPointInLayer(coords.x, coords.y, layer)
-				) {
-					const rect = (
-						e.target as HTMLElement
-					).getBoundingClientRect();
-					const scale = canvasStore.canvasState.zoom / 100;
-
-					canvasStore.textState.isEditing = true;
-					canvasStore.textState.editingLayerId = layer.id;
-					canvasStore.textState.currentText = layer.text;
-					canvasStore.textState.fontSize = layer.fontSize;
-					canvasStore.textState.fontFamily = layer.fontFamily;
-					canvasStore.textState.color = layer.color;
-
-					canvasStore.pageTextState.textInput = true;
-					canvasStore.pageTextState.backgroundColor =
-						layer.backgroundColor;
-
-					setTextInputPosition({
-						x: layer.transform.x * scale + rect.left,
-						y: layer.transform.y * scale + rect.top,
 					});
 
 					break;
