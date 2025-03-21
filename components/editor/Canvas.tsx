@@ -2,7 +2,7 @@
 
 import { useStore } from '@/stores/storeProvider';
 import { observer } from 'mobx-react-lite';
-import { useEffect, useRef, useCallback, useState } from 'react';
+import { useEffect, useRef, useCallback, useState, useMemo } from 'react';
 import {
 	Layer,
 	TransformHandleType,
@@ -38,23 +38,22 @@ const Canvas = observer(() => {
 		y: number;
 	} | null>(null);
 
-	const getBrowserFrameCanvasStyle = (): React.CSSProperties => {
+	const getBrowserFrameCanvasStyle = useMemo((): React.CSSProperties => {
 		const baseStyle: React.CSSProperties = {
 			position: 'absolute',
-			maxWidth: '100%',
-			maxHeight: '100%',
-			transform: `translate(-50%, -50%) scale(${
-				canvasStore.canvasState.zoom / 100
-			})`,
+			top: '0',
+			left: '0',
+			transform: `scale(${canvasStore.canvasState.zoom / 100})`,
+			transformOrigin: 'top left',
 			willChange: 'transform',
 			imageRendering: 'pixelated' as const,
 			zIndex: 3,
 			pointerEvents: 'none',
-			top: '50%',
-			left: '50%',
+			maxWidth: 'none',
+			maxHeight: 'none',
 		};
 		return baseStyle;
-	};
+	}, [canvasStore.canvasState.zoom]);
 
 	const renderPadding = useCallback(() => {
 		const paddingCanvas = paddingCanvasRef.current;
@@ -90,60 +89,49 @@ const Canvas = observer(() => {
 		ctx.clearRect(paddingSize, paddingSize, contentWidth, contentHeight);
 	}, [canvasStore]);
 
-	const getPaddingCanvasStyle = (): React.CSSProperties => {
+	const getPaddingCanvasStyle = useMemo((): React.CSSProperties => {
 		const baseStyle: React.CSSProperties = {
 			position: 'absolute',
-			maxWidth: '100%',
-			maxHeight: '100%',
-			transform: `translate(-50%, -50%) scale(${
-				canvasStore.canvasState.zoom / 100
-			})`,
+			top: '0',
+			left: '0',
+			transform: `scale(${canvasStore.canvasState.zoom / 100})`,
+			transformOrigin: 'top left',
 			willChange: 'transform',
 			imageRendering: 'pixelated' as const,
 			zIndex: 3,
 			pointerEvents: 'none',
-			top: '50%',
-			left: '50%',
+			maxWidth: 'none',
+			maxHeight: 'none',
 		};
 
 		return baseStyle;
-	};
-	const getCanvasStyle = (): React.CSSProperties => {
+	}, [canvasStore.canvasState.zoom]);
+
+	const getCanvasStyle = useMemo((): React.CSSProperties => {
 		const baseStyle: React.CSSProperties = {
 			position: 'absolute',
-			top: '50%',
-			left: '50%',
-			transform: `translate(-50%, -50%) scale(${
-				canvasStore.canvasState.zoom / 100
-			})`,
-			transformOrigin: 'center center',
-			maxWidth: '100%',
-			maxHeight: '100%',
+			top: '0',
+			left: '0',
+			transformOrigin: 'top left',
+			transform: `scale(${canvasStore.canvasState.zoom / 100})`,
+			maxWidth: 'none',
+			maxHeight: 'none',
 		};
 
 		if (canvasStore.cropState.visibleArea) {
 			const { x, y, width, height } = canvasStore.cropState.visibleArea;
-			const canvasWidth = canvasStore.canvasState.dimensions.width;
-			const canvasHeight = canvasStore.canvasState.dimensions.height;
-
-			const offsetX = -(x + width / 2 - canvasWidth / 2);
-			const offsetY = -(y + height / 2 - canvasHeight / 2);
-
-			const zoom = canvasStore.canvasState.zoom / 100;
-			baseStyle.transform = `translate(-50%, -50%) translate(${
-				offsetX * zoom
-			}px, ${offsetY * zoom}px) scale(${zoom})`;
-
-			const left = (x / canvasWidth) * 100;
-			const top = (y / canvasHeight) * 100;
-			const right = ((x + width) / canvasWidth) * 100;
-			const bottom = ((y + height) / canvasHeight) * 100;
-
-			baseStyle.clipPath = `polygon(${left}% ${top}%, ${right}% ${top}%, ${right}% ${bottom}%, ${left}% ${bottom}%)`;
+			baseStyle.transform = `translate(${-x}px, ${-y}px) scale(${
+				canvasStore.canvasState.zoom / 100
+			})`;
+			baseStyle.clipPath = `polygon(${x}px ${y}px, ${
+				x + width
+			}px ${y}px, ${x + width}px ${y + height}px, ${x}px ${
+				y + height
+			}px)`;
 		}
 
 		return baseStyle;
-	};
+	}, [canvasStore.canvasState.zoom, canvasStore.cropState.visibleArea]);
 	useEffect(() => {
 		const mainCanvas = mainCanvasRef.current;
 		const tempCanvas = document.createElement('canvas');
@@ -2335,16 +2323,36 @@ const Canvas = observer(() => {
 			drawSelection(ctx, selectedLayer);
 		}
 	}, [canvasStore, canvasStore.canvasState.selectedLayerIds, drawSelection]);
-	const containerStyle: React.CSSProperties = {
-		width: '100%',
-		height: '100vh',
-		overflow: 'hidden',
-		backgroundColor: '#f3f4f6',
-		display: 'flex',
-		alignItems: 'center',
-		justifyContent: 'center',
-		position: 'relative',
-	};
+
+	const containerStyle = useMemo((): React.CSSProperties => {
+		const zoom = canvasStore.canvasState.zoom / 100;
+		let width, height;
+
+		if (canvasStore.cropState.visibleArea) {
+			width = canvasStore.cropState.visibleArea.width;
+			height = canvasStore.cropState.visibleArea.height;
+		} else {
+			width = canvasStore.canvasState.dimensions.width;
+			height = canvasStore.canvasState.dimensions.height;
+		}
+
+		const minWidth = width * zoom;
+		const minHeight = height * zoom;
+
+		return {
+			width: '100%',
+			height: '100vh',
+			overflow: 'auto',
+			backgroundColor: '#f3f4f6',
+			position: 'relative',
+			minWidth: `${minWidth}px`,
+			minHeight: `${minHeight}px`,
+		};
+	}, [
+		canvasStore.canvasState.zoom,
+		canvasStore.canvasState.dimensions,
+		canvasStore.cropState.visibleArea,
+	]);
 
 	const handleDoubleClick = useCallback(
 		async (e: React.MouseEvent) => {
@@ -2489,7 +2497,7 @@ const Canvas = observer(() => {
 			<canvas
 				ref={mainCanvasRef}
 				style={{
-					...getCanvasStyle(),
+					...getCanvasStyle,
 					zIndex: 1,
 				}}
 				data-testid="main-canvas"
@@ -2505,18 +2513,18 @@ const Canvas = observer(() => {
 
 			<canvas
 				ref={canvasStore.browserFrameCanvasRef}
-				style={getBrowserFrameCanvasStyle()}
+				style={getBrowserFrameCanvasStyle}
 				data-testid="browser-frame-canvas"
 			/>
 			<canvas
 				ref={paddingCanvasRef}
-				style={getPaddingCanvasStyle()}
+				style={getPaddingCanvasStyle}
 				data-testid="padding-canvas"
 			/>
 			<canvas
 				ref={overlayCanvasRef}
 				style={{
-					...getCanvasStyle(),
+					...getCanvasStyle,
 					pointerEvents: 'none',
 					zIndex: 5,
 				}}

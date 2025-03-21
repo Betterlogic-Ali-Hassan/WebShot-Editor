@@ -586,7 +586,7 @@ export class CanvasStore {
 	}
 
 	setZoom(zoom: number) {
-		this.canvasState.zoom = zoom;
+		this.canvasState.zoom = Math.max(10, Math.min(800, zoom));
 		this.logCanvasState();
 	}
 

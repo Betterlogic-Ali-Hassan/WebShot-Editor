@@ -42,14 +42,17 @@ const ImageUploader = observer(({ isLoading }: ImageUploaderProps) => {
 				file,
 				(result) => {
 					if (isFirstImage) {
-						if (result.initialZoom) {
-							canvasStore.setZoom(result.initialZoom);
-						}
 						if (result.canvasDimensions) {
 							canvasStore.setCanvasDimensions(
 								result.canvasDimensions.width,
 								result.canvasDimensions.height
 							);
+						}
+
+						if (result.initialZoom) {
+							setTimeout(() => {
+								canvasStore.setZoom(100);
+							}, 0);
 						}
 					}
 					canvasStore.addLayer(result.layer);
@@ -88,7 +91,10 @@ const ImageUploader = observer(({ isLoading }: ImageUploaderProps) => {
 	return (
 		<>
 			{canvasStore.canvasState.layers.length > 0 ? (
-				<div className="img px-4 sm:px-[70px] flex items-center justify-center">
+				<div
+					className="img px-4 sm:px-[70px] overflow-auto"
+					style={{ height: '100vh' }}
+				>
 					<Canvas />
 				</div>
 			) : (
@@ -99,6 +105,31 @@ const ImageUploader = observer(({ isLoading }: ImageUploaderProps) => {
 					>
 						<div
 							className="p-4 rounded-[16px] border-dashed flex items-center border-2 justify-center flex-col min-h-[420px] w-full"
+							onDrop={(e: React.DragEvent<HTMLDivElement>) => {
+								e.preventDefault();
+								const isFirstImage =
+									canvasStore.canvasState.layers.length === 0;
+								handleImageDrop(
+									e,
+									(result) => {
+										if (isFirstImage) {
+											if (result.canvasDimensions) {
+												canvasStore.setCanvasDimensions(
+													result.canvasDimensions
+														.width,
+													result.canvasDimensions
+														.height
+												);
+											}
+											setTimeout(() => {
+												canvasStore.setZoom(100);
+											}, 0);
+										}
+										canvasStore.addLayer(result.layer);
+									},
+									isFirstImage
+								);
+							}}
 							onPaste={(
 								e: React.ClipboardEvent<HTMLDivElement>
 							) => {
@@ -108,11 +139,7 @@ const ImageUploader = observer(({ isLoading }: ImageUploaderProps) => {
 									e,
 									(result) => {
 										if (isFirstImage) {
-											if (result.initialZoom) {
-												canvasStore.setZoom(
-													result.initialZoom
-												);
-											}
+											// Устанавливаем размеры холста
 											if (result.canvasDimensions) {
 												canvasStore.setCanvasDimensions(
 													result.canvasDimensions
@@ -121,33 +148,9 @@ const ImageUploader = observer(({ isLoading }: ImageUploaderProps) => {
 														.height
 												);
 											}
-										}
-										canvasStore.addLayer(result.layer);
-									},
-									isFirstImage
-								);
-							}}
-							onDrop={(e: React.DragEvent<HTMLDivElement>) => {
-								e.preventDefault();
-								const isFirstImage =
-									canvasStore.canvasState.layers.length === 0;
-								handleImageDrop(
-									e,
-									(result) => {
-										if (isFirstImage) {
-											if (result.initialZoom) {
-												canvasStore.setZoom(
-													result.initialZoom
-												);
-											}
-											if (result.canvasDimensions) {
-												canvasStore.setCanvasDimensions(
-													result.canvasDimensions
-														.width,
-													result.canvasDimensions
-														.height
-												);
-											}
+											setTimeout(() => {
+												canvasStore.setZoom(100);
+											}, 0);
 										}
 										canvasStore.addLayer(result.layer);
 									},
