@@ -113,16 +113,37 @@ const Canvas = observer(() => {
 			top: '0',
 			left: '0',
 			transformOrigin: 'top left',
-			transform: `scale(${canvasStore.canvasState.zoom / 100})`,
 			maxWidth: 'none',
 			maxHeight: 'none',
 		};
 
-		if (canvasStore.cropState.visibleArea) {
+		let paddingOffset = 0;
+		if (canvasStore.paddingState.isEnabled) {
+			paddingOffset = canvasStore.paddingState.size;
+		}
+
+		let browserFrameOffset = 0;
+		if (canvasStore.browserFrameState.isEnabled) {
+			if (canvasStore.browserFrameState.style === 'mac') {
+				browserFrameOffset = 69;
+			} else if (canvasStore.browserFrameState.style === 'windows') {
+				browserFrameOffset = 77;
+			} else if (canvasStore.browserFrameState.style === 'url-top') {
+				browserFrameOffset = 30;
+			}
+		}
+
+		if (!canvasStore.cropState.visibleArea) {
+			baseStyle.transform = `translate(${paddingOffset}px, ${
+				paddingOffset + browserFrameOffset
+			}px) scale(${canvasStore.canvasState.zoom / 100})`;
+		} else {
 			const { x, y, width, height } = canvasStore.cropState.visibleArea;
-			baseStyle.transform = `translate(${-x}px, ${-y}px) scale(${
-				canvasStore.canvasState.zoom / 100
-			})`;
+
+			baseStyle.transform = `translate(${-x + paddingOffset}px, ${
+				-y + paddingOffset + browserFrameOffset
+			}px) scale(${canvasStore.canvasState.zoom / 100})`;
+
 			baseStyle.clipPath = `polygon(${x}px ${y}px, ${
 				x + width
 			}px ${y}px, ${x + width}px ${y + height}px, ${x}px ${
@@ -131,7 +152,15 @@ const Canvas = observer(() => {
 		}
 
 		return baseStyle;
-	}, [canvasStore.canvasState.zoom, canvasStore.cropState.visibleArea]);
+	}, [
+		canvasStore.canvasState.zoom,
+		canvasStore.cropState.visibleArea,
+		canvasStore.paddingState.isEnabled,
+		canvasStore.paddingState.size,
+		canvasStore.browserFrameState.isEnabled,
+		canvasStore.browserFrameState.style,
+	]);
+
 	useEffect(() => {
 		const mainCanvas = mainCanvasRef.current;
 		const tempCanvas = document.createElement('canvas');
